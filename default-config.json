@@ -1,0 +1,20 @@
+{
+   "dbms":{
+      "credentials":{
+         "username":"alfred",
+         "password":"4lfr3d"
+      },
+      "server":{
+         "host":"localhost",
+         "port":5431,
+         "databaseName":"flyaway_db"
+      }
+   },
+   "scripts":{
+      "dirPath":"tests/scripts/sql"
+   },
+   "sync":{
+      "stateFileName":".dbs",
+      "methodName": "dry-run"
+   }
+}

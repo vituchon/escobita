@@ -1,0 +1,5 @@
+*.coverage-out
+vendor/
+bindata.go
+.vscode/launch.json
+*.diff
