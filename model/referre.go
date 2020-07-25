@@ -66,16 +66,16 @@ func (match Match) MatchCanHaveMoreRounds() bool {
 	return (cardsLeft/playersCount >= 3)
 }
 
-func IsValidClaim(handCard Card, boardCards []Card) bool {
+func CanTakeCards(handCard Card, boardCards []Card) bool {
 	return sumValues(append(boardCards, handCard)) == 15
 }
 
-func (match *Match) Claim(player Player, handCard Card, boardCards []Card) {
-	match.Cards.Board = match.Cards.Board.Without(boardCards...)
+func (match *Match) Take(player Player, action PlayerTakeAction) {
+	match.Cards.Board = match.Cards.Board.Without(action.BoardCards...)
 	matchPlayerCards := match.Cards.PerPlayer[player]
-	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(handCard)
-	matchPlayerCards.Taken = append(matchPlayerCards.Taken, handCard)
-	matchPlayerCards.Taken = append(matchPlayerCards.Taken, boardCards...)
+	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
+	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
+	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
 	match.Cards.PerPlayer[player] = matchPlayerCards
 }
 
@@ -115,6 +115,22 @@ type Round struct {
 }
 
 func (r Round) HasNextTurn() bool {
+	return r.doHasNextTurnMethod2()
+}
+
+// this is slower than above but will fit for every quantity of players
+func (r Round) doHasNextTurnMethod2() bool {
+	for _, player := range r.Match.Players {
+		if len(r.Match.Cards.PerPlayer[player].Hand) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// this is faster but won't work for matchs where "36 % len(r.Match.Players) > 0"
+// so to use both an state pattern or somelike that (set on initialization time) would be required,a nice to do thing
+func (r Round) doHasNextTurnMethod1() bool {
 	return r.ConsumedTurns < len(r.Match.Players)*3
 }
 
@@ -124,4 +140,13 @@ func (r *Round) NextTurn() Player {
 	r.CurrentPlayerIndex++
 	r.ConsumedTurns++
 	return nextPlayer
+}
+
+type PlayerTakeAction struct {
+	BoardCards []Card
+	HandCard   Card
+}
+
+type PlayerDropAction struct {
+	HandCard Card
 }

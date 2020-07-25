@@ -40,34 +40,14 @@ func main() {
 				cmd := doReadInput()
 				if cmd == ClaimCommand {
 					fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
-
-					fmt.Print("La de mano, id de carta: ")
-					cardId := ReadSingleIntInput()
-					handCard, err := playerCards.Hand.GetSingle(cardId)
-					for err != nil {
-						fmt.Println("Error: ", err)
-						fmt.Print("La de mano, id de carta: ")
-						cardId := ReadSingleIntInput()
-						handCard, err = playerCards.Hand.GetSingle(cardId)
-					}
-
-					fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
-					cardsIds := ReadMultipleIntsInput()
-					boardCards, err := match.Cards.Board.GetMultiple(cardsIds...)
-					for err != nil {
-						fmt.Println("Error: ", err)
-						fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
-						cardsIds := ReadMultipleIntsInput()
-						boardCards, err = match.Cards.Board.GetMultiple(cardsIds...)
-					}
-
-					fmt.Println(handCard)
-					fmt.Println(boardCards)
-					isValidClaim := model.IsValidClaim(handCard, boardCards)
+					takeAction := readTakeAction(player, match)
+					fmt.Println(takeAction.HandCard)
+					fmt.Println(takeAction.BoardCards)
+					isValidClaim := model.CanTakeCards(takeAction.HandCard, takeAction.BoardCards)
 					if isValidClaim {
 						fmt.Println("La jugada es valida!")
 						playerMustAct = false
-						match.Claim(player, handCard, boardCards)
+						match.Take(player, takeAction)
 					} else {
 						fmt.Println("La jugada NO es valida")
 					}
@@ -92,6 +72,33 @@ func main() {
 		}
 
 		//fmt.Println(match)
+	}
+}
+
+func readTakeAction(player model.Player, match model.Match) model.PlayerTakeAction {
+	playerCards := match.Cards.PerPlayer[player]
+	fmt.Print("La de mano, id de carta: ")
+	cardId := ReadSingleIntInput()
+	handCard, err := playerCards.Hand.GetSingle(cardId)
+	for err != nil {
+		fmt.Println("Error: ", err)
+		fmt.Print("La de mano, id de carta: ")
+		cardId := ReadSingleIntInput()
+		handCard, err = playerCards.Hand.GetSingle(cardId)
+	}
+
+	fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
+	cardsIds := ReadMultipleIntsInput()
+	boardCards, err := match.Cards.Board.GetMultiple(cardsIds...)
+	for err != nil {
+		fmt.Println("Error: ", err)
+		fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
+		cardsIds := ReadMultipleIntsInput()
+		boardCards, err = match.Cards.Board.GetMultiple(cardsIds...)
+	}
+	return model.PlayerTakeAction{
+		BoardCards: boardCards,
+		HandCard:   handCard,
 	}
 }
 
