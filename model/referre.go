@@ -15,24 +15,29 @@ func CreateAndServe(players []Player) Match {
 }
 
 func (match *Match) serve() {
-	shuffle(match.Cards.Left)
-	match.Cards.Board = match.Cards.Left[:4]
-	match.Cards.Left = match.Cards.Left[4:]
+	shuffle(match.MatchCards.Left)
+	match.MatchCards.Board = match.MatchCards.Left[:4]
+	match.MatchCards.Left = match.MatchCards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
 }
 
 func newMatch(players []Player) Match {
 	var deck Deck = NewDeck(Suits, EscobitaRanks)
 	match := Match{
-		Players:        players,
-		ScorePerPlayer: make(map[Player]int),
-		Cards:          newMatchCards(players, deck),
-		RoundNumber:    0,
-	}
-	for _, player := range players {
-		match.ScorePerPlayer[player] = 0
+		Players:          players,
+		MatchCards:       newMatchCards(players, deck),
+		RoundNumber:      0,
+		FirstPlayerIndex: 0,
 	}
 	return match
+}
+
+func newActionsByPlayer(players []Player) ActionsByPlayer {
+	actionsByPlayer := make(ActionsByPlayer)
+	for _, player := range players {
+		actionsByPlayer[player] = make([]PlayerAction, 0, 10)
+	}
+	return actionsByPlayer
 }
 
 func newMatchCards(players []Player, deck Deck) MatchCards {
@@ -53,11 +58,11 @@ func newMatchCards(players []Player, deck Deck) MatchCards {
 // Deal cards to each player for starting a new round
 func (match *Match) NextRound() Round {
 	for _, player := range match.Players {
-		hand := match.Cards.Left[:3]
-		matchPlayerCards := match.Cards.PerPlayer[player]
+		hand := match.MatchCards.Left[:3]
+		matchPlayerCards := match.MatchCards.PerPlayer[player]
 		matchPlayerCards.Hand = hand
-		match.Cards.PerPlayer[player] = matchPlayerCards
-		match.Cards.Left = match.Cards.Left[3:]
+		match.MatchCards.PerPlayer[player] = matchPlayerCards
+		match.MatchCards.Left = match.MatchCards.Left[3:]
 	}
 	match.RoundNumber++
 	return Round{
@@ -69,7 +74,7 @@ func (match *Match) NextRound() Round {
 }
 
 func (match Match) MatchCanHaveMoreRounds() bool {
-	cardsLeft := len(match.Cards.Left)
+	cardsLeft := len(match.MatchCards.Left)
 	playersCount := len(match.Players)
 	return (cardsLeft/playersCount >= 3)
 }
@@ -79,39 +84,23 @@ func CanTakeCards(handCard Card, boardCards []Card) bool {
 }
 
 func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
-	match.Cards.Board = match.Cards.Board.Without(action.BoardCards...)
-	matchPlayerCards := match.Cards.PerPlayer[player]
+	match.MatchCards.Board = match.MatchCards.Board.Without(action.BoardCards...)
+	matchPlayerCards := match.MatchCards.PerPlayer[player]
 	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
-	match.Cards.PerPlayer[player] = matchPlayerCards
-	isEscobita := (len(match.Cards.Board) == 0)
+	match.MatchCards.PerPlayer[player] = matchPlayerCards
+	isEscobita := (len(match.MatchCards.Board) == 0)
 	action.isEscobita = isEscobita
 	return action
 }
 
 func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
-	match.Cards.Board = append(match.Cards.Board, action.HandCard)
-	matchPlayerCards := match.Cards.PerPlayer[player]
+	match.MatchCards.Board = append(match.MatchCards.Board, action.HandCard)
+	matchPlayerCards := match.MatchCards.PerPlayer[player]
 	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
-	match.Cards.PerPlayer[player] = matchPlayerCards
+	match.MatchCards.PerPlayer[player] = matchPlayerCards
 	return action
-}
-
-func sumValues(cards []Card) int {
-	total := 0
-	for _, card := range cards {
-		total += determineValue(card)
-	}
-	return total
-}
-
-func determineValue(card Card) int {
-	if card.Rank < 8 {
-		return card.Rank
-	} else {
-		return card.Rank - 2
-	}
 }
 
 func shuffle(deck Deck) {
@@ -134,7 +123,7 @@ func (r Round) HasNextTurn() bool {
 // this is slower than above but will fit for every quantity of players
 func (r Round) doHasNextTurnMethod2() bool {
 	for _, player := range r.Match.Players {
-		if len(r.Match.Cards.PerPlayer[player].Hand) > 0 {
+		if len(r.Match.MatchCards.PerPlayer[player].Hand) > 0 {
 			return true
 		}
 	}
@@ -153,4 +142,26 @@ func (r *Round) NextTurn() Player {
 	r.CurrentPlayerIndex++
 	r.ConsumedTurns++
 	return nextPlayer
+}
+
+type PlayerTakeAction struct {
+	BoardCards []Card
+	HandCard   Card
+	isEscobita bool
+}
+
+func (a PlayerTakeAction) IsEscobita() bool {
+	return a.isEscobita
+}
+
+type PlayerDropAction struct {
+	HandCard Card
+}
+
+func (a PlayerDropAction) IsEscobita() bool {
+	return false
+}
+
+type PlayerAction interface {
+	IsEscobita() bool
 }

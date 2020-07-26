@@ -63,7 +63,7 @@ func TestMatchFlow(t *testing.T) {
 					t.Error("Players should be addressed once per round")
 				}
 				dropAction := PlayerDropAction{
-					HandCard: match.Cards.PerPlayer[player].Hand[0],
+					HandCard: match.MatchCards.PerPlayer[player].Hand[0],
 				}
 				match.Drop(player, dropAction) // each players just drops a player
 				actualTurns++
@@ -71,7 +71,7 @@ func TestMatchFlow(t *testing.T) {
 			if round.Number != actualRounds {
 				t.Errorf("Round number is %d turns and round.Number is %d", actualRounds, round.Number)
 			}
-			expectedTurns := len(match.Players) * 3
+			expectedTurns := len(match.MatchPlayers) * 3
 			if actualTurns != expectedTurns {
 				t.Errorf("Round should have %d turns and they were %d", expectedTurns, actualTurns)
 			}

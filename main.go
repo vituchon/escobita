@@ -26,19 +26,19 @@ func main() {
 		round := match.NextRound()
 		for round.HasNextTurn() && !quitGame {
 			player := round.NextTurn()
-			playerCards := match.Cards.PerPlayer[player]
-			fmt.Println("Restantes: ", match.Cards.Left)
+			playerCards := match.MatchCards.PerPlayer[player]
+			fmt.Println("Restantes: ", match.MatchCards.Left)
 
 			playerMustAct := true
 			for playerMustAct {
 				fmt.Println("Juega ", player)
-				fmt.Println("En mesa: ", match.Cards.Board)
+				fmt.Println("En mesa: ", match.MatchCards.Board)
 				fmt.Println("En mano: ", playerCards.Hand)
 				fmt.Println("Tomadas: ", playerCards.Taken)
 
-				fmt.Print("Que deseas hacer, jugar (c), soltar carta (d), salir (q): ")
+				fmt.Print("Que deseas hacer, jugar (t), soltar carta (d), salir (q): ")
 				cmd := doReadInput()
-				if cmd == ClaimCommand {
+				if cmd == TakeCommand {
 					takeAction := readTakeActionFromStdin(player, match)
 					fmt.Println(takeAction.HandCard)
 					fmt.Println(takeAction.BoardCards)
@@ -54,10 +54,12 @@ func main() {
 					dropAction := readDropActionFromStdin(player, match)
 					match.Drop(player, dropAction)
 					playerMustAct = false
-				} else if cmd == ExitCommand {
+				} else if cmd == QuitCommand {
 					playerMustAct = false
 					quitGame = true
 				}
+				staticticsByPlayer := match.CalculateStaticticsByPlayer()
+				fmt.Printf("===ESTADISTICAS DEL PARTIDO===\n%+v\n", staticticsByPlayer)
 			}
 
 		}
@@ -67,7 +69,7 @@ func main() {
 
 func readTakeActionFromStdin(player model.Player, match model.Match) model.PlayerTakeAction {
 	fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
-	playerCards := match.Cards.PerPlayer[player]
+	playerCards := match.MatchCards.PerPlayer[player]
 	fmt.Print("La de mano, id de carta: ")
 	cardId := ReadSingleIntInput()
 	handCard, err := playerCards.Hand.GetSingle(cardId)
@@ -80,12 +82,12 @@ func readTakeActionFromStdin(player model.Player, match model.Match) model.Playe
 
 	fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
 	cardsIds := ReadMultipleIntsInput()
-	boardCards, err := match.Cards.Board.GetMultiple(cardsIds...)
+	boardCards, err := match.MatchCards.Board.GetMultiple(cardsIds...)
 	for err != nil {
 		fmt.Println("Error: ", err)
 		fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
 		cardsIds := ReadMultipleIntsInput()
-		boardCards, err = match.Cards.Board.GetMultiple(cardsIds...)
+		boardCards, err = match.MatchCards.Board.GetMultiple(cardsIds...)
 	}
 	return model.PlayerTakeAction{
 		BoardCards: boardCards,
@@ -95,7 +97,7 @@ func readTakeActionFromStdin(player model.Player, match model.Match) model.Playe
 
 func readDropActionFromStdin(player model.Player, match model.Match) model.PlayerDropAction {
 	fmt.Print("La de mano, id de carta: ")
-	playerCards := match.Cards.PerPlayer[player]
+	playerCards := match.MatchCards.PerPlayer[player]
 	cardId := ReadSingleIntInput()
 	handCard, err := playerCards.Hand.GetSingle(cardId)
 	for err != nil {
@@ -112,7 +114,7 @@ func readDropActionFromStdin(player model.Player, match model.Match) model.Playe
 func ReadMultipleIntsInput() (ints []int) {
 	value, command := ReadInputAndParseAnInt()
 	for command != nil && command != FinishCommand {
-		if command == ExitCommand {
+		if command == QuitCommand {
 			os.Exit(0)
 		}
 		ints = append(ints, value)
@@ -126,7 +128,7 @@ func ReadSingleIntInput() int {
 	for command != nil && command == FinishCommand {
 		value, command = ReadInputAndParseAnInt()
 	}
-	if command == ExitCommand {
+	if command == QuitCommand {
 		os.Exit(0)
 	}
 
@@ -135,10 +137,10 @@ func ReadSingleIntInput() int {
 
 func ReadInputAndParseAnInt() (int, Command) {
 	value, err, command := doReadIntInput()
-	isEnteringAnotherCommand := (command == ExitCommand || command == FinishCommand)
+	isEnteringAnotherCommand := (command == QuitCommand || command == FinishCommand)
 	for err != nil && !isEnteringAnotherCommand {
 		value, err, command = doReadIntInput()
-		isEnteringAnotherCommand = (command == ExitCommand || command == FinishCommand)
+		isEnteringAnotherCommand = (command == QuitCommand || command == FinishCommand)
 	}
 	return value, command
 
@@ -165,10 +167,10 @@ type Command interface {
 type CommandType int
 
 const (
-	ExitCommandType CommandType = iota
+	QuitCommandType CommandType = iota
 	FinishCommandType
 	DropCommandType
-	ClaimCommandType
+	TakeCommandType
 	InputValueCommandType
 )
 
@@ -184,9 +186,9 @@ func (bc BaseCommand) GetValue() string {
 	return bc.Value
 }
 
-var ExitCommand = BaseCommand{ExitCommandType, "q"}
+var QuitCommand = BaseCommand{QuitCommandType, "q"}
 var DropCommand = BaseCommand{DropCommandType, "d"}
-var ClaimCommand = BaseCommand{ClaimCommandType, "c"}
+var TakeCommand = BaseCommand{TakeCommandType, "t"}
 var FinishCommand = BaseCommand{FinishCommandType, "f"}
 
 var scanner = bufio.NewScanner(os.Stdin)
@@ -194,16 +196,16 @@ var scanner = bufio.NewScanner(os.Stdin)
 func doReadInput() Command {
 	scanner.Scan()
 	str := scanner.Text()
-	if str == "q" {
-		return ExitCommand
+	if str == QuitCommand.Value {
+		return QuitCommand
 	}
-	if str == "d" {
+	if str == DropCommand.Value {
 		return DropCommand
 	}
-	if str == "c" {
-		return ClaimCommand
+	if str == TakeCommand.Value {
+		return TakeCommand
 	}
-	if str == "f" {
+	if str == FinishCommand.Value {
 		return FinishCommand
 	}
 	return BaseCommand{InputValueCommandType, str}

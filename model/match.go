@@ -7,18 +7,15 @@ import (
 
 type Match struct {
 	Players          []Player
+	ActionsByPlayer  ActionsByPlayer
+	MatchCards       MatchCards
 	FirstPlayerIndex int
-	ScorePerPlayer   map[Player]int
-	Cards            MatchCards
 	RoundNumber      int
 
 	//Status         string
 }
 
-type MatchPlayer struct {
-	Player  Player
-	Actions []PlayerAction
-}
+type ActionsByPlayer map[Player][]PlayerAction
 
 /*
 type matchStatus struct {
@@ -47,13 +44,13 @@ type PlayerMatchCards struct {
 func (m Match) String() string {
 	playersDescription := make([]string, 0, len(m.Players))
 	for _, player := range m.Players {
-		cardsInHands := Deck(m.Cards.PerPlayer[player].Hand).String()
-		cardsTaken := Deck(m.Cards.PerPlayer[player].Taken).String()
-		playerDescription := fmt.Sprintf("%s, score: %d\nCards taken:%v\nCards in hand:%v", player.Name, m.ScorePerPlayer[player], cardsTaken, cardsInHands)
+		cardsInHands := Deck(m.MatchCards.PerPlayer[player].Hand).String()
+		cardsTaken := Deck(m.MatchCards.PerPlayer[player].Taken).String()
+		playerDescription := fmt.Sprintf("%s\nCards taken:%v\nCards in hand:%v", player.Name, cardsTaken, cardsInHands)
 		playersDescription = append(playersDescription, playerDescription)
 	}
 	joinedPlayersDescription := strings.Join(playersDescription, "\n")
-	matchBoardCards := Deck(m.Cards.Board).String()
-	matchLeftCards := Deck(m.Cards.Left).String()
+	matchBoardCards := Deck(m.MatchCards.Board).String()
+	matchLeftCards := Deck(m.MatchCards.Left).String()
 	return fmt.Sprintf("Match\nLeft cards:%v\nBoard cards: %v\nPlayers:\n%v", matchLeftCards, matchBoardCards, joinedPlayersDescription)
 }
