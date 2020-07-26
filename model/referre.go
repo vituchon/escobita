@@ -6,14 +6,19 @@ import (
 
 var EscobitaRanks []Rank = append(Ranks[:7], Ranks[9:]...)
 
-// creates the match and prepare it for play (do note that the initial cards are laydown in this step, and not in the first round)
+// creates the match and prepare it for play
+// do note that the initial cards are laydown at moment 0 and not at round one!
 func CreateAndServe(players []Player) Match {
 	match := newMatch(players)
+	match.serve()
+	return match
+}
+
+func (match *Match) serve() {
 	shuffle(match.Cards.Left)
 	match.Cards.Board = match.Cards.Left[:4]
 	match.Cards.Left = match.Cards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
-	return match
 }
 
 func newMatch(players []Player) Match {
@@ -22,6 +27,7 @@ func newMatch(players []Player) Match {
 		Players:        players,
 		ScorePerPlayer: make(map[Player]int),
 		Cards:          newMatchCards(players, deck),
+		RoundNumber:    0,
 	}
 	for _, player := range players {
 		match.ScorePerPlayer[player] = 0
@@ -53,10 +59,12 @@ func (match *Match) NextRound() Round {
 		match.Cards.PerPlayer[player] = matchPlayerCards
 		match.Cards.Left = match.Cards.Left[3:]
 	}
+	match.RoundNumber++
 	return Round{
 		Match:              match,
 		CurrentPlayerIndex: match.FirstPlayerIndex,
 		ConsumedTurns:      0,
+		Number:             match.RoundNumber,
 	}
 }
 
@@ -70,20 +78,24 @@ func CanTakeCards(handCard Card, boardCards []Card) bool {
 	return sumValues(append(boardCards, handCard)) == 15
 }
 
-func (match *Match) Take(player Player, action PlayerTakeAction) {
+func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
 	match.Cards.Board = match.Cards.Board.Without(action.BoardCards...)
 	matchPlayerCards := match.Cards.PerPlayer[player]
 	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
 	match.Cards.PerPlayer[player] = matchPlayerCards
+	isEscobita := (len(match.Cards.Board) == 0)
+	action.isEscobita = isEscobita
+	return action
 }
 
-func (match *Match) Drop(player Player, card Card) {
-	match.Cards.Board = append(match.Cards.Board, card)
+func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
+	match.Cards.Board = append(match.Cards.Board, action.HandCard)
 	matchPlayerCards := match.Cards.PerPlayer[player]
-	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(card)
+	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
 	match.Cards.PerPlayer[player] = matchPlayerCards
+	return action
 }
 
 func sumValues(cards []Card) int {
@@ -112,6 +124,7 @@ type Round struct {
 	Match              *Match
 	CurrentPlayerIndex int
 	ConsumedTurns      int
+	Number             int
 }
 
 func (r Round) HasNextTurn() bool {
@@ -140,13 +153,4 @@ func (r *Round) NextTurn() Player {
 	r.CurrentPlayerIndex++
 	r.ConsumedTurns++
 	return nextPlayer
-}
-
-type PlayerTakeAction struct {
-	BoardCards []Card
-	HandCard   Card
-}
-
-type PlayerDropAction struct {
-	HandCard Card
 }

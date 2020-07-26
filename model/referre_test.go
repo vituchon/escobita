@@ -55,15 +55,21 @@ func TestMatchFlow(t *testing.T) {
 			actualTurns := 0
 			round := match.NextRound()
 			addressedPlayers := make(map[Player]bool)
-			for round.HasNextTurn() && actualTurns < 20 { // the round ends when each player consumes his turn
+			for round.HasNextTurn() && actualTurns < 20 { // the round ends when each player consumes his three turns per round
 				player := round.NextTurn()
 				//t.Log(player)
 				_, exists := addressedPlayers[player]
 				if exists {
 					t.Error("Players should be addressed once per round")
 				}
-				match.Drop(player, match.Cards.PerPlayer[player].Hand[0]) // each players just drops a player
+				dropAction := PlayerDropAction{
+					HandCard: match.Cards.PerPlayer[player].Hand[0],
+				}
+				match.Drop(player, dropAction) // each players just drops a player
 				actualTurns++
+			}
+			if round.Number != actualRounds {
+				t.Errorf("Round number is %d turns and round.Number is %d", actualRounds, round.Number)
 			}
 			expectedTurns := len(match.Players) * 3
 			if actualTurns != expectedTurns {

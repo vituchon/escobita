@@ -10,7 +10,14 @@ type Match struct {
 	FirstPlayerIndex int
 	ScorePerPlayer   map[Player]int
 	Cards            MatchCards
+	RoundNumber      int
+
 	//Status         string
+}
+
+type MatchPlayer struct {
+	Player  Player
+	Actions []PlayerAction
 }
 
 /*

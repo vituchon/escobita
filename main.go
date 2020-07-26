@@ -39,8 +39,7 @@ func main() {
 				fmt.Print("Que deseas hacer, jugar (c), soltar carta (d), salir (q): ")
 				cmd := doReadInput()
 				if cmd == ClaimCommand {
-					fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
-					takeAction := readTakeAction(player, match)
+					takeAction := readTakeActionFromStdin(player, match)
 					fmt.Println(takeAction.HandCard)
 					fmt.Println(takeAction.BoardCards)
 					isValidClaim := model.CanTakeCards(takeAction.HandCard, takeAction.BoardCards)
@@ -52,16 +51,8 @@ func main() {
 						fmt.Println("La jugada NO es valida")
 					}
 				} else if cmd == DropCommand {
-					fmt.Print("La de mano, id de carta: ")
-					cardId := ReadSingleIntInput()
-					handCard, err := playerCards.Hand.GetSingle(cardId)
-					for err != nil {
-						fmt.Println("Error: ", err)
-						fmt.Print("La de mano, id de carta: ")
-						cardId := ReadSingleIntInput()
-						handCard, err = playerCards.Hand.GetSingle(cardId)
-					}
-					match.Drop(player, handCard)
+					dropAction := readDropActionFromStdin(player, match)
+					match.Drop(player, dropAction)
 					playerMustAct = false
 				} else if cmd == ExitCommand {
 					playerMustAct = false
@@ -70,12 +61,12 @@ func main() {
 			}
 
 		}
-
 		//fmt.Println(match)
 	}
 }
 
-func readTakeAction(player model.Player, match model.Match) model.PlayerTakeAction {
+func readTakeActionFromStdin(player model.Player, match model.Match) model.PlayerTakeAction {
+	fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
 	playerCards := match.Cards.PerPlayer[player]
 	fmt.Print("La de mano, id de carta: ")
 	cardId := ReadSingleIntInput()
@@ -99,6 +90,22 @@ func readTakeAction(player model.Player, match model.Match) model.PlayerTakeActi
 	return model.PlayerTakeAction{
 		BoardCards: boardCards,
 		HandCard:   handCard,
+	}
+}
+
+func readDropActionFromStdin(player model.Player, match model.Match) model.PlayerDropAction {
+	fmt.Print("La de mano, id de carta: ")
+	playerCards := match.Cards.PerPlayer[player]
+	cardId := ReadSingleIntInput()
+	handCard, err := playerCards.Hand.GetSingle(cardId)
+	for err != nil {
+		fmt.Println("Error: ", err)
+		fmt.Print("La de mano, id de carta: ")
+		cardId := ReadSingleIntInput()
+		handCard, err = playerCards.Hand.GetSingle(cardId)
+	}
+	return model.PlayerDropAction{
+		HandCard: handCard,
 	}
 }
 
