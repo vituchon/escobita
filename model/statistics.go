@@ -13,11 +13,6 @@ type PlayerStatictics struct {
 
 type StaticticsByPlayer map[Player]PlayerStatictics
 
-var boolToInt map[bool]int = map[bool]int{
-	true:  1,
-	false: 0,
-}
-
 func (match Match) CalculateStaticticsByPlayer() StaticticsByPlayer {
 	staticticsByPlayer := make(StaticticsByPlayer)
 	for _, player := range match.Players {
@@ -50,8 +45,14 @@ func countCardsTaken(player Player, match Match) int {
 	return len(match.MatchCards.PerPlayer[player].Taken)
 }
 
+var boolToInt map[bool]int = map[bool]int{
+	true:  1,
+	false: 0,
+}
+
 func countEscobitas(player Player, match Match) int {
 	escobitasCount := 0
+	fmt.Printf("match.ActionsByPlayer[player]=%+v", match.ActionsByPlayer[player])
 	for _, action := range match.ActionsByPlayer[player] {
 		escobitasCount += boolToInt[action.IsEscobita()]
 	}

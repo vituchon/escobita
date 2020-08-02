@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"math/rand"
 )
 
@@ -10,8 +9,20 @@ var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
 // creates the match and prepare it for play
 // do note that the initial cards are laydown at moment 0 and not at round one!
 func CreateAndServe(players []Player) Match {
-	match := newMatch(players)
+	var deck Deck = NewDeck(Suits, EscobitaRanks)
+	match := newMatch(players, deck)
 	match.serve()
+	return match
+}
+
+func newMatch(players []Player, deck Deck) Match {
+	match := Match{
+		Players:          players,
+		ActionsByPlayer:  newActionsByPlayer(players),
+		MatchCards:       newMatchCards(players, deck),
+		RoundNumber:      0,
+		FirstPlayerIndex: 0,
+	}
 	return match
 }
 
@@ -20,17 +31,6 @@ func (match *Match) serve() {
 	match.MatchCards.Board = copyDeck(match.MatchCards.Left[:4])
 	match.MatchCards.Left = match.MatchCards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
-}
-
-func newMatch(players []Player) Match {
-	var deck Deck = NewDeck(Suits, EscobitaRanks)
-	match := Match{
-		Players:          players,
-		MatchCards:       newMatchCards(players, deck),
-		RoundNumber:      0,
-		FirstPlayerIndex: 0,
-	}
-	return match
 }
 
 func newActionsByPlayer(players []Player) ActionsByPlayer {
@@ -62,7 +62,8 @@ func (match *Match) NextRound() Round {
 		matchPlayerCards := match.MatchCards.PerPlayer[player]
 		matchPlayerCards.Hand = copyDeck(match.MatchCards.Left[:3])
 		match.MatchCards.PerPlayer[player] = matchPlayerCards
-		fmt.Printf("%+v\n", matchPlayerCards.Hand)
+		/*fmt.Printf("\nmatchPlayerCards.Hand%+v\n", matchPlayerCards.Hand)
+		fmt.Printf("\nmatch.MatchCards.Left%+v\n", match.MatchCards.Left)*/
 		match.MatchCards.Left = match.MatchCards.Left[3:]
 	}
 	match.RoundNumber++
@@ -109,6 +110,7 @@ func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
 	match.MatchCards.PerPlayer[player] = matchPlayerCards
 	isEscobita := (len(match.MatchCards.Board) == 0)
 	action.isEscobita = isEscobita
+	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	return action
 }
 
@@ -117,6 +119,7 @@ func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
 	matchPlayerCards := match.MatchCards.PerPlayer[player]
 	/*matchPlayerCards.Hand = */ matchPlayerCards.Hand.Without(action.HandCard)
 	match.MatchCards.PerPlayer[player] = matchPlayerCards
+	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	return action
 }
 
