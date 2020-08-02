@@ -1,5 +1,9 @@
 package model
 
+import (
+	"fmt"
+)
+
 type PlayerStatictics struct {
 	CardsTakenCount int
 	EscobitasCount  int
@@ -29,15 +33,21 @@ func (match Match) CalculateStatictics(player Player) PlayerStatictics {
 func (match Match) doCalculateStatictics(player Player) PlayerStatictics {
 	cardsTakenCount := countCardsTaken(player, match)
 	escobitasCount := countEscobitas(player, match)
-	seventiesScore := calculateSeventiesScore(player, match)
+	seventiesScore := calculateSeventiesScore(match.MatchCards.PerPlayer[player].Taken...)
 	hasGoldSeven := hasGoldenSeven(player, match)
 
-	return PlayerStatictics{
+	ps := PlayerStatictics{
 		CardsTakenCount: cardsTakenCount,
 		EscobitasCount:  escobitasCount,
 		SeventiesScore:  seventiesScore,
 		HasGoldSeven:    hasGoldSeven,
 	}
+	fmt.Printf("Haciendo calculos para %+v es %+v", player, ps)
+	return ps
+}
+
+func countCardsTaken(player Player, match Match) int {
+	return len(match.MatchCards.PerPlayer[player].Taken)
 }
 
 func countEscobitas(player Player, match Match) int {
@@ -48,17 +58,12 @@ func countEscobitas(player Player, match Match) int {
 	return escobitasCount
 }
 
-func countCardsTaken(player Player, match Match) int {
-	return len(match.MatchCards.PerPlayer[player].Taken)
-}
-
-var factors []int = []int{2, 4, 8, 16, 32, 64, 128}
-
-func calculateSeventiesScore(player Player, match Match) int {
+func calculateSeventiesScore(cards ...Card) int {
+	var factors []int = []int{2, 4, 8, 16, 32, 64, 128}
 	score := 0
-	for _, card := range match.MatchCards.PerPlayer[player].Taken {
+	for _, card := range cards {
 		if card.Rank <= 7 {
-			score += factors[card.Rank]
+			score += factors[card.Rank-1]
 		}
 	}
 	return score
@@ -74,16 +79,17 @@ func hasGoldenSeven(player Player, match Match) bool {
 }
 
 type Tracker struct {
-	who *Player
-	max int
+	who   *Player
+	count int
 }
 
 func (staticticsByPlayer StaticticsByPlayer) calculateMostCardsPlayer() Player {
 	var tracker Tracker = Tracker{nil, 0}
 	for player, statictics := range staticticsByPlayer {
-		if statictics.CardsTakenCount > tracker.max {
-			tracker.max = statictics.CardsTakenCount
-			tracker.who = &player
+		if statictics.CardsTakenCount >= tracker.count {
+			playerCopy := player // "player" variable is "re used" with a new value in each loop, so a copy is required
+			tracker.count = statictics.CardsTakenCount
+			tracker.who = &playerCopy
 		}
 	}
 	return *tracker.who
@@ -92,26 +98,46 @@ func (staticticsByPlayer StaticticsByPlayer) calculateMostCardsPlayer() Player {
 func (staticticsByPlayer StaticticsByPlayer) calculateSeventiesPlayer() Player {
 	var tracker Tracker = Tracker{nil, 0}
 	for player, statictics := range staticticsByPlayer {
-		if statictics.SeventiesScore > tracker.max {
-			tracker.max = statictics.SeventiesScore
-			tracker.who = &player
+		if statictics.SeventiesScore >= tracker.count {
+			playerCopy := player // "player" variable is "re used" with a new value in each loop, so a copy is required
+			tracker.count = statictics.SeventiesScore
+			tracker.who = &playerCopy
 		}
 	}
 	return *tracker.who
 }
 
-func sumValues(cards []Card) int {
-	total := 0
-	for _, card := range cards {
-		total += determineValue(card)
-	}
-	return total
+type PlayerScoreSummary struct {
+	Score      int
+	Statictics PlayerStatictics
 }
 
-func determineValue(card Card) int {
-	if card.Rank < 8 {
-		return card.Rank
-	} else {
-		return card.Rank - 2
+type ScoreSummaryByPlayer map[Player]PlayerScoreSummary
+
+func (staticticsByPlayer StaticticsByPlayer) BuildScoreBoard() ScoreSummaryByPlayer {
+	scoreSummaryByPlayer := make(ScoreSummaryByPlayer)
+	mostCardsPlayer := staticticsByPlayer.calculateMostCardsPlayer()
+	seventiesPlayer := staticticsByPlayer.calculateSeventiesPlayer()
+
+	fmt.Printf("\nmostCardsPlayer = %v\n", mostCardsPlayer)
+	fmt.Printf("\nseventiesPlayer = %v\n", seventiesPlayer)
+	for player, statictics := range staticticsByPlayer {
+		score := 0
+		if player == mostCardsPlayer {
+			score += 1
+		}
+		if player == seventiesPlayer {
+			score += 1
+		}
+		if statictics.HasGoldSeven {
+			fmt.Printf("Player %v has golden seven\n", player.Name)
+			score += 1
+		}
+		score += statictics.EscobitasCount
+		scoreSummaryByPlayer[player] = PlayerScoreSummary{
+			Score:      score,
+			Statictics: statictics,
+		}
 	}
+	return scoreSummaryByPlayer
 }

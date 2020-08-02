@@ -22,7 +22,7 @@ func main() {
 
 	quitGame := false
 	match := model.CreateAndServe(players)
-	for match.MatchCanHaveMoreRounds() && !quitGame {
+	for match.HasMoreRounds() && !quitGame {
 		round := match.NextRound()
 		for round.HasNextTurn() && !quitGame {
 			player := round.NextTurn()
@@ -59,7 +59,8 @@ func main() {
 					quitGame = true
 				}
 				staticticsByPlayer := match.CalculateStaticticsByPlayer()
-				fmt.Printf("===ESTADISTICAS DEL PARTIDO===\n%+v\n", staticticsByPlayer)
+				//fmt.Printf("===ESTADISTICAS DEL PARTIDO===\n%+v\n", staticticsByPlayer)
+				fmt.Printf("===Resutaldos===\n%+v\n", staticticsByPlayer.BuildScoreBoard())
 			}
 
 		}

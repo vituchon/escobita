@@ -1,10 +1,11 @@
 package model
 
 import (
+	"fmt"
 	"math/rand"
 )
 
-var EscobitaRanks []Rank = append(Ranks[:7], Ranks[9:]...)
+var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
 
 // creates the match and prepare it for play
 // do note that the initial cards are laydown at moment 0 and not at round one!
@@ -16,7 +17,7 @@ func CreateAndServe(players []Player) Match {
 
 func (match *Match) serve() {
 	shuffle(match.MatchCards.Left)
-	match.MatchCards.Board = match.MatchCards.Left[:4]
+	match.MatchCards.Board = copyDeck(match.MatchCards.Left[:4])
 	match.MatchCards.Left = match.MatchCards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
 }
@@ -42,14 +43,14 @@ func newActionsByPlayer(players []Player) ActionsByPlayer {
 
 func newMatchCards(players []Player, deck Deck) MatchCards {
 	matchCards := MatchCards{
-		Board:     make([]Card, 0, 4),
+		Board:     nil,
 		Left:      deck,
 		PerPlayer: make(map[Player]PlayerMatchCards),
 	}
 	for _, player := range players {
 		matchCards.PerPlayer[player] = PlayerMatchCards{
-			Taken: make([]Card, 0, 10),
-			Hand:  make([]Card, 0, 3),
+			Taken: nil,
+			Hand:  nil,
 		}
 	}
 	return matchCards
@@ -58,10 +59,10 @@ func newMatchCards(players []Player, deck Deck) MatchCards {
 // Deal cards to each player for starting a new round
 func (match *Match) NextRound() Round {
 	for _, player := range match.Players {
-		hand := match.MatchCards.Left[:3]
 		matchPlayerCards := match.MatchCards.PerPlayer[player]
-		matchPlayerCards.Hand = hand
+		matchPlayerCards.Hand = copyDeck(match.MatchCards.Left[:3])
 		match.MatchCards.PerPlayer[player] = matchPlayerCards
+		fmt.Printf("%+v\n", matchPlayerCards.Hand)
 		match.MatchCards.Left = match.MatchCards.Left[3:]
 	}
 	match.RoundNumber++
@@ -73,7 +74,7 @@ func (match *Match) NextRound() Round {
 	}
 }
 
-func (match Match) MatchCanHaveMoreRounds() bool {
+func (match Match) HasMoreRounds() bool {
 	cardsLeft := len(match.MatchCards.Left)
 	playersCount := len(match.Players)
 	return (cardsLeft/playersCount >= 3)
@@ -83,10 +84,26 @@ func CanTakeCards(handCard Card, boardCards []Card) bool {
 	return sumValues(append(boardCards, handCard)) == 15
 }
 
+func sumValues(cards []Card) int {
+	total := 0
+	for _, card := range cards {
+		total += determineValue(card)
+	}
+	return total
+}
+
+func determineValue(card Card) int {
+	if card.Rank < 8 {
+		return card.Rank
+	} else {
+		return card.Rank - 2
+	}
+}
+
 func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
-	match.MatchCards.Board = match.MatchCards.Board.Without(action.BoardCards...)
+	/*match.MatchCards.Board = */ match.MatchCards.Board.Without(action.BoardCards...)
 	matchPlayerCards := match.MatchCards.PerPlayer[player]
-	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
+	/*matchPlayerCards.Hand = */ matchPlayerCards.Hand.Without(action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
 	match.MatchCards.PerPlayer[player] = matchPlayerCards
@@ -98,7 +115,7 @@ func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
 func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
 	match.MatchCards.Board = append(match.MatchCards.Board, action.HandCard)
 	matchPlayerCards := match.MatchCards.PerPlayer[player]
-	matchPlayerCards.Hand = matchPlayerCards.Hand.Without(action.HandCard)
+	/*matchPlayerCards.Hand = */ matchPlayerCards.Hand.Without(action.HandCard)
 	match.MatchCards.PerPlayer[player] = matchPlayerCards
 	return action
 }

@@ -11,24 +11,9 @@ type Match struct {
 	MatchCards       MatchCards
 	FirstPlayerIndex int
 	RoundNumber      int
-
-	//Status         string
 }
 
 type ActionsByPlayer map[Player][]PlayerAction
-
-/*
-type matchStatus struct {
-	Served  string
-	OnGoing string
-	Finish  string
-}
-
-var MatchStatus = matchStatus{
-	Served:  "served",   // ready to play
-	OnGoing: "on-going", // playing
-	Finish:  "finish",
-}*/
 
 type MatchCards struct {
 	Board     Deck // the cards on the table that anyone can reclaim
@@ -52,5 +37,5 @@ func (m Match) String() string {
 	joinedPlayersDescription := strings.Join(playersDescription, "\n")
 	matchBoardCards := Deck(m.MatchCards.Board).String()
 	matchLeftCards := Deck(m.MatchCards.Left).String()
-	return fmt.Sprintf("Match\nLeft cards:%v\nBoard cards: %v\nPlayers:\n%v", matchLeftCards, matchBoardCards, joinedPlayersDescription)
+	return fmt.Sprintf("Match, first player is %v and current round is %v,\nLeft cards:%v\nBoard cards: %v\nPlayers:\n%v", m.Players[m.FirstPlayerIndex], m.RoundNumber, matchLeftCards, matchBoardCards, joinedPlayersDescription)
 }
