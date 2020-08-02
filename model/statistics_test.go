@@ -58,36 +58,20 @@ func TestEscobita(t *testing.T) {
 	round := match.NextRound() // round 1
 
 	beto := round.NextTurn()
-	takeAction := PlayerTakeAction{
-		HandCard:   match.MatchCards.PerPlayer[beto].Hand[0], // 1 de puntaje
-		BoardCards: match.MatchCards.Board,                   // 14 de puntaje
-	}
-	escobitaAction := match.Take(beto, takeAction) // 1 hace una escovid
-	if !escobitaAction.IsEscobita() {
-		t.Fatalf("player take action shall be escobita and actual result is not")
-	}
+	// take: 1 hand + (5+5+3+1) board = 15, escobita
+	takeCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[0], match.MatchCards.Board, true)
 
 	pepe := round.NextTurn()
-	dropAction := PlayerDropAction{
-		HandCard: match.MatchCards.PerPlayer[pepe].Hand[0], // 8 de puntaje
-	}
-	match.Drop(pepe, dropAction)
+	// drop: 8
+	dropCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[0])
 
 	beto = round.NextTurn()
-	dropAction = PlayerDropAction{
-		HandCard: match.MatchCards.PerPlayer[beto].Hand[0], // 3 de puntaje
-	}
-	match.Drop(beto, dropAction)
+	// drop: 3
+	dropCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[0])
 
 	pepe = round.NextTurn()
-	takeAction = PlayerTakeAction{
-		HandCard:   match.MatchCards.PerPlayer[pepe].Hand[0], // 4 de puntaje
-		BoardCards: match.MatchCards.Board,                   // 11 de puntaje
-	}
-	escobitaAction = match.Take(pepe, takeAction)
-	if !escobitaAction.IsEscobita() {
-		t.Fatalf("player take action shall be escobita and actual result is not")
-	}
+	// take: 4 hand + (8+3) board = 15, escobita
+	takeCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[0], match.MatchCards.Board, true)
 
 	staticticsByPlayer := match.CalculateStaticticsByPlayer()
 	if staticticsByPlayer[beto].EscobitasCount != 1 {
@@ -103,6 +87,21 @@ func TestEscobita(t *testing.T) {
 
 }
 
-func dropCard(t *testing.T, player Player, match Match, card Card) {
+func takeCard(t *testing.T, player Player, match *Match, handCard Card, boardCards []Card, mustBeEscobita bool) PlayerAction {
+	takeAction := PlayerTakeAction{
+		HandCard:   handCard,
+		BoardCards: boardCards,
+	}
+	action := match.Take(player, takeAction)
+	if mustBeEscobita && !action.IsEscobita() {
+		t.Fatalf("player take action shall be escobita and actual result is not")
+	}
+	return action
+}
 
+func dropCard(t *testing.T, player Player, match *Match, card Card) PlayerAction {
+	dropAction := PlayerDropAction{
+		HandCard: card,
+	}
+	return match.Drop(player, dropAction)
 }
