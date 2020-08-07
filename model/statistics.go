@@ -28,7 +28,7 @@ func (match Match) CalculateStatictics(player Player) PlayerStatictics {
 func (match Match) doCalculateStatictics(player Player) PlayerStatictics {
 	cardsTakenCount := countCardsTaken(player, match)
 	escobitasCount := countEscobitas(player, match)
-	seventiesScore := calculateSeventiesScore(match.MatchCards.PerPlayer[player].Taken...)
+	seventiesScore := calculateSeventiesScore(match.MatchCards.PerPlayer[player].Taken)
 	hasGoldSeven := hasGoldenSeven(player, match)
 
 	ps := PlayerStatictics{
@@ -59,13 +59,20 @@ func countEscobitas(player Player, match Match) int {
 	return escobitasCount
 }
 
-func calculateSeventiesScore(cards ...Card) int {
-	var factors []int = []int{2, 4, 8, 16, 32, 64, 128}
-	score := 0
-	for _, card := range cards {
-		if card.Rank <= 7 {
-			score += factors[card.Rank-1]
+func calculateSeventiesScore(cards Deck) int {
+	splittedByRank := cards.SplitByRank()
+	seventyCardBySuit := make(map[Suit]*Card)
+	for suit, cards := range splittedByRank {
+		seventyCard := cards.getLeftCloserToRank(7)
+		if seventyCard != nil {
+			seventyCardBySuit[suit] = seventyCard
 		}
+	}
+
+	score := 0
+	var factors []int = []int{1, 2, 4, 8, 16, 32, 64}
+	for _, seventyCard := range seventyCardBySuit {
+		score += factors[seventyCard.Rank-1] // ranks starts at 1
 	}
 	return score
 }
