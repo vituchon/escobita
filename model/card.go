@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -14,8 +15,8 @@ type Card struct {
 }
 
 func (s Card) String() string {
-	return "(id=" + strconv.Itoa(s.Id) + ",value=" + strconv.Itoa(determineValue(s)) + ") " + s.Suit.String() + "," + strconv.Itoa(s.Rank)
-	//return s.Suit.String() + "," + strconv.Itoa(s.Rank)
+	//return "(id=" + strconv.Itoa(s.Id) + ",value=" + strconv.Itoa(determineValue(s)) + ") " + s.Suit.String() + "," + strconv.Itoa(s.Rank)
+	return s.Suit.String() + "," + strconv.Itoa(s.Rank)
 }
 
 // The suit that a card belongs to
@@ -94,23 +95,28 @@ func (d *Deck) Without(cards ...Card) {
 	(*d) = f
 }
 
-/*
-func (d Deck) Without(cards ...Card) Deck {
-	var filtered Deck = make(Deck, 0, 0)
-	for _, deckCard := range d {
-		include := true
-		for _, card := range cards {
-			if deckCard.Id == card.Id {
-				include = false
-				break
-			}
-		}
-		if include {
-			filtered = append(filtered, deckCard)
+func (d Deck) SplitByRank() map[Suit]Deck {
+	var splitted map[Suit]Deck = make(map[Suit]Deck)
+	for _, card := range d {
+		splitted[card.Suit] = append(splitted[card.Suit], card)
+	}
+	return splitted
+}
+
+// Gets the card that is most closer (from the "left": lower or equals) if exists, if not a nil is returned
+func (d Deck) getLeftCloserToRank(rank int) *Card {
+	higherRank := 0
+	var higherCard *Card
+	for _, card := range d {
+		fmt.Printf("Comparando carta %v contra %d\n ", card, higherRank)
+		if card.Rank <= rank && card.Rank > higherRank {
+			cardCopy := card
+			higherCard = &cardCopy
+			higherRank = cardCopy.Rank
 		}
 	}
-	return filtered
-}*/
+	return higherCard
+}
 
 func (d Deck) String() string {
 	cardStrings := make([]string, 0, len(d))
