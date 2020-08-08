@@ -9,6 +9,7 @@ type PlayerStatictics struct {
 	EscobitasCount  int
 	SeventiesScore  int
 	HasGoldSeven    bool
+	GoldCardsCount  int
 }
 
 type StaticticsByPlayer map[Player]PlayerStatictics
@@ -29,15 +30,16 @@ func (match Match) doCalculateStatictics(player Player) PlayerStatictics {
 	cardsTakenCount := countCardsTaken(player, match)
 	escobitasCount := countEscobitas(player, match)
 	seventiesScore := calculateSeventiesScore(match.MatchCards.PerPlayer[player].Taken)
-	hasGoldSeven := hasGoldenSeven(player, match)
+	hasGoldSeven := hasGoldSeven(player, match)
+	goldCardsCount := countGoldCards(player, match)
 
 	ps := PlayerStatictics{
 		CardsTakenCount: cardsTakenCount,
 		EscobitasCount:  escobitasCount,
 		SeventiesScore:  seventiesScore,
 		HasGoldSeven:    hasGoldSeven,
+		GoldCardsCount:  goldCardsCount,
 	}
-	fmt.Printf("Haciendo calculos para %+v es %+v", player, ps)
 	return ps
 }
 
@@ -77,13 +79,20 @@ func calculateSeventiesScore(cards Deck) int {
 	return score
 }
 
-func hasGoldenSeven(player Player, match Match) bool {
+func hasGoldSeven(player Player, match Match) bool {
 	for _, card := range match.MatchCards.PerPlayer[player].Taken {
 		if card.Rank == 7 && card.Suit == GOLD {
 			return true
 		}
 	}
 	return false
+}
+
+func countGoldCards(player Player, match Match) (score int) {
+	for _, card := range match.MatchCards.PerPlayer[player].Taken {
+		score += boolToInt[card.Suit == GOLD]
+	}
+	return
 }
 
 type Tracker struct {
@@ -115,6 +124,18 @@ func (staticticsByPlayer StaticticsByPlayer) calculateSeventiesPlayer() Player {
 	return *tracker.who
 }
 
+func (staticticsByPlayer StaticticsByPlayer) calculateMostGoldCardsPlayer() Player {
+	var tracker Tracker = Tracker{nil, 0}
+	for player, statictics := range staticticsByPlayer {
+		if statictics.GoldCardsCount >= tracker.count {
+			playerCopy := player // "player" variable is "re used" with a new value in each loop, so a copy is required
+			tracker.count = statictics.GoldCardsCount
+			tracker.who = &playerCopy
+		}
+	}
+	return *tracker.who
+}
+
 type PlayerScoreSummary struct {
 	Score      int
 	Statictics PlayerStatictics
@@ -126,6 +147,7 @@ func (staticticsByPlayer StaticticsByPlayer) BuildScoreBoard() ScoreSummaryByPla
 	scoreSummaryByPlayer := make(ScoreSummaryByPlayer)
 	mostCardsPlayer := staticticsByPlayer.calculateMostCardsPlayer()
 	seventiesPlayer := staticticsByPlayer.calculateSeventiesPlayer()
+	mostGoldCardsPlayer := staticticsByPlayer.calculateMostGoldCardsPlayer()
 
 	fmt.Printf("\nmostCardsPlayer = %v\n", mostCardsPlayer)
 	fmt.Printf("\nseventiesPlayer = %v\n", seventiesPlayer)
@@ -137,8 +159,10 @@ func (staticticsByPlayer StaticticsByPlayer) BuildScoreBoard() ScoreSummaryByPla
 		if player == seventiesPlayer {
 			score += 1
 		}
+		if player == mostGoldCardsPlayer {
+			score += 1
+		}
 		if statictics.HasGoldSeven {
-			fmt.Printf("Player %v has golden seven\n", player.Name)
 			score += 1
 		}
 		score += statictics.EscobitasCount
