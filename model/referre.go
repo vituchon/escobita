@@ -102,9 +102,9 @@ func determineValue(card Card) int {
 }
 
 func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
-	/*match.MatchCards.Board = */ match.MatchCards.Board.Without(action.BoardCards...)
+	match.MatchCards.Board.Without(action.BoardCards...)
 	matchPlayerCards := match.MatchCards.PerPlayer[player]
-	/*matchPlayerCards.Hand = */ matchPlayerCards.Hand.Without(action.HandCard)
+	matchPlayerCards.Hand.Without(action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
 	match.MatchCards.PerPlayer[player] = matchPlayerCards
@@ -117,7 +117,7 @@ func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
 func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
 	match.MatchCards.Board = append(match.MatchCards.Board, action.HandCard)
 	matchPlayerCards := match.MatchCards.PerPlayer[player]
-	/*matchPlayerCards.Hand = */ matchPlayerCards.Hand.Without(action.HandCard)
+	matchPlayerCards.Hand.Without(action.HandCard)
 	match.MatchCards.PerPlayer[player] = matchPlayerCards
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	return action
