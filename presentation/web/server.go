@@ -26,7 +26,7 @@ func Run() {
 func buildPortalRouter() *mux.Router {
 	root := mux.NewRouter()
 	fileServer := http.FileServer(http.Dir("./"))
-	root.PathPrefix("/presentation/web/assest").Handler(fileServer)
+	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
 	//root.Use(SslRedirect, PortalAccessLogMiddleware, PortalOrgAwareMiddleware)
 
