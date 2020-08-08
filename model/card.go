@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -108,7 +107,6 @@ func (d Deck) getLeftCloserToRank(rank int) *Card {
 	higherRank := 0
 	var higherCard *Card
 	for _, card := range d {
-		fmt.Printf("Comparando carta %v contra %d\n ", card, higherRank)
 		if card.Rank <= rank && card.Rank > higherRank {
 			cardCopy := card
 			higherCard = &cardCopy
