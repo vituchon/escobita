@@ -26,13 +26,13 @@ func RunCLIApp() {
 		round := match.NextRound()
 		for round.HasNextTurn() && !quitGame {
 			player := round.NextTurn()
-			playerCards := match.MatchCards.PerPlayer[player]
-			fmt.Println("Restantes: ", match.MatchCards.Left)
+			playerCards := match.Cards.PerPlayer[player]
+			fmt.Println("Restantes: ", match.Cards.Left)
 
 			playerMustAct := true
 			for playerMustAct {
 				fmt.Println("Juega ", player)
-				fmt.Println("En mesa: ", match.MatchCards.Board)
+				fmt.Println("En mesa: ", match.Cards.Board)
 				fmt.Println("En mano: ", playerCards.Hand)
 				fmt.Println("Tomadas: ", playerCards.Taken)
 
@@ -70,7 +70,7 @@ func RunCLIApp() {
 
 func readTakeActionFromStdin(player model.Player, match model.Match) model.PlayerTakeAction {
 	fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
-	playerCards := match.MatchCards.PerPlayer[player]
+	playerCards := match.Cards.PerPlayer[player]
 	fmt.Print("La de mano, id de carta: ")
 	cardId := ReadSingleIntInput()
 	handCard, err := playerCards.Hand.GetSingle(cardId)
@@ -83,12 +83,12 @@ func readTakeActionFromStdin(player model.Player, match model.Match) model.Playe
 
 	fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
 	cardsIds := ReadMultipleIntsInput()
-	boardCards, err := match.MatchCards.Board.GetMultiple(cardsIds...)
+	boardCards, err := match.Cards.Board.GetMultiple(cardsIds...)
 	for err != nil {
 		fmt.Println("Error: ", err)
 		fmt.Print("La de la mesa, ids de cartas (f para terminar ingreso): ")
 		cardsIds := ReadMultipleIntsInput()
-		boardCards, err = match.MatchCards.Board.GetMultiple(cardsIds...)
+		boardCards, err = match.Cards.Board.GetMultiple(cardsIds...)
 	}
 	return model.PlayerTakeAction{
 		BoardCards: boardCards,
@@ -98,7 +98,7 @@ func readTakeActionFromStdin(player model.Player, match model.Match) model.Playe
 
 func readDropActionFromStdin(player model.Player, match model.Match) model.PlayerDropAction {
 	fmt.Print("La de mano, id de carta: ")
-	playerCards := match.MatchCards.PerPlayer[player]
+	playerCards := match.Cards.PerPlayer[player]
 	cardId := ReadSingleIntInput()
 	handCard, err := playerCards.Hand.GetSingle(cardId)
 	for err != nil {

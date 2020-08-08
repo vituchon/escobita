@@ -15,56 +15,22 @@ func CreateAndServe(players []Player) Match {
 	return match
 }
 
-func newMatch(players []Player, deck Deck) Match {
-	match := Match{
-		Players:          players,
-		ActionsByPlayer:  newActionsByPlayer(players),
-		MatchCards:       newMatchCards(players, deck),
-		RoundNumber:      0,
-		FirstPlayerIndex: 0,
-	}
-	return match
-}
-
 func (match *Match) serve() {
-	shuffle(match.MatchCards.Left)
-	match.MatchCards.Board = copyDeck(match.MatchCards.Left[:4])
-	match.MatchCards.Left = match.MatchCards.Left[4:]
+	shuffle(match.Cards.Left)
+	match.Cards.Board = copyDeck(match.Cards.Left[:4])
+	match.Cards.Left = match.Cards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
-}
-
-func newActionsByPlayer(players []Player) ActionsByPlayer {
-	actionsByPlayer := make(ActionsByPlayer)
-	for _, player := range players {
-		actionsByPlayer[player] = make([]PlayerAction, 0, 10)
-	}
-	return actionsByPlayer
-}
-
-func newMatchCards(players []Player, deck Deck) MatchCards {
-	matchCards := MatchCards{
-		Board:     nil,
-		Left:      deck,
-		PerPlayer: make(map[Player]PlayerMatchCards),
-	}
-	for _, player := range players {
-		matchCards.PerPlayer[player] = PlayerMatchCards{
-			Taken: nil,
-			Hand:  nil,
-		}
-	}
-	return matchCards
 }
 
 // Deal cards to each player for starting a new round
 func (match *Match) NextRound() Round {
 	for _, player := range match.Players {
-		matchPlayerCards := match.MatchCards.PerPlayer[player]
-		matchPlayerCards.Hand = copyDeck(match.MatchCards.Left[:3])
-		match.MatchCards.PerPlayer[player] = matchPlayerCards
+		matchPlayerCards := match.Cards.PerPlayer[player]
+		matchPlayerCards.Hand = copyDeck(match.Cards.Left[:3])
+		match.Cards.PerPlayer[player] = matchPlayerCards
 		/*fmt.Printf("\nmatchPlayerCards.Hand%+v\n", matchPlayerCards.Hand)
 		fmt.Printf("\nmatch.MatchCards.Left%+v\n", match.MatchCards.Left)*/
-		match.MatchCards.Left = match.MatchCards.Left[3:]
+		match.Cards.Left = match.Cards.Left[3:]
 	}
 	match.RoundNumber++
 	return Round{
@@ -76,7 +42,7 @@ func (match *Match) NextRound() Round {
 }
 
 func (match Match) HasMoreRounds() bool {
-	cardsLeft := len(match.MatchCards.Left)
+	cardsLeft := len(match.Cards.Left)
 	playersCount := len(match.Players)
 	return (cardsLeft/playersCount >= 3)
 }
@@ -102,24 +68,26 @@ func determineValue(card Card) int {
 }
 
 func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
-	match.MatchCards.Board.Without(action.BoardCards...)
-	matchPlayerCards := match.MatchCards.PerPlayer[player]
+	match.Cards.Board.Without(action.BoardCards...)
+	matchPlayerCards := match.Cards.PerPlayer[player]
 	matchPlayerCards.Hand.Without(action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
-	match.MatchCards.PerPlayer[player] = matchPlayerCards
-	isEscobita := (len(match.MatchCards.Board) == 0)
+	match.Cards.PerPlayer[player] = matchPlayerCards
+	isEscobita := (len(match.Cards.Board) == 0)
 	action.isEscobita = isEscobita
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
+	match.ActionsLog = append(match.ActionsLog, action)
 	return action
 }
 
 func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
-	match.MatchCards.Board = append(match.MatchCards.Board, action.HandCard)
-	matchPlayerCards := match.MatchCards.PerPlayer[player]
+	match.Cards.Board = append(match.Cards.Board, action.HandCard)
+	matchPlayerCards := match.Cards.PerPlayer[player]
 	matchPlayerCards.Hand.Without(action.HandCard)
-	match.MatchCards.PerPlayer[player] = matchPlayerCards
+	match.Cards.PerPlayer[player] = matchPlayerCards
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
+	match.ActionsLog = append(match.ActionsLog, action)
 	return action
 }
 
@@ -143,7 +111,7 @@ func (r Round) HasNextTurn() bool {
 // this is slower than above but will fit for every quantity of players
 func (r Round) doHasNextTurnMethod2() bool {
 	for _, player := range r.Match.Players {
-		if len(r.Match.MatchCards.PerPlayer[player].Hand) > 0 {
+		if len(r.Match.Cards.PerPlayer[player].Hand) > 0 {
 			return true
 		}
 	}

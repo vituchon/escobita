@@ -29,7 +29,7 @@ func (match Match) CalculateStatictics(player Player) PlayerStatictics {
 func (match Match) doCalculateStatictics(player Player) PlayerStatictics {
 	cardsTakenCount := countCardsTaken(player, match)
 	escobitasCount := countEscobitas(player, match)
-	seventiesScore := calculateSeventiesScore(match.MatchCards.PerPlayer[player].Taken)
+	seventiesScore := calculateSeventiesScore(match.Cards.PerPlayer[player].Taken)
 	hasGoldSeven := hasGoldSeven(player, match)
 	goldCardsCount := countGoldCards(player, match)
 
@@ -44,7 +44,7 @@ func (match Match) doCalculateStatictics(player Player) PlayerStatictics {
 }
 
 func countCardsTaken(player Player, match Match) int {
-	return len(match.MatchCards.PerPlayer[player].Taken)
+	return len(match.Cards.PerPlayer[player].Taken)
 }
 
 var boolToInt map[bool]int = map[bool]int{
@@ -80,7 +80,7 @@ func calculateSeventiesScore(cards Deck) int {
 }
 
 func hasGoldSeven(player Player, match Match) bool {
-	for _, card := range match.MatchCards.PerPlayer[player].Taken {
+	for _, card := range match.Cards.PerPlayer[player].Taken {
 		if card.Rank == 7 && card.Suit == GOLD {
 			return true
 		}
@@ -89,7 +89,7 @@ func hasGoldSeven(player Player, match Match) bool {
 }
 
 func countGoldCards(player Player, match Match) (score int) {
-	for _, card := range match.MatchCards.PerPlayer[player].Taken {
+	for _, card := range match.Cards.PerPlayer[player].Taken {
 		score += boolToInt[card.Suit == GOLD]
 	}
 	return

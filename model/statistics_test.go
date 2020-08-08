@@ -85,28 +85,28 @@ func TestEscobita(t *testing.T) {
 	match := newMatch(players, oneRoundTwoPlayersDeck)
 
 	// begin: hardcoding a serve
-	match.FirstPlayerIndex = 0                                    // beto
-	match.MatchCards.Board = copyDeck(oneRoundTwoPlayersDeck[:4]) // 14 de puntaje en la mesa
-	match.MatchCards.Left = oneRoundTwoPlayersDeck[4:]
+	match.FirstPlayerIndex = 0                               // beto
+	match.Cards.Board = copyDeck(oneRoundTwoPlayersDeck[:4]) // 14 de puntaje en la mesa
+	match.Cards.Left = oneRoundTwoPlayersDeck[4:]
 	// end: hardcoding a serve
 
 	round := match.NextRound() // round 1
 
 	beto := round.NextTurn()
 	// take: 1 hand + (5+5+3+1) board = 15, escobita
-	takeCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[0], match.MatchCards.Board, true)
+	takeCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0], match.Cards.Board, true)
 
 	pepe := round.NextTurn()
 	// drop: 8
-	dropCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[0])
+	dropCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0])
 
 	beto = round.NextTurn()
 	// drop: 3
-	dropCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[0])
+	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0])
 
 	pepe = round.NextTurn()
 	// take: 4 hand + (8+3) board = 15, escobita
-	takeCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[0], match.MatchCards.Board, true)
+	takeCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0], match.Cards.Board, true)
 
 	staticticsByPlayer := match.CalculateStaticticsByPlayer()
 	if staticticsByPlayer[beto].EscobitasCount != 1 {
@@ -146,43 +146,43 @@ func TestGoldSeven(t *testing.T) {
 	match := newMatch(players, oneRoundTwoPlayersDeck)
 
 	// begin: hardcoding a serve
-	match.FirstPlayerIndex = 0                                    // beto
-	match.MatchCards.Board = copyDeck(oneRoundTwoPlayersDeck[:4]) // 12 de puntaje en la mesa
-	match.MatchCards.Left = copyDeck(oneRoundTwoPlayersDeck[4:])
+	match.FirstPlayerIndex = 0                               // beto
+	match.Cards.Board = copyDeck(oneRoundTwoPlayersDeck[:4]) // 12 de puntaje en la mesa
+	match.Cards.Left = copyDeck(oneRoundTwoPlayersDeck[4:])
 	// end: hardcoding a serve
 
 	round := match.NextRound() // round 1
 
 	beto := round.NextTurn()
 	// take: 7 hand + (3+2+3) board = 15 (GOLD 7)
-	boardCards, err := match.MatchCards.Board.GetMultiple(1, 2, 3)
-	takeCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[0], boardCards, false)
-	t.Logf("%+v", match.MatchCards.PerPlayer[beto])
+	boardCards, err := match.Cards.Board.GetMultiple(1, 2, 3)
+	takeCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0], boardCards, false)
+	t.Logf("%+v", match.Cards.PerPlayer[beto])
 
 	pepe := round.NextTurn()
 	// take: 10 hand + (5) board = 15, escobita
-	boardCards, err = match.MatchCards.Board.GetMultiple(4)
-	takeCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[2], boardCards, true)
+	boardCards, err = match.Cards.Board.GetMultiple(4)
+	takeCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[2], boardCards, true)
 
 	beto = round.NextTurn()
 	// drop: 1
-	dropCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[1])
+	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[1])
 
 	pepe = round.NextTurn()
 	// drop: 10
-	dropCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[0])
+	dropCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0])
 
 	beto = round.NextTurn()
 	// drop: 3
-	dropCard(t, beto, &match, match.MatchCards.PerPlayer[beto].Hand[0])
+	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0])
 
 	pepe = round.NextTurn()
 	// take: 4 hand + (11) board = 15,
-	boardCards, err = match.MatchCards.Board.GetMultiple(7, 8)
+	boardCards, err = match.Cards.Board.GetMultiple(7, 8)
 	if err != nil {
 		t.Fatalf("unexpected error: '%v'", err)
 	}
-	takeCard(t, pepe, &match, match.MatchCards.PerPlayer[pepe].Hand[0], boardCards, false)
+	takeCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0], boardCards, false)
 
 	staticticsByPlayer := match.CalculateStaticticsByPlayer()
 	if !staticticsByPlayer[beto].HasGoldSeven {
@@ -207,8 +207,8 @@ func TestGoldSeven(t *testing.T) {
 		t.Errorf("pepe shall have score 2 and pepe computed is %d", scoreSummaryByPlayer[pepe].Score)
 	}
 
-	t.Logf("match %+v\n", match)
-	t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
+	//t.Logf("match %+v\n", match)
+	//t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
 
 	if match.HasMoreRounds() {
 		t.Errorf("Match is one round only")

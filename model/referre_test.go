@@ -49,7 +49,7 @@ func TestMatchFlow(t *testing.T) {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
 		match := CreateAndServe(testRun.players)
 		actualRounds := 0
-		t.Log(actualRounds, match)
+		//t.Log(actualRounds, match)
 		for match.HasMoreRounds() && actualRounds < 10 { // the match ends by dealing cards until there a no more cards left
 			actualRounds++
 			actualTurns := 0
@@ -65,7 +65,7 @@ func TestMatchFlow(t *testing.T) {
 				}
 				addressedPlayers[player] = true*/
 				dropAction := PlayerDropAction{
-					HandCard: match.MatchCards.PerPlayer[player].Hand[0],
+					HandCard: match.Cards.PerPlayer[player].Hand[0],
 				}
 				//t.Logf("dropAction: %+v por parte de %v\n ", dropAction, player)
 				match.Drop(player, dropAction) // each players just drops a player
@@ -82,12 +82,21 @@ func TestMatchFlow(t *testing.T) {
 		if actualRounds != testRun.expectedRounds {
 			t.Errorf("Match should end before %d rounds and rounds were %d", testRun.expectedRounds, actualRounds)
 		}
+
+		var actionsLogCount int
+		if len(match.Players) == 5 {
+			actionsLogCount = 30
+		} else {
+			actionsLogCount = 36
+		}
+		if len(match.ActionsLog) != actionsLogCount {
+			t.Errorf("Match quantity of actions must be 36 and computed is %d", len(match.ActionsLog))
+		}
 	}
 }
 
 const MOCK_ID = 0
 
-/*
 func TestCardsCombinationValues(t *testing.T) {
 
 	testRuns := []struct {
@@ -139,4 +148,3 @@ func TestCardsCombinationValues(t *testing.T) {
 		}
 	}
 }
-*/

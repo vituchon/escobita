@@ -8,12 +8,48 @@ import (
 type Match struct {
 	Players          []Player
 	ActionsByPlayer  ActionsByPlayer
-	MatchCards       MatchCards
+	ActionsLog       []PlayerAction
+	Cards            MatchCards
 	FirstPlayerIndex int
 	RoundNumber      int
 }
 
+func newMatch(players []Player, deck Deck) Match {
+	totalTurns := len(deck) - 4 // it should be 36, but in the tests is lower because i employ an small deck
+	match := Match{
+		Players:          players,
+		ActionsByPlayer:  newActionsByPlayer(players),
+		ActionsLog:       make([]PlayerAction, 0, totalTurns),
+		Cards:            newMatchCards(players, deck),
+		RoundNumber:      0,
+		FirstPlayerIndex: 0,
+	}
+	return match
+}
+
+func (m Match) String() string {
+	playersDescription := make([]string, 0, len(m.Players))
+	for _, player := range m.Players {
+		cardsInHands := Deck(m.Cards.PerPlayer[player].Hand).String()
+		cardsTaken := Deck(m.Cards.PerPlayer[player].Taken).String()
+		playerDescription := fmt.Sprintf("%s\nCards taken:%v\nCards in hand:%v", player.Name, cardsTaken, cardsInHands)
+		playersDescription = append(playersDescription, playerDescription)
+	}
+	joinedPlayersDescription := strings.Join(playersDescription, "\n")
+	matchBoardCards := Deck(m.Cards.Board).String()
+	matchLeftCards := Deck(m.Cards.Left).String()
+	return fmt.Sprintf("Match, first player is %v and current round is %v,\nLeft cards:%v\nBoard cards: %v\nPlayers:\n%v", m.Players[m.FirstPlayerIndex], m.RoundNumber, matchLeftCards, matchBoardCards, joinedPlayersDescription)
+}
+
 type ActionsByPlayer map[Player][]PlayerAction
+
+func newActionsByPlayer(players []Player) ActionsByPlayer {
+	actionsByPlayer := make(ActionsByPlayer)
+	for _, player := range players {
+		actionsByPlayer[player] = make([]PlayerAction, 0, 10)
+	}
+	return actionsByPlayer
+}
 
 type MatchCards struct {
 	Board     Deck // the cards on the table that anyone can reclaim
@@ -21,21 +57,22 @@ type MatchCards struct {
 	PerPlayer map[Player]PlayerMatchCards
 }
 
+func newMatchCards(players []Player, deck Deck) MatchCards {
+	matchCards := MatchCards{
+		Board:     nil,
+		Left:      deck,
+		PerPlayer: make(map[Player]PlayerMatchCards),
+	}
+	for _, player := range players {
+		matchCards.PerPlayer[player] = PlayerMatchCards{
+			Taken: nil,
+			Hand:  nil,
+		}
+	}
+	return matchCards
+}
+
 type PlayerMatchCards struct {
 	Taken Deck // the cards on the player has claimed
 	Hand  Deck // the cards on the player has to play
-}
-
-func (m Match) String() string {
-	playersDescription := make([]string, 0, len(m.Players))
-	for _, player := range m.Players {
-		cardsInHands := Deck(m.MatchCards.PerPlayer[player].Hand).String()
-		cardsTaken := Deck(m.MatchCards.PerPlayer[player].Taken).String()
-		playerDescription := fmt.Sprintf("%s\nCards taken:%v\nCards in hand:%v", player.Name, cardsTaken, cardsInHands)
-		playersDescription = append(playersDescription, playerDescription)
-	}
-	joinedPlayersDescription := strings.Join(playersDescription, "\n")
-	matchBoardCards := Deck(m.MatchCards.Board).String()
-	matchLeftCards := Deck(m.MatchCards.Left).String()
-	return fmt.Sprintf("Match, first player is %v and current round is %v,\nLeft cards:%v\nBoard cards: %v\nPlayers:\n%v", m.Players[m.FirstPlayerIndex], m.RoundNumber, matchLeftCards, matchBoardCards, joinedPlayersDescription)
 }
