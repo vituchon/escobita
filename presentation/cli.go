@@ -46,13 +46,13 @@ func RunCLIApp() {
 					if isValidClaim {
 						fmt.Println("La jugada es valida!")
 						playerMustAct = false
-						match.Take(player, takeAction)
+						match.Take(takeAction)
 					} else {
 						fmt.Println("La jugada NO es valida")
 					}
 				} else if cmd == DropCommand {
 					dropAction := readDropActionFromStdin(player, match)
-					match.Drop(player, dropAction)
+					match.Drop(dropAction)
 					playerMustAct = false
 				} else if cmd == QuitCommand {
 					playerMustAct = false
@@ -90,10 +90,7 @@ func readTakeActionFromStdin(player model.Player, match model.Match) model.Playe
 		cardsIds := ReadMultipleIntsInput()
 		boardCards, err = match.Cards.Board.GetMultiple(cardsIds...)
 	}
-	return model.PlayerTakeAction{
-		BoardCards: boardCards,
-		HandCard:   handCard,
-	}
+	return model.NewPlayerTakeAction(player, handCard, boardCards)
 }
 
 func readDropActionFromStdin(player model.Player, match model.Match) model.PlayerDropAction {
@@ -107,9 +104,7 @@ func readDropActionFromStdin(player model.Player, match model.Match) model.Playe
 		cardId := ReadSingleIntInput()
 		handCard, err = playerCards.Hand.GetSingle(cardId)
 	}
-	return model.PlayerDropAction{
-		HandCard: handCard,
-	}
+	return model.NewPlayerDropAction(player, handCard)
 }
 
 func ReadMultipleIntsInput() (ints []int) {
