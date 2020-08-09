@@ -9,21 +9,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Run() {
-	portalRouter := buildPortalRouter()
-	portalServer := &http.Server{
+func StartWebServer() {
+	router := buildRouter()
+	server := &http.Server{
 		Addr:         ":9090",
-		Handler:      portalRouter,
+		Handler:      router,
 		ReadTimeout:  40 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
-	fmt.Printf("baby-portal listening on '0.0.0.0%s'", ":9090")
-	portalServer.ListenAndServe()
+	fmt.Printf("escobita web server listening at %v", server.Addr)
+	server.ListenAndServe()
 
 	// TODO (for greater good) : Perhaps we are now in condition to add https://github.com/gorilla/mux#graceful-shutdown
 }
 
-func buildPortalRouter() *mux.Router {
+func buildRouter() *mux.Router {
 	root := mux.NewRouter()
 	fileServer := http.FileServer(http.Dir("./"))
 	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
