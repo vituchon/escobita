@@ -54,7 +54,7 @@ var boolToInt map[bool]int = map[bool]int{
 
 func countEscobitas(player Player, match Match) int {
 	escobitasCount := 0
-	fmt.Printf("match.ActionsByPlayer[player]=%+v", match.ActionsByPlayer[player])
+	//fmt.Printf("match.ActionsByPlayer[player]=%+v", match.ActionsByPlayer[player])
 	for _, action := range match.ActionsByPlayer[player] {
 		escobitasCount += boolToInt[action.IsEscobita()]
 	}
