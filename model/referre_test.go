@@ -47,7 +47,7 @@ func TestMatchFlow(t *testing.T) {
 
 	for _, testRun := range testRuns {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
-		match := CreateAndServe(testRun.players)
+		match := CreateAndBegins(testRun.players)
 		actualRounds := 0
 		//t.Log(actualRounds, match)
 		for match.HasMoreRounds() && actualRounds < 10 { // the match ends by dealing cards until there a no more cards left

@@ -21,7 +21,7 @@ func RunCLIApp() {
 	}
 
 	quitGame := false
-	match := model.CreateAndServe(players)
+	match := model.CreateAndBegins(players)
 	for match.HasMoreRounds() && !quitGame {
 		round := match.NextRound()
 		for round.HasNextTurn() && !quitGame {
