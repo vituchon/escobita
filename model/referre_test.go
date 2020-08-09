@@ -64,11 +64,10 @@ func TestMatchFlow(t *testing.T) {
 					t.Error("Players should be addressed once per round")
 				}
 				addressedPlayers[player] = true*/
-				dropAction := PlayerDropAction{
-					HandCard: match.Cards.PerPlayer[player].Hand[0],
-				}
+				dropAction := NewPlayerDropAction(player, match.Cards.PerPlayer[player].Hand[0])
+
 				//t.Logf("dropAction: %+v por parte de %v\n ", dropAction, player)
-				match.Drop(player, dropAction) // each players just drops a player
+				match.Drop(dropAction) // each players just drops a player
 				actualTurns++
 			}
 			if round.Number != actualRounds {
@@ -92,6 +91,8 @@ func TestMatchFlow(t *testing.T) {
 		if len(match.ActionsLog) != actionsLogCount {
 			t.Errorf("Match quantity of actions must be 36 and computed is %d", len(match.ActionsLog))
 		}
+
+		match.Ends()
 	}
 }
 

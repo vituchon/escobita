@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math/rand"
 )
 
@@ -15,11 +16,69 @@ func CreateAndBegins(players []Player) Match {
 	return match
 }
 
+// performs the initial lay down of cards and select the initial player so the match is ready to begin
 func (match *Match) Begins() {
 	shuffle(match.Cards.Left)
 	match.Cards.Board = copyDeck(match.Cards.Left[:4])
 	match.Cards.Left = match.Cards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
+}
+
+// finalizes the match grating the left cards to the last taker
+func (match *Match) Ends() {
+	if len(match.Cards.Board) > 0 {
+		player := match.getLastCardTaker()
+		if player != nil {
+			matchPlayerCards := match.Cards.PerPlayer[*player]
+			matchPlayerCards.Taken = append(matchPlayerCards.Taken, match.Cards.Board...)
+			match.Cards.PerPlayer[*player] = matchPlayerCards
+			match.Cards.Board = match.Cards.Board[:0] // practical way to empty an slice
+			fmt.Printf("The last card taker is %v", *player)
+		} else {
+			fmt.Println("Nobody takes cards")
+		}
+	}
+}
+
+func (match Match) getLastCardTaker() *Player {
+	for i := len(match.ActionsLog) - 1; i > 0; i-- {
+		action := match.ActionsLog[i]
+		_, isTakeAction := action.(PlayerTakeAction)
+		if isTakeAction {
+			player := action.GetPlayer()
+			return &player
+		}
+	}
+	return nil
+}
+
+// Performs cards take from board using a hand card.
+// It is assumed that the combination of cards is valid (sums 15)
+func (match *Match) Take(action PlayerTakeAction) PlayerAction {
+	player := action.Player
+	match.Cards.Board.Without(action.BoardCards...)
+	matchPlayerCards := match.Cards.PerPlayer[player]
+	matchPlayerCards.Hand.Without(action.HandCard)
+	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
+	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
+	match.Cards.PerPlayer[player] = matchPlayerCards
+	isEscobita := (len(match.Cards.Board) == 0)
+	action.isEscobita = isEscobita
+	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
+	match.ActionsLog = append(match.ActionsLog, action)
+	return action
+}
+
+// Performs a card drop
+func (match *Match) Drop(action PlayerDropAction) PlayerAction {
+	player := action.Player
+	match.Cards.Board = append(match.Cards.Board, action.HandCard)
+	matchPlayerCards := match.Cards.PerPlayer[player]
+	matchPlayerCards.Hand.Without(action.HandCard)
+	match.Cards.PerPlayer[player] = matchPlayerCards
+	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
+	match.ActionsLog = append(match.ActionsLog, action)
+	return action
 }
 
 // Deal cards to each player for starting a new round
@@ -67,30 +126,6 @@ func determineValue(card Card) int {
 	}
 }
 
-func (match *Match) Take(player Player, action PlayerTakeAction) PlayerAction {
-	match.Cards.Board.Without(action.BoardCards...)
-	matchPlayerCards := match.Cards.PerPlayer[player]
-	matchPlayerCards.Hand.Without(action.HandCard)
-	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
-	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
-	match.Cards.PerPlayer[player] = matchPlayerCards
-	isEscobita := (len(match.Cards.Board) == 0)
-	action.isEscobita = isEscobita
-	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
-	match.ActionsLog = append(match.ActionsLog, action)
-	return action
-}
-
-func (match *Match) Drop(player Player, action PlayerDropAction) PlayerAction {
-	match.Cards.Board = append(match.Cards.Board, action.HandCard)
-	matchPlayerCards := match.Cards.PerPlayer[player]
-	matchPlayerCards.Hand.Without(action.HandCard)
-	match.Cards.PerPlayer[player] = matchPlayerCards
-	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
-	match.ActionsLog = append(match.ActionsLog, action)
-	return action
-}
-
 func shuffle(deck Deck) {
 	rand.Shuffle(len(deck), func(i, j int) {
 		deck[i], deck[j] = deck[j], deck[i]
@@ -132,10 +167,29 @@ func (r *Round) NextTurn() Player {
 	return nextPlayer
 }
 
+type basePlayerAction struct {
+	Player Player // the performer
+}
+
+func (bpa basePlayerAction) GetPlayer() Player {
+	return bpa.Player
+}
+
 type PlayerTakeAction struct {
+	basePlayerAction
 	BoardCards []Card
 	HandCard   Card
 	isEscobita bool
+}
+
+func NewPlayerTakeAction(player Player, handCard Card, boardCards []Card) PlayerTakeAction {
+	return PlayerTakeAction{
+		basePlayerAction: basePlayerAction{
+			Player: player,
+		},
+		HandCard:   handCard,
+		BoardCards: boardCards,
+	}
 }
 
 func (a PlayerTakeAction) IsEscobita() bool {
@@ -143,7 +197,17 @@ func (a PlayerTakeAction) IsEscobita() bool {
 }
 
 type PlayerDropAction struct {
+	basePlayerAction
 	HandCard Card
+}
+
+func NewPlayerDropAction(player Player, handCard Card) PlayerDropAction {
+	return PlayerDropAction{
+		basePlayerAction: basePlayerAction{
+			Player: player,
+		},
+		HandCard: handCard,
+	}
 }
 
 func (a PlayerDropAction) IsEscobita() bool {
@@ -152,4 +216,5 @@ func (a PlayerDropAction) IsEscobita() bool {
 
 type PlayerAction interface {
 	IsEscobita() bool
+	GetPlayer() Player
 }
