@@ -4,3 +4,4 @@ bindata.go
 .vscode/launch.json
 *.diff
 escobita
+.ss
