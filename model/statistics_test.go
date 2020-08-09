@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-/*
 func TestSeventiesCalculation(t *testing.T) {
 	testRuns := []struct {
 		title         string
@@ -60,7 +59,7 @@ func TestSeventiesCalculation(t *testing.T) {
 			t.Errorf("aggregated card values differs! Expected is %d and computed value is %d", testRun.expectedValue, computedValue)
 		}
 	}
-}*/
+}
 
 func TestEscobita(t *testing.T) {
 	var players []Player = []Player{
@@ -122,7 +121,7 @@ func TestEscobita(t *testing.T) {
 	}
 	match.Ends()
 	staticticsByPlayer := match.CalculateStaticticsByPlayer()
-	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreBoard()
+	//scoreSummaryByPlayer := staticticsByPlayer.BuildScoreBoard()
 	//t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
 
 	if staticticsByPlayer[beto].EscobitasCount != 1 {
