@@ -22,27 +22,27 @@ func TestMatchFlow(t *testing.T) {
 			title:          "match flow for 2 players",
 			players:        party[:2],
 			expectedRounds: 6,
-		},
-		{
-			title:          "match flow for 3 players",
-			players:        party[:3],
-			expectedRounds: 4,
-		},
-		{
-			title:          "match flow for 4 players",
-			players:        party[:4],
-			expectedRounds: 3,
-		},
-		{
-			title:          "match flow for 5 players",
-			players:        party[:5],
-			expectedRounds: 2, // it doesn't fit perfect as 36(cards) / (5(player) * 3(cards)) = 2,4 rounds
-		},
-		{
-			title:          "match flow for 6 players",
-			players:        party[:6],
-			expectedRounds: 2,
-		},
+		}, /*
+			{
+				title:          "match flow for 3 players",
+				players:        party[:3],
+				expectedRounds: 4,
+			},
+			{
+				title:          "match flow for 4 players",
+				players:        party[:4],
+				expectedRounds: 3,
+			},
+			{
+				title:          "match flow for 5 players",
+				players:        party[:5],
+				expectedRounds: 2, // it doesn't fit perfect as 36(cards) / (5(player) * 3(cards)) = 2,4 rounds
+			},
+			{
+				title:          "match flow for 6 players",
+				players:        party[:6],
+				expectedRounds: 2,
+			},*/
 	}
 
 	for _, testRun := range testRuns {
@@ -54,22 +54,26 @@ func TestMatchFlow(t *testing.T) {
 			actualRounds++
 			actualTurns := 0
 			round := match.NextRound()
-			//addressedPlayers := make(map[Player]bool)
+			turnsCountByPlayer := make(map[Player]int)
 			for round.HasNextTurn() && actualTurns < 20 { // the round ends when each player consumes his three turns per round
 				player := round.NextTurn()
 				//t.Log("turno: ", actualRounds, ", jugador: ", player, "cartas:", match.MatchCards.PerPlayer[player])
 				//t.Log(match)
-				/*_, exists := addressedPlayers[player]
-				if exists {
-					t.Error("Players should be addressed once per round")
-				}
-				addressedPlayers[player] = true*/
+				t.Log(turnsCountByPlayer)
+				count, _ := turnsCountByPlayer[player]
+				turnsCountByPlayer[player] = count + 1
 				dropAction := NewPlayerDropAction(player, match.Cards.PerPlayer[player].Hand[0])
 
 				//t.Logf("dropAction: %+v por parte de %v\n ", dropAction, player)
 				match.Drop(dropAction) // each players just drops a player
 				actualTurns++
 			}
+			for player, turnsCount := range turnsCountByPlayer {
+				if turnsCount != 3 {
+					t.Fatalf("Player %v has %d turns and expected turns are 3", player, turnsCount)
+				}
+			}
+
 			if round.Number != actualRounds {
 				t.Errorf("Round number is %d turns and round.Number is %d", actualRounds, round.Number)
 			}
