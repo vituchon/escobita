@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// TODO : needs to implement what happens in draw, right now only one winner can be and would be "the first" that the algorithm find
 type PlayerStatictics struct {
 	CardsTakenCount int
 	EscobitasCount  int
