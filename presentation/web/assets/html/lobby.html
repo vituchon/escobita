@@ -1,3 +1,19 @@
 <div id="LobbyContainer" class="vertical layout flex">
   <span>Esto es el lobby</span>
+  <div class="materialCard loginContainer vertical layout raised-2">
+    <div class="mainLogo"></div>
+    <div class="flex"></div>
+    <input class="loginInput" type="nombre" placeholder="Nombre del juego" ng-model="game.name" autofocus>
+    <div class="flex"></div>
+    <div class="buttons">
+      <div class="textButton" style="font-size: 11px" ng-click="ctr.updateGameList()">Actualizar listado de juegos</div>
+      <div class="flex"></div>
+      <div class="materialButton raised colorButton" ng-click="ctr.createGame(game)">Crear Juego</div>
+    </div>
+  </div>
+
+  Listado de juegos:
+  <div ng-repeat="game in ctr.games">
+    <pre>{{game|json}}</pre>
+  </div>
 </div>
