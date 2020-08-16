@@ -1,0 +1,770 @@
+@mainColor: #477ACD;
+@lightGray: #FAFAFA;
+@midGray: #A4A4A4;
+@darkGray: #404041;
+
+@red: #D32F2F;
+
+@appointment: #009688;
+@studies: #607D8B;
+@drugs: #795548;
+@problems: #D32F2F;
+@contacts: #477ACD;
+
+
+@defaultTransition: all 0.2s linear;
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'),
+       url('../../fonts/MaterialIcons-Regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'Roboto';
+  src:  url('../../fonts/Roboto-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src:  url('../../fonts/Roboto-Light.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src:  url('../../fonts/Roboto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src:  url('../../fonts/Roboto-Medium.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src:  url('../../fonts/Roboto-Bold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src:  url('../../fonts/Roboto-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+body{
+  height:           100vh;
+  margin:           0;
+  background-color: white;
+  font-family:      'Roboto', sans-serif;
+}
+ui-view {
+  height:              100%;
+  background-size:     cover;
+  background-position: center;
+}
+
+/*General*/
+.materialIcon {
+  font-family:            'Material Icons';
+  font-weight:            normal;
+  font-style:             normal;
+  font-size:              24px;  /* Preferred icon size */
+  display:                inline-block;
+  line-height:            1;
+  text-transform:         none;
+  letter-spacing:         normal;
+  word-wrap:              normal;
+  white-space:            nowrap;
+  direction:              ltr;
+  -webkit-font-smoothing: antialiased; /* Support for all WebKit browsers. */
+  text-rendering:         optimizeLegibility; /* Support for Safari and Chrome. */
+  &.mi12{
+    font-size: 12px;
+  }
+  &.mi14{
+    font-size: 14px;
+  }
+  &.mi18{
+    font-size: 18px;
+  }
+  &.mi28{
+    font-size: 28px;
+  }
+}
+.materialCard{
+  border-radius: 2px;
+  padding:       8px;
+  margin:        8px;
+  transition:    @defaultTransition;
+  .title{
+    font-weight: 400;
+    color: @darkGray;
+    font-size: 20px;
+    margin: 10px 5px;
+    &.white{
+      color: white;
+    }
+  }
+  & .optionText{
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+.buttons{
+  display:         flex;
+  flex-direction:  row;
+  justify-content: flex-end;
+  padding:         8px;
+  align-items:     flex-end;
+  &.dark{
+    background-color: #F5F5F5;
+  }
+  &.white{
+    background-color: white;
+  }
+}
+.verticalButtons{
+  display:         flex;
+  flex-direction:  column;
+  justify-content: flex-start;
+  padding:         8px;
+  align-items:     flex-start;
+  height:          100%;
+  &.dark{
+    background-color: #F5F5F5;
+  }
+}
+.materialButton{
+  align-items:    center;
+  justify-content: center;
+  display:        flex;
+  flex-direction: row;
+  border-radius:  2px;
+  padding:        0 16px;
+  height:         36px;
+  min-width:      66px;
+  transition:     @defaultTransition;
+  cursor:         pointer;
+  font-weight:    700;
+  font-size:      13px;
+  text-transform: uppercase;
+  &.raised{
+    box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
+    &:hover{
+      box-shadow: 0 4px 3px 0px rgba(0,0,0,0.3);  
+    }  
+  }
+  &.gray{
+    background-color: #F8F8F8;
+    border:             1px solid #BCBCBC;
+    &:hover{
+      background-color: darken(#F8F8F8, 5%);
+    }
+  }
+  &.colorButton{
+    background-color: @mainColor;
+    color:          white;
+    &:hover{
+      background-color: darken(@mainColor, 10%);
+    }
+  }
+  &.white{
+    background-color: white;
+    color:          @darkGray;
+    &:hover{
+      background-color: darken(white, 5%);
+    }
+  }
+  &.transparentButton{
+    background-color: transparent;
+    color:            @darkGray;
+    &:hover{
+        background-color: fade(@darkGray, 20%);
+      }
+      &:active{
+        background-color: fade(@darkGray, 40%);
+      }
+    &.white{
+      color: white;
+      &:hover{
+        background-color: fade(white, 20%);
+      }
+      &:active{
+        background-color: fade(white, 40%);
+      }
+    }
+  }
+  &.iconButton{
+    background-color: transparent;
+    color:            @darkGray;
+    padding:          6px;
+    min-width:        0;
+    text-transform:   none;
+    font-weight:      400;
+    font-size:        24px;
+    height:           24px;
+    &:hover.close{
+      color: @red;
+    }
+    &.contacts{
+      color: @contacts;
+    }
+    &.hidden{
+      opacity: 0;
+    }
+  }
+  &.tagButton{
+    padding:      3px;
+    margin:       2px auto 2px 10px;
+    font-size:    12px;
+    font-weight:  200;
+    height:       20px;
+    &.selected{
+      background-color: @mainColor;
+      color:          white;
+      font-weight:      600;
+    }
+  }
+}
+.textButton{
+  cursor: pointer;
+  color:  @darkGray;
+  &:hover{
+    color: @mainColor;
+  }
+}
+.raised{
+  box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
+}
+.raised-2{
+  box-shadow: 0 5px 4px 0px rgba(0,0,0,0.3);
+}
+select, input{
+  border:           0;
+  border-radius:    0;
+  color:            @darkGray;
+  background-color: transparent;
+  padding:          2px 2px 1px;
+  margin:           0 5px;
+  border-bottom:    1px solid @midGray;
+  transition:       @defaultTransition;
+  &:focus{
+    border:        0;
+    outline:       0;
+    border-bottom: 1px solid @darkGray;
+  }
+  &::-webkit-input-placeholder {
+    color: @midGray;
+  }
+  &.white{
+    color:            white;
+    border-bottom:    1px solid #DDDDDD;
+    &:focus{
+      border-bottom: 1px solid white;
+    }
+    &::-webkit-input-placeholder {
+      color: #DDDDDD;
+    } 
+  }
+}
+/*End general*/
+
+/*Layout*/
+.layout{
+  display: flex;
+  &.vertical{
+    flex-direction: column;
+  }
+  &.horizontal{
+    flex-direction: row;
+  }
+  &.wrap{
+    flex-wrap: wrap;
+  }
+  &.center{
+    align-items: center;
+  }
+  &.baseline{
+    align-items: baseline;
+  }
+}
+.flex{
+  display: flex;
+  flex: 1;
+}
+.flex-2{
+  display: flex;
+  flex: 2;
+}
+.flex-3{
+  display: flex;
+  flex: 3;
+}
+/*End layout*/
+.mainLogo{
+  background:          url('../../images/logo.png');
+  height:              70px;
+  width:               210px;
+  background-size:     contain;
+  background-repeat:   no-repeat;
+  background-position: center;
+  margin:              30px 0 0;
+}
+.loginContainer{
+  position:           absolute;
+  top:                0;
+  bottom:             0;
+  margin:             auto 75px;
+  background-color: white;
+  width:              300px;
+  height:             320px;
+  & .loginInput{
+    font-size: 16px;
+    margin:    18px 10px;
+  }
+}
+.hSeparator{
+  height:           1px;
+  opacity:          0.5;
+  background-color: @darkGray;
+}
+#mainContainer{
+  // background-color: @lightGray;
+  & .dark{
+    background-color: @darkGray;
+    color: white;
+  }
+  & .appointmentsColor{
+    background-color: @appointment;
+    color:            white;
+  }
+  & .studiesColor{
+    background-color: @studies;
+    color:            white;
+  }
+  & .drugsColor{
+    background-color: @drugs;
+    color:            white;
+  }
+  & .problemsColor{
+    background-color: @problems;
+    color:            white;
+  }
+  & .contactsColor{
+    background-color: @contacts;
+    color:            white;
+  }
+  & #mainHeader{
+    align-items:      center;
+    min-height:       60px;
+    padding:          0 16px;
+    transition:       @defaultTransition;
+    color:          white;
+    z-index: 10;
+    & .logo{
+      width:200px;
+      cursor: pointer;
+    }
+    & #mainUserMenu{
+      top: 45px;
+      & .mainUserMenuContent{
+        background-color: white;
+        color:            @darkGray;
+        min-width:        300px;
+        border-radius:    2px;
+        & .userName{
+          display:        flex;
+          flex-direction: row;
+          font-size:      14px;
+        }
+      }
+    }
+    & .picture{
+      background-color: white;
+      color:            #404041;
+      width:              36px;
+      height:             36px;
+      border-radius:      18px;
+      font-size:          17px;
+      font-weight:        200;
+      line-height:        2.2;
+      justify-content:    center;
+      text-align:         center;
+      &.full{
+        font-size:        36px;
+        line-height:      2.3;
+        background-color: @darkGray;
+        color:          white;
+        width:            80px;
+        height:           80px;
+        border-radius:    40px;
+      }
+    }
+    & .mainEndpoint{
+      width: 200px;
+    }
+    & #navMenu{
+      align-content: center;
+      align-self:    flex-end;
+      & .navMenuItem{
+        text-transform: uppercase;
+        font-size:      16px;
+        font-weight:    200;
+        padding:        5px 8px 2px;
+        margin:         0 10px;
+        cursor:         pointer;
+        border-bottom:  2px solid transparent;
+        transition:     @defaultTransition;
+        &:hover{
+          font-weight:   700;
+          padding:       5px 7px 2px;        
+          border-bottom: 2px solid rgba(255,255,255,0.7);
+        }
+        &.selected{
+          font-weight:   900;
+          padding:       5px 7px 2px;
+          border-bottom: 2px solid white;
+        }
+      }
+    }
+  }
+}
+.content{
+  padding: 10px;
+}
+
+/*Dropdown*/
+.dropdown{
+  position: relative;
+  & .dropdownToggle{
+    cursor: pointer;
+    &:hover{
+      opacity: 0.8;
+    }
+  }
+  & .dropdownContent{
+    display:    none;
+    background: transparent;
+    position:   absolute;
+    top:        0;
+    right:      0;
+    opacity:    0;
+    border:     0;
+    transition: @defaultTransition;
+    & .dropdownTriangle{
+      color:   white;
+      position:  absolute;
+      top:       -25px;
+      right:     -4px;
+      font-size: 44px !important;
+    }
+    &.show{
+      display: flex;
+      opacity: 1;
+    }
+  }
+}
+/*End Dropdown*/
+.mainContent{
+  align-items: center;
+  overflow:  hidden;
+  & .subtitle{
+    font-weight: 200;
+  }
+  /*Appointments*/
+  & .transparentButton{
+      color: @appointment;
+    &:hover{
+      color: darken(@appointment, 10%);
+      background-color: fade(@appointment, 20%);
+    }
+    &:active{
+      background-color: fade(@appointment, 40%);
+    }
+    &.selected{
+      background-color: @appointment;
+      color: white;
+    }
+  }
+  & .appointmentContainer{
+    position:           relative;
+    color:              @darkGray;
+    width:              550px;
+    min-height:         135px;
+    padding:            0;
+    transition:         @defaultTransition;
+    &:hover{
+      color: @appointment;
+    }
+    & .dayTime{
+      font-size:   14px;
+      font-weight: 200;
+    }
+    & .appointmentContent{
+      transition:       @defaultTransition;
+      min-height:       100px;
+      z-index:          1;
+      background-color: white;
+    } 
+    & .buttons{
+      padding:    0 8px;
+      transition: @defaultTransition;
+    }
+    &.past{
+      opacity:    0.5;
+      &:hover{
+        opacity: 1;
+      }
+    }
+    &.future{
+      opacity: 0.75;
+      &:hover{
+        opacity: 1;
+      }
+    }
+    & .drPicture{
+      width:            90px;
+      height:           100px;
+      background-color: @darkGray;
+    }
+    & .drLastname{
+      font-size:   18px;
+      font-weight: 700;
+    }
+    & .drName{
+      font-size:   18px;
+      font-weight: 200;
+    }
+    & .drSpecialty{
+      font-size:   16px;
+      font-weight: 200;      
+    }
+    & .drAddress{
+      font-size:   14px;
+      font-weight: 200;
+    }
+  }
+  & .letterContainer{
+    padding: 10px 10px 10px 30px;
+    width:   975px;
+    .title{
+      font-weight: 400;
+      color:       @darkGray;
+      font-size:   20px;
+      margin:      7px 10px 0;
+    }
+  }
+  .sidebar{
+    width:       350px;
+    align-self:  flex-start;
+    align-items: center;
+    margin:      27px 0 0 20px;
+    font-weight: 200;
+    & .calendar{
+      background-color: white;
+      z-index:            5;
+      top:                22px;
+      width:              350px;
+      border-radius:      2px;
+      & .calendarHeader{
+        background-color: @darkGray;
+        color:          white;
+        padding:          0 0 4px;
+        font-size:        12px;
+      }
+      & .calendarTitle{
+        background-color: @darkGray;
+        color:          white;
+        padding:          0 8px;
+        font-size:        12px;
+        & .monthTitle{
+          font-size: 16px
+        }
+      }
+      & .day{
+        width:         30px;
+        text-align:    center;
+        margin:        3px 10px;
+        padding:       5px 0;
+        border-radius: 30px;
+        font-size:     12px;
+        &:hover{
+          color: @mainColor;
+        }
+        &.today{
+          font-weight:      600;
+          background-color: @midGray;
+          color:            white;          
+        }
+        &.matchDay{
+          font-weight:      600;
+          background-color: @appointment;
+          color:            white;
+        }
+        & .appointmentPoint{
+          background-color: white;
+          margin:           1px;
+          width:            4px;
+          height:           4px;
+          border-radius:    2px;
+        }
+      }
+    }
+  }
+  /*End appointments*/
+  & .searchContainer{
+    // align-self:       stretch;
+    align-self:       center;
+    width:            900px;
+    padding:          8px 16px;
+    margin:           20px 0 10px;
+    min-height:       40px;
+    color:          white;
+  }
+  & .filterSidebar{
+    width: 335px;
+    margin-top: 30px;
+    background-color: white;
+    & .filterContainer{
+      & .filterTitle{
+        font-size: 14px;
+      }
+    }
+  }
+}
+.fab{
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 12px 12px 9px 11px;
+  width: 29px;
+  border-radius: 30px;
+  text-align: center;
+  cursor: pointer;
+  &.appointments{
+    background-color: @appointment;
+    color: white;
+    &:hover{
+      background-color: darken(@appointment, 5%);      
+    }
+  }
+}
+/*Dialog*/
+dialog {
+  background: #FFF;
+  padding: 0;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  &::backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  & .dialogHeader{
+    color: #2A323F;
+    margin: 15px 15px 0;
+    font-size: 18px;
+  }
+  & .dialogContent{
+    padding: 20px;
+  }
+  //Appointments
+  &#newAppointmentDialog{
+    width:  750px;
+    height: 600px;
+    & .filterSidebar{
+      width: 120px;
+      & .filterContainer{
+        margin-bottom: 20px;
+        & .filterTitle{
+          font-size: 14px;
+        }
+        & .tagButton{
+          &.selected{
+            background-color: @appointment;
+          }
+        }
+      }
+    }
+  }
+}
+/*End Dialog*/
+& .professionalHeader{
+  background-color: @darkGray;
+  color: white;
+  width: 885px;
+  min-height: 18px;
+  margin-top: 10px;
+  font-size: 14px;
+  position: absolute;
+}
+& .professional{
+  padding: 2px 10px;
+  cursor: pointer;
+  border-radius: 2px;
+  &:hover .iconButton{
+    opacity: 1;
+  }
+  &:hover.appointments{
+    color: @appointment;
+  }
+  &:hover.contacts{
+    // color: @contacts;
+    background-color: #F5F5F5;
+  }
+  & .drPicture{
+    width:            50px;
+    height:           60px;
+    background-color: @darkGray;
+    margin-right:     5px;
+  }
+  & .drLastname{
+    font-size: 14px;
+    font-weight: 700;
+  }
+  & .drName{
+    font-size: 14px;
+    font-weight: 200;
+  }
+  & .drSpecialty{
+    font-size: 12px;
+    font-weight: 200;      
+  }
+  & .drAddress{
+    font-size:   12px;
+    font-weight: 200;
+  }
+  & .drDay{
+    font-size:       12px;
+    font-weight:     200;
+    opacity:         0.4;
+    justify-content: center;
+    &.trueDay{
+      color:       @appointment;
+      opacity:     1;
+      font-weight: 700;
+    }        
+  }
+}
+
+.searchResults{
+  width:            915px;
+  height:           450px;
+  background-color: white;
+  margin:           10px 0;
+}

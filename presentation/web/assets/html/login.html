@@ -1,0 +1,14 @@
+<ui-view class="vertical layout flex" ng-style="{'background-image': ctr.mainBack}">
+  <div class="materialCard loginContainer vertical layout raised-2">
+    <div class="mainLogo"></div>
+    <div class="flex"></div>
+    <input class="loginInput" type="email" placeholder="Nombre de usuario" autofocus>
+    <input class="loginInput" type="password" placeholder="Contraseña">
+    <div class="flex"></div>
+    <div class="buttons">
+      <div class="textButton" style="font-size: 11px" ui-sref="recover" ui-sref-active="active">¿Olvidó su contraseña?</div>
+      <div class="flex"></div>
+      <div class="materialButton raised colorButton" ui-sref="main" ui-sref-active="active">Iniciar sesión</div>
+    </div>
+  </div>
+</ui-view>

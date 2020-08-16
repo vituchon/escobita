@@ -1,0 +1,746 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'), local('MaterialIcons-Regular'), url('../../fonts/MaterialIcons-Regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../fonts/Roboto-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../fonts/Roboto-Light.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../fonts/Roboto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../fonts/Roboto-Medium.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../fonts/Roboto-Bold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../fonts/Roboto-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+body {
+  height: 100vh;
+  margin: 0;
+  background-color: white;
+  font-family: 'Roboto', sans-serif;
+}
+ui-view {
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+/*General*/
+.materialIcon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  /* Support for all WebKit browsers. */
+  text-rendering: optimizeLegibility;
+  /* Support for Safari and Chrome. */
+}
+.materialIcon.mi12 {
+  font-size: 12px;
+}
+.materialIcon.mi14 {
+  font-size: 14px;
+}
+.materialIcon.mi18 {
+  font-size: 18px;
+}
+.materialIcon.mi28 {
+  font-size: 28px;
+}
+.materialCard {
+  border-radius: 2px;
+  padding: 8px;
+  margin: 8px;
+  transition: all 0.2s linear;
+}
+.materialCard .title {
+  font-weight: 400;
+  color: #404041;
+  font-size: 20px;
+  margin: 10px 5px;
+}
+.materialCard .title.white {
+  color: white;
+}
+.materialCard .optionText {
+  font-size: 14px;
+  font-weight: 400;
+}
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 8px;
+  align-items: flex-end;
+}
+.buttons.dark {
+  background-color: #F5F5F5;
+}
+.buttons.white {
+  background-color: white;
+}
+.verticalButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 8px;
+  align-items: flex-start;
+  height: 100%;
+}
+.verticalButtons.dark {
+  background-color: #F5F5F5;
+}
+.materialButton {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  border-radius: 2px;
+  padding: 0 16px;
+  height: 36px;
+  min-width: 66px;
+  transition: all 0.2s linear;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+.materialButton.raised {
+  box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
+}
+.materialButton.raised:hover {
+  box-shadow: 0 4px 3px 0px rgba(0, 0, 0, 0.3);
+}
+.materialButton.gray {
+  background-color: #F8F8F8;
+  border: 1px solid #BCBCBC;
+}
+.materialButton.gray:hover {
+  background-color: #ebebeb;
+}
+.materialButton.colorButton {
+  background-color: #477ACD;
+  color: white;
+}
+.materialButton.colorButton:hover {
+  background-color: #3061b1;
+}
+.materialButton.white {
+  background-color: white;
+  color: #404041;
+}
+.materialButton.white:hover {
+  background-color: #f2f2f2;
+}
+.materialButton.transparentButton {
+  background-color: transparent;
+  color: #404041;
+}
+.materialButton.transparentButton:hover {
+  background-color: rgba(64, 64, 65, 0.2);
+}
+.materialButton.transparentButton:active {
+  background-color: rgba(64, 64, 65, 0.4);
+}
+.materialButton.transparentButton.white {
+  color: white;
+}
+.materialButton.transparentButton.white:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.materialButton.transparentButton.white:active {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+.materialButton.iconButton {
+  background-color: transparent;
+  color: #404041;
+  padding: 6px;
+  min-width: 0;
+  text-transform: none;
+  font-weight: 400;
+  font-size: 24px;
+  height: 24px;
+}
+.materialButton.iconButton:hover.close {
+  color: #D32F2F;
+}
+.materialButton.iconButton.contacts {
+  color: #477ACD;
+}
+.materialButton.iconButton.hidden {
+  opacity: 0;
+}
+.materialButton.tagButton {
+  padding: 3px;
+  margin: 2px auto 2px 10px;
+  font-size: 12px;
+  font-weight: 200;
+  height: 20px;
+}
+.materialButton.tagButton.selected {
+  background-color: #477ACD;
+  color: white;
+  font-weight: 600;
+}
+.textButton {
+  cursor: pointer;
+  color: #404041;
+}
+.textButton:hover {
+  color: #477ACD;
+}
+.raised {
+  box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
+}
+.raised-2 {
+  box-shadow: 0 5px 4px 0px rgba(0, 0, 0, 0.3);
+}
+select,
+input {
+  border: 0;
+  border-radius: 0;
+  color: #404041;
+  background-color: transparent;
+  padding: 2px 2px 1px;
+  margin: 0 5px;
+  border-bottom: 1px solid #A4A4A4;
+  transition: all 0.2s linear;
+}
+select:focus,
+input:focus {
+  border: 0;
+  outline: 0;
+  border-bottom: 1px solid #404041;
+}
+select::-webkit-input-placeholder,
+input::-webkit-input-placeholder {
+  color: #A4A4A4;
+}
+select.white,
+input.white {
+  color: white;
+  border-bottom: 1px solid #DDDDDD;
+}
+select.white:focus,
+input.white:focus {
+  border-bottom: 1px solid white;
+}
+select.white::-webkit-input-placeholder,
+input.white::-webkit-input-placeholder {
+  color: #DDDDDD;
+}
+/*End general*/
+/*Layout*/
+.layout {
+  display: flex;
+}
+.layout.vertical {
+  flex-direction: column;
+}
+.layout.horizontal {
+  flex-direction: row;
+}
+.layout.wrap {
+  flex-wrap: wrap;
+}
+.layout.center {
+  align-items: center;
+}
+.layout.baseline {
+  align-items: baseline;
+}
+.flex {
+  display: flex;
+  flex: 1;
+}
+.flex-2 {
+  display: flex;
+  flex: 2;
+}
+.flex-3 {
+  display: flex;
+  flex: 3;
+}
+/*End layout*/
+.mainLogo {
+  background: url('../../images/logo.png');
+  height: 70px;
+  width: 210px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 30px 0 0;
+}
+.loginContainer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto 75px;
+  background-color: white;
+  width: 300px;
+  height: 320px;
+}
+.loginContainer .loginInput {
+  font-size: 16px;
+  margin: 18px 10px;
+}
+.hSeparator {
+  height: 1px;
+  opacity: 0.5;
+  background-color: #404041;
+}
+#mainContainer .dark {
+  background-color: #404041;
+  color: white;
+}
+#mainContainer .appointmentsColor {
+  background-color: #009688;
+  color: white;
+}
+#mainContainer .studiesColor {
+  background-color: #607D8B;
+  color: white;
+}
+#mainContainer .drugsColor {
+  background-color: #795548;
+  color: white;
+}
+#mainContainer .problemsColor {
+  background-color: #D32F2F;
+  color: white;
+}
+#mainContainer .contactsColor {
+  background-color: #477ACD;
+  color: white;
+}
+#mainContainer #mainHeader {
+  align-items: center;
+  min-height: 60px;
+  padding: 0 16px;
+  transition: all 0.2s linear;
+  color: white;
+  z-index: 10;
+}
+#mainContainer #mainHeader .logo {
+  width: 200px;
+  cursor: pointer;
+}
+#mainContainer #mainHeader #mainUserMenu {
+  top: 45px;
+}
+#mainContainer #mainHeader #mainUserMenu .mainUserMenuContent {
+  background-color: white;
+  color: #404041;
+  min-width: 300px;
+  border-radius: 2px;
+}
+#mainContainer #mainHeader #mainUserMenu .mainUserMenuContent .userName {
+  display: flex;
+  flex-direction: row;
+  font-size: 14px;
+}
+#mainContainer #mainHeader .picture {
+  background-color: white;
+  color: #404041;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  font-size: 17px;
+  font-weight: 200;
+  line-height: 2.2;
+  justify-content: center;
+  text-align: center;
+}
+#mainContainer #mainHeader .picture.full {
+  font-size: 36px;
+  line-height: 2.3;
+  background-color: #404041;
+  color: white;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+}
+#mainContainer #mainHeader .mainEndpoint {
+  width: 200px;
+}
+#mainContainer #mainHeader #navMenu {
+  align-content: center;
+  align-self: flex-end;
+}
+#mainContainer #mainHeader #navMenu .navMenuItem {
+  text-transform: uppercase;
+  font-size: 16px;
+  font-weight: 200;
+  padding: 5px 8px 2px;
+  margin: 0 10px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s linear;
+}
+#mainContainer #mainHeader #navMenu .navMenuItem:hover {
+  font-weight: 700;
+  padding: 5px 7px 2px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+}
+#mainContainer #mainHeader #navMenu .navMenuItem.selected {
+  font-weight: 900;
+  padding: 5px 7px 2px;
+  border-bottom: 2px solid white;
+}
+.content {
+  padding: 10px;
+}
+/*Dropdown*/
+.dropdown {
+  position: relative;
+}
+.dropdown .dropdownToggle {
+  cursor: pointer;
+}
+.dropdown .dropdownToggle:hover {
+  opacity: 0.8;
+}
+.dropdown .dropdownContent {
+  display: none;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  border: 0;
+  transition: all 0.2s linear;
+}
+.dropdown .dropdownContent .dropdownTriangle {
+  color: white;
+  position: absolute;
+  top: -25px;
+  right: -4px;
+  font-size: 44px !important;
+}
+.dropdown .dropdownContent.show {
+  display: flex;
+  opacity: 1;
+}
+/*End Dropdown*/
+.mainContent {
+  align-items: center;
+  overflow: hidden;
+  /*Appointments*/
+  /*End appointments*/
+}
+.mainContent .subtitle {
+  font-weight: 200;
+}
+.mainContent .transparentButton {
+  color: #009688;
+}
+.mainContent .transparentButton:hover {
+  color: #00635a;
+  background-color: rgba(0, 150, 136, 0.2);
+}
+.mainContent .transparentButton:active {
+  background-color: rgba(0, 150, 136, 0.4);
+}
+.mainContent .transparentButton.selected {
+  background-color: #009688;
+  color: white;
+}
+.mainContent .appointmentContainer {
+  position: relative;
+  color: #404041;
+  width: 550px;
+  min-height: 135px;
+  padding: 0;
+  transition: all 0.2s linear;
+}
+.mainContent .appointmentContainer:hover {
+  color: #009688;
+}
+.mainContent .appointmentContainer .dayTime {
+  font-size: 14px;
+  font-weight: 200;
+}
+.mainContent .appointmentContainer .appointmentContent {
+  transition: all 0.2s linear;
+  min-height: 100px;
+  z-index: 1;
+  background-color: white;
+}
+.mainContent .appointmentContainer .buttons {
+  padding: 0 8px;
+  transition: all 0.2s linear;
+}
+.mainContent .appointmentContainer.past {
+  opacity: 0.5;
+}
+.mainContent .appointmentContainer.past:hover {
+  opacity: 1;
+}
+.mainContent .appointmentContainer.future {
+  opacity: 0.75;
+}
+.mainContent .appointmentContainer.future:hover {
+  opacity: 1;
+}
+.mainContent .appointmentContainer .drPicture {
+  width: 90px;
+  height: 100px;
+  background-color: #404041;
+}
+.mainContent .appointmentContainer .drLastname {
+  font-size: 18px;
+  font-weight: 700;
+}
+.mainContent .appointmentContainer .drName {
+  font-size: 18px;
+  font-weight: 200;
+}
+.mainContent .appointmentContainer .drSpecialty {
+  font-size: 16px;
+  font-weight: 200;
+}
+.mainContent .appointmentContainer .drAddress {
+  font-size: 14px;
+  font-weight: 200;
+}
+.mainContent .letterContainer {
+  padding: 10px 10px 10px 30px;
+  width: 975px;
+}
+.mainContent .letterContainer .title {
+  font-weight: 400;
+  color: #404041;
+  font-size: 20px;
+  margin: 7px 10px 0;
+}
+.mainContent .sidebar {
+  width: 350px;
+  align-self: flex-start;
+  align-items: center;
+  margin: 27px 0 0 20px;
+  font-weight: 200;
+}
+.mainContent .sidebar .calendar {
+  background-color: white;
+  z-index: 5;
+  top: 22px;
+  width: 350px;
+  border-radius: 2px;
+}
+.mainContent .sidebar .calendar .calendarHeader {
+  background-color: #404041;
+  color: white;
+  padding: 0 0 4px;
+  font-size: 12px;
+}
+.mainContent .sidebar .calendar .calendarTitle {
+  background-color: #404041;
+  color: white;
+  padding: 0 8px;
+  font-size: 12px;
+}
+.mainContent .sidebar .calendar .calendarTitle .monthTitle {
+  font-size: 16px;
+}
+.mainContent .sidebar .calendar .day {
+  width: 30px;
+  text-align: center;
+  margin: 3px 10px;
+  padding: 5px 0;
+  border-radius: 30px;
+  font-size: 12px;
+}
+.mainContent .sidebar .calendar .day:hover {
+  color: #477ACD;
+}
+.mainContent .sidebar .calendar .day.today {
+  font-weight: 600;
+  background-color: #A4A4A4;
+  color: white;
+}
+.mainContent .sidebar .calendar .day.matchDay {
+  font-weight: 600;
+  background-color: #009688;
+  color: white;
+}
+.mainContent .sidebar .calendar .day .appointmentPoint {
+  background-color: white;
+  margin: 1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+}
+.mainContent .searchContainer {
+  align-self: center;
+  width: 900px;
+  padding: 8px 16px;
+  margin: 20px 0 10px;
+  min-height: 40px;
+  color: white;
+}
+.mainContent .filterSidebar {
+  width: 335px;
+  margin-top: 30px;
+  background-color: white;
+}
+.mainContent .filterSidebar .filterContainer .filterTitle {
+  font-size: 14px;
+}
+.fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 12px 12px 9px 11px;
+  width: 29px;
+  border-radius: 30px;
+  text-align: center;
+  cursor: pointer;
+}
+.fab.appointments {
+  background-color: #009688;
+  color: white;
+}
+.fab.appointments:hover {
+  background-color: #007d71;
+}
+/*Dialog*/
+dialog {
+  background: #FFF;
+  padding: 0;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+dialog::backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+dialog .dialogHeader {
+  color: #2A323F;
+  margin: 15px 15px 0;
+  font-size: 18px;
+}
+dialog .dialogContent {
+  padding: 20px;
+}
+dialog#newAppointmentDialog {
+  width: 750px;
+  height: 600px;
+}
+dialog#newAppointmentDialog .filterSidebar {
+  width: 120px;
+}
+dialog#newAppointmentDialog .filterSidebar .filterContainer {
+  margin-bottom: 20px;
+}
+dialog#newAppointmentDialog .filterSidebar .filterContainer .filterTitle {
+  font-size: 14px;
+}
+dialog#newAppointmentDialog .filterSidebar .filterContainer .tagButton.selected {
+  background-color: #009688;
+}
+/*End Dialog*/
+.professionalHeader {
+  background-color: #404041;
+  color: white;
+  width: 885px;
+  min-height: 18px;
+  margin-top: 10px;
+  font-size: 14px;
+  position: absolute;
+}
+.professional {
+  padding: 2px 10px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.professional:hover .iconButton {
+  opacity: 1;
+}
+.professional:hover.appointments {
+  color: #009688;
+}
+.professional:hover.contacts {
+  background-color: #F5F5F5;
+}
+.professional .drPicture {
+  width: 50px;
+  height: 60px;
+  background-color: #404041;
+  margin-right: 5px;
+}
+.professional .drLastname {
+  font-size: 14px;
+  font-weight: 700;
+}
+.professional .drName {
+  font-size: 14px;
+  font-weight: 200;
+}
+.professional .drSpecialty {
+  font-size: 12px;
+  font-weight: 200;
+}
+.professional .drAddress {
+  font-size: 12px;
+  font-weight: 200;
+}
+.professional .drDay {
+  font-size: 12px;
+  font-weight: 200;
+  opacity: 0.4;
+  justify-content: center;
+}
+.professional .drDay.trueDay {
+  color: #009688;
+  opacity: 1;
+  font-weight: 700;
+}
+.searchResults {
+  width: 915px;
+  height: 450px;
+  background-color: white;
+  margin: 10px 0;
+}

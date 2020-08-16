@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>Escobita</title>
+    <link rel="shortcut icon" href="presentation/web/assets/images/logo.png" type="image/x-icon">
+    <!-- CUSTOM CSS -->
+    <link rel="stylesheet" type="text/css" href="presentation/web/assets/css/less_compiled/main.css">
+    <!-- THIRD PARTY JS -->
+    <script type="text/javascript" src="presentation/web/assets/js/third_party/jquery.min.js"></script>
+    <script type="text/javascript" src="presentation/web/assets/js/third_party/moment.min.js"></script>
+    <script type="text/javascript" src="presentation/web/assets/js/third_party/underscore.min.js"></script>
+    <script type="text/javascript" src="presentation/web/assets/js/third_party/angular.min.js"></script>
+    <script type="text/javascript" src="presentation/web/assets/js/third_party/angular-ui-router.min.js"></script>
+    <!-- CUSTOM JS -->
+    <script type="text/javascript" src="presentation/web/assets/js/ts_compiled/app.js"></script>
+    <script type="text/javascript" src="presentation/web/assets/js/ts_compiled/controllers/lobby.js"></script>
+    <script type="text/javascript" src="presentation/web/assets/js/ts_compiled/controllers/about.js"></script>
+  </head>
+
+  <body ng-app="escobita" class="escobita-body">
+    <div class="escobita-nav">
+      <ul>
+        <li><a ui-sref="about" ui-sref-active="active" >Acerca de</a></li>
+        <li><a ui-sref="lobby" ui-sref-active="active" >Lobby</a></li>
+      </ul>
+    </div>
+    <div class="escobita-content" ui-view>
+    </div>
+  </body>
+</html>

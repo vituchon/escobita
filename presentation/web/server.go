@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	_ "net/http/pprof"
@@ -77,6 +78,7 @@ func buildRouter() *mux.Router {
 
 	Get := BuildSetHandleFunc(root, "GET")
 	//Post := BuildSetHandleFunc(root, "POST")
+	Get("/", serveRoot)
 	Get("/healthcheck", healthcheck)
 
 	/*Post("/api/v1/login", controllers.Login)
@@ -108,13 +110,14 @@ func BuildSetHandleFunc(router *mux.Router, methods ...string) setHandlerFunc {
 
 func NoMatchingHandler(response http.ResponseWriter, request *http.Request) {
 	fmt.Println("No maching route for " + request.URL.Path)
+	response.WriteHeader(http.StatusNotFound)
 
 	if request.URL.Path == "/favicon.ico" { // avoids to trigger another request to landing or login on the "silent" http request by chrome to get an icon! I guess i could tell chrome for ubuntu that redirection for an icon can create more and bigger troubles than solutions... i mean nobody dies for an icon... for now...
 		response.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	http.Redirect(response, request, "/presentation/web/assets/170.png", http.StatusSeeOther)
+	http.Redirect(response, request, "/presentation/web/assets/images/logo.png", http.StatusSeeOther)
 }
 
 func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
@@ -145,4 +148,15 @@ func getOrCreateClientSession(request *http.Request) *sessions.Session {
 
 func saveClientSession(request *http.Request, response http.ResponseWriter, clientSession *sessions.Session) error {
 	return ClientSessions.Save(request, response, clientSession)
+}
+
+// Dev notes: the request context has the organization due to the ContextAwareMiddle, so there will be always a valid portal's client session when invoking this function
+func serveRoot(response http.ResponseWriter, request *http.Request) {
+	t, err := template.ParseFiles("presentation/web/assets/html/root.html")
+	if err != nil {
+		fmt.Printf("Error while parsing template : %v", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	t.Execute(response, nil)
 }
