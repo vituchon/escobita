@@ -8,11 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 	"time"
 
 	"local/escobita/presentation/util"
 	"local/escobita/presentation/web/controllers"
-	"local/escobita/presentation/web/services"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -80,7 +80,7 @@ func buildRouter() *mux.Router {
 	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
 	//root.Use(SslRedirect, AccessLogMiddleware, OrgAwareMiddleware)
-	root.Use(ClientSessionAwareMiddleware, AccessLogMiddleware)
+	root.Use(ClientSessionAwareMiddleware)
 
 	Get := BuildSetHandleFunc(root, "GET")
 	//Post := BuildSetHandleFunc(root, "POST")
@@ -92,6 +92,7 @@ func buildRouter() *mux.Router {
 	Get("/home", ServeHomeAuth)*/
 
 	api := root.PathPrefix("/api/v1").Subrouter()
+	api.Use(AccessLogMiddleware) // only logs api calls
 	//api.Use(AuthMiddleware)
 	apiGet := BuildSetHandleFunc(api, "GET")
 	apiPost := BuildSetHandleFunc(api, "POST")
@@ -131,7 +132,7 @@ func NoMatchingHandler(response http.ResponseWriter, request *http.Request) {
 // Adds a logging handler for logging each request's in Apache Common Log Format (CLF).
 // With this middleware we ensure that each requests will be, at least, logged once.
 func AccessLogMiddleware(h http.Handler) http.Handler {
-	loggingHandler := handlers.LoggingHandler(services.Logger.Out, h)
+	loggingHandler := handlers.LoggingHandler(os.Stdout, h)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		loggingHandler.ServeHTTP(w, r)

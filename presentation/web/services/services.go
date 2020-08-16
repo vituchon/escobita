@@ -5,11 +5,7 @@ package services
 import (
 	"errors"
 	"local/escobita/model"
-
-	"github.com/Sirupsen/logrus"
 )
-
-var Logger = logrus.New()
 
 var EntityNotExistsErr error = errors.New("Entity doesn't exists")
 var EntityDuplicatedErr error = errors.New("Duplicated Entity")
