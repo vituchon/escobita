@@ -5,3 +5,4 @@ bindata.go
 *.diff
 escobita
 .ss
+presentation/web/assets/js/ts_compiled/**
