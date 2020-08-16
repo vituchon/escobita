@@ -8,9 +8,9 @@ import (
 
 // Spanish card
 type Card struct {
-	Id   int
-	Suit Suit
-	Rank Rank
+	Id   int  `json:"id"`
+	Suit Suit `json:"suit"`
+	Rank Rank `json:"rank"`
 }
 
 func (s Card) String() string {

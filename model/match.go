@@ -6,12 +6,12 @@ import (
 )
 
 type Match struct {
-	Players          []Player
-	ActionsByPlayer  ActionsByPlayer
-	ActionsLog       []PlayerAction
-	Cards            MatchCards
-	FirstPlayerIndex int
-	RoundNumber      int
+	Players          []Player        `json:"players"`
+	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayer"`
+	ActionsLog       []PlayerAction  `json:"playerAction"`
+	Cards            MatchCards      `json:"matchCards"`
+	FirstPlayerIndex int             `json:"firstPlayerIndex"`
+	RoundNumber      int             `json:"roundNumber"`
 }
 
 func newMatch(players []Player, deck Deck) Match {
@@ -52,9 +52,9 @@ func newActionsByPlayer(players []Player) ActionsByPlayer {
 }
 
 type MatchCards struct {
-	Board     Deck // the cards on the table that anyone can reclaim
-	Left      Deck // the remaining cards to play in the rest of the match
-	PerPlayer map[Player]PlayerMatchCards
+	Board     Deck                        `json:"board"` // the cards on the table that anyone can reclaim
+	Left      Deck                        `json:"left"`  // the remaining cards to play in the rest of the match
+	PerPlayer map[Player]PlayerMatchCards `json:"perPlayer"`
 }
 
 func newMatchCards(players []Player, deck Deck) MatchCards {
@@ -73,6 +73,6 @@ func newMatchCards(players []Player, deck Deck) MatchCards {
 }
 
 type PlayerMatchCards struct {
-	Taken Deck // the cards on the player has claimed
-	Hand  Deck // the cards on the player has to play
+	Taken Deck // the cards on the player has claimed `json:"taken"`
+	Hand  Deck // the cards on the player has to play `json:"hand"`
 }

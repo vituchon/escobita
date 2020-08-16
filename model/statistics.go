@@ -6,11 +6,11 @@ import (
 
 // TODO : needs to implement what happens in draw, right now only one winner can be and would be "the first" that the algorithm find
 type PlayerStatictics struct {
-	CardsTakenCount int
-	EscobitasCount  int
-	SeventiesScore  int
-	HasGoldSeven    bool
-	GoldCardsCount  int
+	CardsTakenCount int  `json:"cardsTakenCount"`
+	EscobitasCount  int  `json:"escobitasCount"`
+	SeventiesScore  int  `json:"seventiesScore"`
+	HasGoldSeven    bool `json:"hasGoldSeven"`
+	GoldCardsCount  int  `json:"goldCardsCount"`
 }
 
 type StaticticsByPlayer map[Player]PlayerStatictics
@@ -138,8 +138,8 @@ func (staticticsByPlayer StaticticsByPlayer) calculateMostGoldCardsPlayer() Play
 }
 
 type PlayerScoreSummary struct {
-	Score      int
-	Statictics PlayerStatictics
+	Score      int              `json:"score"`
+	Statictics PlayerStatictics `json:"statictics"`
 }
 
 type ScoreSummaryByPlayer map[Player]PlayerScoreSummary

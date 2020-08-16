@@ -1,9 +1,9 @@
 package model
 
 type Game struct {
-	Matchs         []Match
-	Players        []Player
-	ScorePerPlayer map[Player]int
+	Matchs         []Match        `json:"matchs"`
+	Players        []Player       `json:"players"`
+	ScorePerPlayer map[Player]int `json:"scorePerPlayer"`
 }
 
 func NewGame(players []Player) Game {

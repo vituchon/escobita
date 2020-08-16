@@ -133,10 +133,10 @@ func shuffle(deck Deck) {
 }
 
 type Round struct {
-	Match              *Match
-	CurrentPlayerIndex int
-	ConsumedTurns      int
-	Number             int
+	Match              *Match `json:"match"`
+	CurrentPlayerIndex int    `json:"currentPlayerIndex"`
+	ConsumedTurns      int    `json:"consumedTurns"`
+	Number             int    `json:"number"`
 }
 
 func (r Round) HasNextTurn() bool {
@@ -168,7 +168,7 @@ func (r *Round) NextTurn() Player {
 }
 
 type basePlayerAction struct {
-	Player Player // the performer
+	Player Player `json:"player"` // the performer
 }
 
 func (bpa basePlayerAction) GetPlayer() Player {
@@ -177,9 +177,9 @@ func (bpa basePlayerAction) GetPlayer() Player {
 
 type PlayerTakeAction struct {
 	basePlayerAction
-	BoardCards []Card
-	HandCard   Card
-	isEscobita bool
+	BoardCards []Card `json:"boardCards"`
+	HandCard   Card   `json:"handCard"`
+	isEscobita bool   `json:"isEscobita"`
 }
 
 func NewPlayerTakeAction(player Player, handCard Card, boardCards []Card) PlayerTakeAction {
@@ -198,7 +198,7 @@ func (a PlayerTakeAction) IsEscobita() bool {
 
 type PlayerDropAction struct {
 	basePlayerAction
-	HandCard Card
+	HandCard Card `json:"handCard"`
 }
 
 func NewPlayerDropAction(player Player, handCard Card) PlayerDropAction {
