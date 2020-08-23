@@ -5,4 +5,9 @@ namespace Api {
     match: any;
     players: any;
   }
+
+  export interface Player {
+    id: number;
+    name: string;
+  }
 }
