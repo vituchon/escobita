@@ -4,10 +4,16 @@
 module Lobby {
   class Controller {
 
-    public games: Games.Game[]
+    public games: Games.Game[];
+    public players: Players.Player[];
 
-    constructor(private $state: ng.ui.IStateService, private gamesService: Games.Service) {
+    public player: Players.Player;
+
+    constructor(private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service) {
       this.games = [];
+      this.playersService.getClientPlayer().then((player) => {
+        this.player = player;
+      })
     }
 
     public createGame(game: Api.Game) {
@@ -21,7 +27,19 @@ module Lobby {
         this.games = games
       })
     }
+
+    public updatePlayer(player: Players.Player) {
+      this.playersService.updatePlayer(player).then((player) => {
+        this.player = player;
+      })
+    }
+
+    public updatePlayersList() {
+      this.playersService.getPlayers().then((players) => {
+        this.players = players
+      })
+    }
   }
 
-  escobita.controller('LobbyController', ['$state', 'GamesService', Controller]);
+  escobita.controller('LobbyController', ['$state', 'GamesService', 'PlayersService', Controller]);
 }
