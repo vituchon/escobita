@@ -5,13 +5,6 @@ var App;
     function setup($state, $urlRouterProvider, $location) {
         $location.html5Mode({ enabled: true, requireBase: false });
         $urlRouterProvider.otherwise('/');
-        /*const landing : ng.ui.IState = {
-          name: 'landing',
-          url: '/',
-          templateUrl: '/presentation/web/assets/html/landing.html',
-          controller: "LandingController",
-          controllerAs: "ctr",
-        };*/
         var lobby = {
             name: 'lobby',
             url: 'lobby',
@@ -26,7 +19,6 @@ var App;
             controller: "AboutController",
             controllerAs: "ctr"
         };
-        //$state.state(landing);
         $state.state(lobby);
         $state.state(about);
     }
