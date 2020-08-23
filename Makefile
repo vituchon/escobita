@@ -12,7 +12,7 @@ clean: ts-clean less-clean
 run: clean compile
 	@go run main.go
 
-dev-run: ts-compile-watch run
+dev-run: less-compile-watch ts-compile-watch run
 
 # TS RELATED TARGETS AND VARIABLES
 ts_src_root_path = presentation/web/assets/js/ts
@@ -53,8 +53,8 @@ less-clean:
 	rm -rfv $(less_out_root_path)
 
 less-compile-watch: $(less_files)
-	chmod +x scripts/less_compiler_deamon.sh
-	scripts/less_compiler_deamon.sh $(less_src_root_path)
+	chmod +x ./less_compiler_deamon.sh
+	./less_compiler_deamon.sh $(less_src_root_path)
 
 all-compile-watch: ts-compile-watch less-compile-watch
 
