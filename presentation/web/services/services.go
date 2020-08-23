@@ -89,10 +89,12 @@ func AdvanceGame(id int) (*WebGame, error) {
 				game.CurrentMatch.Ends()
 			}
 		}
+		return &game, nil
 	} else {
-		err = game.BeginMatch()
+		err := game.BeginMatch()
+		return &game, err
 	}
-	return &game, err
+
 }
 
 // PLAYERS
