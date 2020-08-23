@@ -8,14 +8,6 @@ module App {
     $location.html5Mode({ enabled: true, requireBase: false });
     $urlRouterProvider.otherwise('/');
 
-    /*const landing : ng.ui.IState = {
-      name: 'landing',
-      url: '/',
-      templateUrl: '/presentation/web/assets/html/landing.html',
-      controller: "LandingController",
-      controllerAs: "ctr",
-    };*/
-
     const lobby: ng.ui.IState = {
       name: 'lobby',
       url: 'lobby',
@@ -32,7 +24,6 @@ module App {
       controllerAs: "ctr"
     };
 
-    //$state.state(landing);
     $state.state(lobby);
     $state.state(about);
   };
