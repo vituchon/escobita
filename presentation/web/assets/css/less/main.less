@@ -1,3 +1,5 @@
+
+
 @mainColor: #477ACD;
 @lightGray: #FAFAFA;
 @midGray: #A4A4A4;
@@ -57,6 +59,38 @@
   src:  url('../../fonts/Roboto-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
+}
+
+// COMMON STYLES
+
+.main-title {
+  font-size: 16px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-weight: bold;
+  color: @mainColor;
+}
+.section-title {
+  .main-title();
+  font-size: 14px;
+
+}
+
+.section-separator {
+  height: 20px;
+  background-color: lightgray;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+// LOBBY STYLES
+
+.lobby-title {
+  font-size: 16px;
+}
+
+.lobby-section {
+  width: 600px;
 }
 
 body{
@@ -159,8 +193,8 @@ ui-view {
   &.raised{
     box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
     &:hover{
-      box-shadow: 0 4px 3px 0px rgba(0,0,0,0.3);  
-    }  
+      box-shadow: 0 4px 3px 0px rgba(0,0,0,0.3);
+    }
   }
   &.gray{
     background-color: #F8F8F8;
@@ -272,7 +306,7 @@ select, input{
     }
     &::-webkit-input-placeholder {
       color: #DDDDDD;
-    } 
+    }
   }
 }
 /*End general*/
@@ -425,7 +459,7 @@ select, input{
         transition:     @defaultTransition;
         &:hover{
           font-weight:   700;
-          padding:       5px 7px 2px;        
+          padding:       5px 7px 2px;
           border-bottom: 2px solid rgba(255,255,255,0.7);
         }
         &.selected{
@@ -513,7 +547,7 @@ select, input{
       min-height:       100px;
       z-index:          1;
       background-color: white;
-    } 
+    }
     & .buttons{
       padding:    0 8px;
       transition: @defaultTransition;
@@ -545,7 +579,7 @@ select, input{
     }
     & .drSpecialty{
       font-size:   16px;
-      font-weight: 200;      
+      font-weight: 200;
     }
     & .drAddress{
       font-size:   14px;
@@ -602,7 +636,7 @@ select, input{
         &.today{
           font-weight:      600;
           background-color: @midGray;
-          color:            white;          
+          color:            white;
         }
         &.matchDay{
           font-weight:      600;
@@ -653,7 +687,7 @@ select, input{
     background-color: @appointment;
     color: white;
     &:hover{
-      background-color: darken(@appointment, 5%);      
+      background-color: darken(@appointment, 5%);
     }
   }
 }
@@ -743,7 +777,7 @@ dialog {
   }
   & .drSpecialty{
     font-size: 12px;
-    font-weight: 200;      
+    font-weight: 200;
   }
   & .drAddress{
     font-size:   12px;
@@ -758,7 +792,7 @@ dialog {
       color:       @appointment;
       opacity:     1;
       font-weight: 700;
-    }        
+    }
   }
 }
 
