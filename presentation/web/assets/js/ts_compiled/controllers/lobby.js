@@ -43,9 +43,12 @@ var Lobby;
         Controller.prototype.doesGameAcceptPlayers = function (game) {
             return !Games.isStarted(game);
         };
-        Controller.prototype.joinGame = function (player, game) {
-            console.log(player, game);
-            // this.$state.go => game screen with game as data!
+        Controller.prototype.joinGame = function (game, player) {
+            var _this = this;
+            Games.addPlayer(game, player);
+            this.gamesService.updateGame(game).then(function () {
+                _this.$state.go("game", { game: game }, { relative: false });
+            });
         };
         return Controller;
     }());

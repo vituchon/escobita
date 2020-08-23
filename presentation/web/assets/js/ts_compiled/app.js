@@ -12,6 +12,16 @@ var App;
             controller: "LobbyController",
             controllerAs: "ctr"
         };
+        var game = {
+            name: 'game',
+            url: 'game',
+            templateUrl: '/presentation/web/assets/html/game.html',
+            controller: "GameController",
+            controllerAs: "ctr",
+            params: {
+                game: null
+            }
+        };
         var about = {
             name: 'about',
             url: 'about',
@@ -21,6 +31,7 @@ var App;
         };
         $state.state(lobby);
         $state.state(about);
+        $state.state(game);
     }
     ;
     escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);

@@ -16,6 +16,17 @@ module App {
       controllerAs: "ctr"
     };
 
+    const game: ng.ui.IState = {
+      name: 'game',
+      url: 'game',
+      templateUrl: '/presentation/web/assets/html/game.html',
+      controller: "GameController",
+      controllerAs: "ctr",
+      params: {
+        game: null,
+      }
+    };
+
     const about: ng.ui.IState = {
       name: 'about',
       url: 'about',
@@ -26,6 +37,7 @@ module App {
 
     $state.state(lobby);
     $state.state(about);
+    $state.state(game);
   };
 
   escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);

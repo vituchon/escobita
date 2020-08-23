@@ -1,0 +1,16 @@
+<div class="main-container lobby-container" class="vertical layout flex">
+
+  <div class="main-title lobby-title">Juego {{ctr.game.name}}</div>
+
+  <div class="section-separator"></div>
+
+  <div class="section lobby-section">
+    <div class="section-title">Jugadores</div>
+    <div ng-repeat="player in ctr.game.players">
+      <div class="horizontal">
+        <span>{{player.name}}</span>
+      </div>
+    </div>
+  </div>
+
+</div>

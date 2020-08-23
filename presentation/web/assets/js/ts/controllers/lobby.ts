@@ -47,9 +47,11 @@ module Lobby {
       return !Games.isStarted(game)
     }
 
-    public joinGame(player: Players.Player, game: Games.Game) {
-      console.log(player,game)
-      // this.$state.go => game screen with game as data!
+    public joinGame(game: Games.Game, player: Players.Player) {
+      Games.addPlayer(game, player)
+      this.gamesService.updateGame(game).then(() => {
+        this.$state.go("game", {game: game}, {relative: false})
+      })
     }
   }
 
