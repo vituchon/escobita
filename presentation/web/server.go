@@ -51,7 +51,7 @@ func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
 	return
 }
 
-func StartWebServer() {
+func StartServer() {
 	key, err := retrieveCookieStoreKey(storeKeyFilePath)
 	if err != nil {
 		fmt.Printf("Unexpected error while retrieving cookie store key: %v", err)
@@ -102,7 +102,7 @@ func buildRouter() *mux.Router {
 	apiGet("/games/{id:[0-9]+}", controllers.GetGameById)
 	apiPost("/games", controllers.CreateGame)
 	apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
-	apiDelete("/games/{id:[0-9]+}", controllers.UpdateGame)
+	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame) // TODO (!) : change to DeleteGame
 
 	apiGet("/players", controllers.GetPlayers)
 	apiGet("/player", controllers.GetClientPlayer)
