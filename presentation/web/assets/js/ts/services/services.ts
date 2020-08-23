@@ -12,6 +12,18 @@ namespace Games {
     return false
   }
 
+  export function addPlayer(game :Game, player: Players.Player) {
+    if (_.isEmpty(game.players)) {
+      game.players = [player]
+    } else {
+      const gamePlayer = _.find(game.players,(gamePlayer) => gamePlayer.id == player.id)
+      const playerNotJoined = _.isUndefined(gamePlayer)
+      if (playerNotJoined) {
+        game.players.push(player)
+      }
+    }
+  }
+
   export namespace Periods {
     const dayInSeconds = 24 * 60 * 60;
     const weekInSeconds = dayInSeconds * 7;

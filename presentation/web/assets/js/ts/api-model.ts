@@ -3,7 +3,7 @@ namespace Api {
   export interface Game {
     id: number;
     match: any;
-    players: any;
+    players: Player[];
   }
 
   export interface Player {
