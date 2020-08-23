@@ -8,6 +8,10 @@ namespace Games {
   export interface Game extends Api.Game {
   }
 
+  export function isStarted(game :Game) : boolean{
+    return false
+  }
+
   export namespace Periods {
     const dayInSeconds = 24 * 60 * 60;
     const weekInSeconds = dayInSeconds * 7;
