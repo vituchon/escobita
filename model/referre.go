@@ -10,10 +10,14 @@ var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
 // creates the match and prepare it for play
 // do note that the initial cards are laydown at moment 0 and not at round one!
 func CreateAndBegins(players []Player) Match {
-	var deck Deck = NewDeck(Suits, EscobitaRanks)
-	match := newMatch(players, deck)
+	match := CreateMatch(players)
 	match.Begins()
 	return match
+}
+
+func CreateMatch(players []Player) Match {
+	var deck Deck = NewDeck(Suits, EscobitaRanks)
+	return newMatch(players, deck)
 }
 
 // performs the initial lay down of cards and select the initial player so the match is ready to begin
@@ -92,12 +96,14 @@ func (match *Match) NextRound() Round {
 		match.Cards.Left = match.Cards.Left[3:]
 	}
 	match.RoundNumber++
-	return Round{
+	round := Round{
 		Match:              match,
 		CurrentPlayerIndex: match.FirstPlayerIndex,
 		ConsumedTurns:      0,
 		Number:             match.RoundNumber,
 	}
+	match.CurrentRound = &round
+	return round
 }
 
 func (match Match) HasMoreRounds() bool {

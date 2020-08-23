@@ -12,6 +12,10 @@ type Match struct {
 	Cards            MatchCards      `json:"matchCards"`
 	FirstPlayerIndex int             `json:"firstPlayerIndex"`
 	RoundNumber      int             `json:"roundNumber"`
+	// dev notes: este campo se agrego acá, pero tranquilamente podria haber sido agregado a nivel WebGame dado que es allí donde aparece la
+	// necesidad de acceder a la ronda de juego en progreso, lo cual tambien se podria haber programado a nivel WebGame guardando en dicha struct el round
+	// que devuelve el método NextRound
+	CurrentRound *Round `json:"currentRound,omitempty"` // TODO : add some test to ensure this is tracking OK
 }
 
 func newMatch(players []Player, deck Deck) Match {
@@ -23,6 +27,7 @@ func newMatch(players []Player, deck Deck) Match {
 		Cards:            newMatchCards(players, deck),
 		RoundNumber:      0,
 		FirstPlayerIndex: 0,
+		CurrentRound:     nil,
 	}
 	return match
 }
