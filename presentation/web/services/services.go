@@ -51,8 +51,8 @@ func CreateGame(game WebGame) (created *WebGame, err error) {
 
 	// not treat safe
 	nextId := idSequence + 1
-	gamesById[idSequence] = game
 	game.Id = &nextId
+	gamesById[nextId] = game
 	idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
 	// end not treat safe
 	return &game, nil
