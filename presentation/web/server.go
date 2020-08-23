@@ -3,6 +3,7 @@ package web
 // trying to use one file for all kinds controllers and content delivery related code
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -17,7 +18,6 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
 )
 
 // TODO : nice implement something like this
@@ -39,27 +39,25 @@ const (
 	storeKeyFilePath = ".ss" // the file were the actual key is stored
 )
 
-var ClientSessions *sessions.CookieStore
-
-func retrieveCookieStoreKey() (key []byte, err error) {
-	if util.FileExists(storeKeyFilePath) {
+func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
+	if util.FileExists(filepath) {
 		key, err = ioutil.ReadFile(storeKeyFilePath)
 		fmt.Printf("Using existing key %s\n", string(key))
 	} else {
 		key = securecookie.GenerateRandomKey(32)
 		ioutil.WriteFile(storeKeyFilePath, key, 0644)
-		fmt.Printf("Generated new key %s and stored at %s", string(key), storeKeyFilePath)
+		fmt.Printf("Generated new key %s and stored at %s\n", string(key), storeKeyFilePath)
 	}
 	return
 }
 
 func StartWebServer() {
-	key, err := retrieveCookieStoreKey()
+	key, err := retrieveCookieStoreKey(storeKeyFilePath)
 	if err != nil {
 		fmt.Printf("Unexpected error while retrieving cookie store key: %v", err)
 		return
 	}
-	ClientSessions = sessions.NewCookieStore(key)
+	controllers.NewSessionStore(key)
 
 	router := buildRouter()
 	server := &http.Server{
@@ -86,6 +84,7 @@ func buildRouter() *mux.Router {
 	//Post := BuildSetHandleFunc(root, "POST")
 	Get("/", serveRoot)
 	Get("/healthcheck", controllers.Healthcheck)
+	Get("/version", controllers.Version)
 
 	/*Post("/api/v1/login", controllers.Login)
 	ServeHomeAuth := AuthMiddlewareForHome(http.HandlerFunc(controllers.ServeHome)).(http.HandlerFunc)
@@ -105,6 +104,11 @@ func buildRouter() *mux.Router {
 	apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
 	apiDelete("/games/{id:[0-9]+}", controllers.UpdateGame)
 
+	apiGet("/players", controllers.GetPlayers)
+	apiGet("/player", controllers.GetClientPlayer)
+	apiGet("/players/{id:[0-9]+}", controllers.GetPlayerById)
+	apiPost("/players", controllers.CreatePlayer)
+	apiPut("/players/{id:[0-9]+}", controllers.UpdatePlayer)
 	return root
 }
 
@@ -121,12 +125,12 @@ func NoMatchingHandler(response http.ResponseWriter, request *http.Request) {
 	fmt.Println("No maching route for " + request.URL.Path)
 	response.WriteHeader(http.StatusNotFound)
 
-	if request.URL.Path == "/favicon.ico" { // avoids to trigger another request to landing or login on the "silent" http request by chrome to get an icon! I guess i could tell chrome for ubuntu that redirection for an icon can create more and bigger troubles than solutions... i mean nobody dies for an icon... for now...
+	/*if request.URL.Path == "/favicon.ico" { // avoids to trigger another request to landing or login on the "silent" http request by chrome to get an icon! I guess i could tell chrome for ubuntu that redirection for an icon can create more and bigger troubles than solutions... i mean nobody dies for an icon... for now...
 		response.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	http.Redirect(response, request, "/presentation/web/assets/images/logo.png", http.StatusSeeOther)
+	http.Redirect(response, request, "/presentation/web/assets/images/logo.png", http.StatusSeeOther)*/
 }
 
 // Adds a logging handler for logging each request's in Apache Common Log Format (CLF).
@@ -141,32 +145,16 @@ func AccessLogMiddleware(h http.Handler) http.Handler {
 
 func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		clientSession := getOrCreateClientSession(request)
-		err := saveClientSession(request, response, clientSession)
+		clientSession := controllers.GetOrCreateClientSession(request)
+		err := controllers.SaveClientSession(request, response, clientSession)
 		if err != nil {
 			fmt.Printf("error while saving client session: %v", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		h.ServeHTTP(response, request)
+		ctx := context.WithValue(request.Context(), "clientSession", clientSession)
+		h.ServeHTTP(response, request.WithContext(ctx))
 	})
-}
-
-func getOrCreateClientSession(request *http.Request) *sessions.Session {
-	clientSession, err := ClientSessions.Get(request, "client_session")
-	if err != nil {
-		fmt.Printf("error while retrieving 'client_session' from session store: %+v\n", err)
-	}
-	if clientSession.IsNew {
-		fmt.Print("creating new session\n")
-	} else {
-		fmt.Print("using existing session\n")
-	}
-	return clientSession
-}
-
-func saveClientSession(request *http.Request, response http.ResponseWriter, clientSession *sessions.Session) error {
-	return ClientSessions.Save(request, response, clientSession)
 }
 
 // Dev notes: the request context has the organization due to the ContextAwareMiddle, so there will be always a valid portal's client session when invoking this function
