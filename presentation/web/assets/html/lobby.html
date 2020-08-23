@@ -1,37 +1,44 @@
-<div id="LobbyContainer" class="vertical layout flex">
-  <span>Esto es el lobby</span>
-  <div class="">
-    <div>Información del jugador</div>
-    <div class="flex"></div>
-    <input class="loginInput" placeholder="Escribe tu nombre" ng-model="ctr.player.name" >
-    <input class="loginInput" readonly ng-model="ctr.player.id">
-    <div class="buttons">
-      <div class="materialButton raised colorButton" ng-click="ctr.updatePlayer(ctr.player)">Actualizar datos de jugador</div>
-      <div class="textButton" style="font-size: 11px" ng-click="ctr.updatePlayersList()">Actualizar listado de jugadores</div>
+<div class="main-container lobby-container" class="vertical layout flex">
+
+  <div class="main-title lobby-title">Esto es el lobby</div>
+
+  <div class="section-separator"></div>
+
+  <div class="section lobby-section">
+    <div class="section-title">Jugador</div>
+    <span>Nombre:</span><input class="loginInput" placeholder="Escribe tu nombre" ng-model="ctr.player.name" >
+    <span>Id:</span><strong>{{ctr.player.id}}</strong>
+    <div class="flex">
+      <div class="materialButton raised colorButton" ng-click="ctr.updatePlayer(ctr.player)">Guardar</div>
     </div>
-  </div>
-  <div class="">
     <div class="flex"></div>
-    <input class="loginInput"  placeholder="Nombre del juego" ng-model="game.name">
-    <div class="flex"></div>
-    <div class="buttons">
-      <div class="textButton" style="font-size: 11px" ng-click="ctr.updateGameList()">Actualizar listado de juegos</div>
-      <div class="flex"></div>
-      <div class="materialButton raised colorButton" ng-click="ctr.createGame(game)">Crear Juego</div>
-    </div>
   </div>
 
-  <div>
-    Listado de juegos:
+  <div class="section-separator"></div>
+
+  <div class="section lobby-section">
+    <div class="section-title">Listado de juegos</div>
+    <div class="flex">
+      <div class="materialButton colorButton" ng-click="ctr.updateGameList()">Actualizar listado de juegos</div>
+    </div>
     <div ng-repeat="game in ctr.games">
-      <pre>{{game|json}}</pre>
+      <div class="horizontal">
+        <span>{{game.name}}</span>
+        <pre>{{game|json}}</pre>
+        <div class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-click="ctr.joinGame(game, ctr.player)">Unirse</div>
+      </div>
     </div>
   </div>
 
-  <div>
-    Listado de jugadores:
-    <div ng-repeat="player in ctr.players">
-      <pre>{{player|json}}</pre>
+  <div class="section-separator"></div>
+
+  <div class="section lobby-section">
+    <div class="section-title">Crear un nuevo juego</div>
+    <input class="loginInput"  placeholder="Nombre del juego" ng-model="game.name">
+    <div class="flex">
+      <div class="materialButton colorButton" ng-click="ctr.createGame(game)">Crear</div>
     </div>
   </div>
+
+
 </div>

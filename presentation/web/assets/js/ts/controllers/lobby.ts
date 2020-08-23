@@ -14,6 +14,9 @@ module Lobby {
       this.playersService.getClientPlayer().then((player) => {
         this.player = player;
       })
+      this.gamesService.getGames().then((games) => {
+        this.games = games
+      })
     }
 
     public createGame(game: Api.Game) {
@@ -38,6 +41,15 @@ module Lobby {
       this.playersService.getPlayers().then((players) => {
         this.players = players
       })
+    }
+
+    public doesGameAcceptPlayers(game: Games.Game) {
+      return !Games.isStarted(game)
+    }
+
+    public joinGame(player: Players.Player, game: Games.Game) {
+      console.log(player,game)
+      // this.$state.go => game screen with game as data!
     }
   }
 

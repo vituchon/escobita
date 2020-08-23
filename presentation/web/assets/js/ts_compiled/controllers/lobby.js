@@ -1,5 +1,5 @@
-/// <reference path='../ts/app.ts' />
-/// <reference path='../ts/services/services.ts' />
+/// <reference path='../app.ts' />
+/// <reference path='../services/services.ts' />
 var Lobby;
 (function (Lobby) {
     var Controller = (function () {
@@ -11,6 +11,9 @@ var Lobby;
             this.games = [];
             this.playersService.getClientPlayer().then(function (player) {
                 _this.player = player;
+            });
+            this.gamesService.getGames().then(function (games) {
+                _this.games = games;
             });
         }
         Controller.prototype.createGame = function (game) {
@@ -36,6 +39,13 @@ var Lobby;
             this.playersService.getPlayers().then(function (players) {
                 _this.players = players;
             });
+        };
+        Controller.prototype.doesGameAcceptPlayers = function (game) {
+            return !Games.isStarted(game);
+        };
+        Controller.prototype.joinGame = function (player, game) {
+            console.log(player, game);
+            // this.$state.go => game screen with game as data!
         };
         return Controller;
     }());
