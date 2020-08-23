@@ -1,9 +1,18 @@
 <div id="LobbyContainer" class="vertical layout flex">
   <span>Esto es el lobby</span>
-  <div class="materialCard loginContainer vertical layout raised-2">
-    <div class="mainLogo"></div>
+  <div class="">
+    <div>Información del jugador</div>
     <div class="flex"></div>
-    <input class="loginInput" type="nombre" placeholder="Nombre del juego" ng-model="game.name" autofocus>
+    <input class="loginInput" placeholder="Escribe tu nombre" ng-model="ctr.player.name" >
+    <input class="loginInput" readonly ng-model="ctr.player.id">
+    <div class="buttons">
+      <div class="materialButton raised colorButton" ng-click="ctr.updatePlayer(ctr.player)">Actualizar datos de jugador</div>
+      <div class="textButton" style="font-size: 11px" ng-click="ctr.updatePlayersList()">Actualizar listado de jugadores</div>
+    </div>
+  </div>
+  <div class="">
+    <div class="flex"></div>
+    <input class="loginInput"  placeholder="Nombre del juego" ng-model="game.name">
     <div class="flex"></div>
     <div class="buttons">
       <div class="textButton" style="font-size: 11px" ng-click="ctr.updateGameList()">Actualizar listado de juegos</div>
@@ -12,8 +21,17 @@
     </div>
   </div>
 
-  Listado de juegos:
-  <div ng-repeat="game in ctr.games">
-    <pre>{{game|json}}</pre>
+  <div>
+    Listado de juegos:
+    <div ng-repeat="game in ctr.games">
+      <pre>{{game|json}}</pre>
+    </div>
+  </div>
+
+  <div>
+    Listado de jugadores:
+    <div ng-repeat="player in ctr.players">
+      <pre>{{player|json}}</pre>
+    </div>
   </div>
 </div>
