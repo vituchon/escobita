@@ -109,6 +109,13 @@ func buildRouter() *mux.Router {
 	apiGet("/players/{id:[0-9]+}", controllers.GetPlayerById)
 	apiPost("/players", controllers.CreatePlayer)
 	apiPut("/players/{id:[0-9]+}", controllers.UpdatePlayer)
+
+	apiGet("/messages", controllers.GetMessages)
+	apiGet("/messages/{id:[0-9]+}", controllers.GetMessageById)
+	apiGet("/messages/get-by-game/{id:[0-9]+}", controllers.GetMessagesByGame)
+	apiPost("/messages", controllers.CreateMessage)
+	apiPut("/messages/{id:[0-9]+}", controllers.UpdateMessage)
+	apiDelete("/messages/{id:[0-9]+}", controllers.DeleteMessage)
 	return root
 }
 
