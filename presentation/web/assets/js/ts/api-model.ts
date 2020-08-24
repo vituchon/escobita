@@ -1,13 +1,20 @@
 
 namespace Api {
   export interface Game {
-    id: number;
+    id?: number;
     match: any;
     players: Player[];
   }
 
   export interface Player {
-    id: number;
+    id?: number;
     name: string;
+  }
+
+  export interface Message {
+    id?: number;
+    playerId: number;
+    gameId: number;
+    text: string;
   }
 }
