@@ -70,6 +70,7 @@
   font-weight: bold;
   color: @mainColor;
 }
+
 .section-title {
   .main-title();
   font-size: 14px;
@@ -83,6 +84,12 @@
   margin-bottom: 10px;
 }
 
+.disabled-button {
+  opacity: 0.5;
+  background-color: transparent;
+  cursor:           default !important;
+}
+
 // LOBBY STYLES
 
 .lobby-title {
@@ -91,6 +98,19 @@
 
 .lobby-section {
   width: 600px;
+}
+
+// GAME STYLES
+
+.game-message {
+  color: blue;
+}
+
+.game-messages-section {
+  overflow: auto;
+  height: 400px;
+  border: 2px black solid;
+  background-color: yellow;
 }
 
 body{

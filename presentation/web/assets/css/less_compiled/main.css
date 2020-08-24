@@ -61,11 +61,25 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.disabled-button {
+  opacity: 0.5;
+  background-color: transparent;
+  cursor: default !important;
+}
 .lobby-title {
   font-size: 16px;
 }
 .lobby-section {
   width: 600px;
+}
+.game-message {
+  color: blue;
+}
+.game-messages-section {
+  overflow: auto;
+  height: 400px;
+  border: 2px black solid;
+  background-color: yellow;
 }
 body {
   height: 100vh;

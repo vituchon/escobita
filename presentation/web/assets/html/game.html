@@ -1,14 +1,30 @@
-<div class="main-container lobby-container" class="vertical layout flex">
+<div class="main-container game-container" class="vertical layout flex">
 
-  <div class="main-title lobby-title">Juego {{ctr.game.name}}</div>
+  <div class="main-title game-title">Juego {{ctr.game.name}}</div>
 
   <div class="section-separator"></div>
 
-  <div class="section lobby-section">
+  <div class="section game-section">
     <div class="section-title">Jugadores</div>
     <div ng-repeat="player in ctr.game.players">
       <div class="horizontal">
         <span>{{player.name}}</span>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="game-chat-section section lobby-section">
+
+    <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
+    <div class="flex">
+      <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
+    </div>
+
+    <div class="game-messages-section">
+      <div class="game-message horizontal" ng-repeat="message in ctr.messages">
+        <strong>{{ctr.playersById[message.playerId].name}}:</strong>&nbsp;
+        <span>{{message.text}}</span>
       </div>
     </div>
   </div>

@@ -19,7 +19,8 @@ var App;
             controller: "GameController",
             controllerAs: "ctr",
             params: {
-                game: null
+                game: null,
+                player: null
             }
         };
         var about = {

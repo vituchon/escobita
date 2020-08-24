@@ -50,7 +50,10 @@ module Lobby {
     public joinGame(game: Games.Game, player: Players.Player) {
       Games.addPlayer(game, player)
       this.gamesService.updateGame(game).then(() => {
-        this.$state.go("game", {game: game}, {relative: false})
+        this.$state.go("game", {
+          game: game,
+          player: player,
+        }, {relative: false})
       })
     }
   }

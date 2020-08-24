@@ -47,7 +47,10 @@ var Lobby;
             var _this = this;
             Games.addPlayer(game, player);
             this.gamesService.updateGame(game).then(function () {
-                _this.$state.go("game", { game: game }, { relative: false });
+                _this.$state.go("game", {
+                    game: game,
+                    player: player
+                }, { relative: false });
             });
         };
         return Controller;

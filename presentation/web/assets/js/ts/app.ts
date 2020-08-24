@@ -24,6 +24,7 @@ module App {
       controllerAs: "ctr",
       params: {
         game: null,
+        player: null,
       }
     };
 
