@@ -1,5 +1,9 @@
 package model
 
+import (
+	"encoding/json"
+)
+
 type Player struct {
 	Name string `json:"name"`
 }
@@ -17,5 +21,19 @@ func (player Player) MarshalText() (text []byte, err error) {
 
 func (player *Player) UnmarshalText(text []byte) error {
 	player.Name = string(text)
+	return nil
+}
+
+func (p Player) MarshalJSON() ([]byte, error) {
+	return []byte(`{"name":"` + p.Name + `"}`), nil
+}
+
+func (p *Player) UnmarshalJSON(b []byte) error {
+	var stuff map[string]interface{}
+	err := json.Unmarshal(b, &stuff)
+	if err != nil {
+		return err
+	}
+	p.Name = stuff["name"].(string)
 	return nil
 }
