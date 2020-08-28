@@ -34,6 +34,7 @@ func (match *Match) Ends() {
 		player := match.getLastCardTaker()
 		if player != nil {
 			matchPlayerCards := match.Cards.PerPlayer[*player]
+			// dev notes: a design decision here may be to track this "movement" as an other type of Action, like CleanBoardAction
 			matchPlayerCards.Taken = append(matchPlayerCards.Taken, match.Cards.Board...)
 			match.Cards.PerPlayer[*player] = matchPlayerCards
 			match.Cards.Board = match.Cards.Board[:0] // practical way to empty an slice
