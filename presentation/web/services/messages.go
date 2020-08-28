@@ -1,10 +1,15 @@
 package services
 
+import (
+	"time"
+)
+
 type WebMessage struct {
 	Id       *int   `json:"id,omitempty"`
 	PlayerId int    `json:"playerId"`
 	GameId   int    `json:"gameId"`
 	Text     string `json:"text"`
+	Created  int64  `json:"created"`
 }
 
 var messagesById map[int]WebMessage = make(map[int]WebMessage)
@@ -50,6 +55,7 @@ func CreateMessage(message WebMessage) (created *WebMessage, err error) {
 	messagesById[nextId] = message
 	idMessageSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
 	// end not treat safe
+	message.Created = time.Now().Unix()
 	messagesById[*message.Id] = message
 	return &message, nil
 }
