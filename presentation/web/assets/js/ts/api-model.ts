@@ -16,5 +16,6 @@ namespace Api {
     playerId: number;
     gameId: number;
     text: string;
+    created?: number;
   }
 }
