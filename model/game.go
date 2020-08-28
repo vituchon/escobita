@@ -10,7 +10,7 @@ type Game struct {
 	PlayedMatchs   []Match        `json:"matchs"`
 	Players        []Player       `json:"players"`
 	ScorePerPlayer map[Player]int `json:"scorePerPlayer"` // TODO : rename to ScoreByPlayer
-	CurrentMatch   *Match         `json:"CurrentMatch, omitempty"`
+	CurrentMatch   *Match         `json:"currentMatch, omitempty"`
 }
 
 func NewGame(players []Player) Game {
