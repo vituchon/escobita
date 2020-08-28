@@ -91,27 +91,6 @@ namespace Players {
   export interface Player extends Api.Player {
   }
 
-  export namespace Periods {
-    const dayInSeconds = 24 * 60 * 60;
-    const weekInSeconds = dayInSeconds * 7;
-
-    //  Well know values
-    export enum Values {
-      Daily = dayInSeconds,
-      Weekly = weekInSeconds,
-     };
-
-     // common legend to display for each value, it shall be accessed via the well know values
-    export const labels = Object.freeze({
-      [Values.Daily] : "Diaria",
-      [Values.Weekly] : "Semanal"
-    });
-
-    export function getPeriodDescription(period: Periods.Values): string {
-      return (<any>Periods.labels)[period]
-    }
-  }
-
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
