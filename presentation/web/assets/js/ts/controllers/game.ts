@@ -2,6 +2,40 @@
 /// <reference path='../services/services.ts' />
 
 module Game {
+
+  // BEGIN : move to common.js
+  function isNumeric(s: any): boolean {
+    return !isNaN(parseFloat(s)) && isFinite(s); // based from: http://stackoverflow.com/a/6449623
+  }
+
+
+  function unixToReadableClock(unix: number): string {
+    return formatUnixTimestamp(unix,"HH:mm")
+  }
+
+  function unixToReadableDay(unix: number): string {
+    return formatUnixTimestamp(unix,"DD/MM/YYYY")
+  }
+
+  function unixToReadableDate(unix: number): string {
+    return formatUnixTimestamp(unix,"DD/MM/YYYY HH:mm")
+  }
+
+  function unixToReadableDateVerbose(unix: number): string {
+    return formatUnixTimestamp(unix,"dddd DD/MM/YYYY [a las] HH:mm")
+  }
+
+
+  function formatUnixTimestamp(unix: number, layout:string) {
+    if (isNumeric(unix)) {
+      return moment.unix(unix).format(layout);
+    } else {
+      console.warn(`Unix timestamp value(=${unix}) is not a number`)
+      return '';
+    }
+  }
+  // END :  move to util.js
+
   class Controller {
 
     public game: Games.Game;
@@ -15,8 +49,11 @@ module Game {
 
     private lastUpdateUnixTimestamp: number = undefined;
 
+    public formatUnixTimestamp = unixToReadableClock
+
     constructor(private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
-      private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService) {
+      private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
+      private $q: ng.IQService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
 
@@ -41,7 +78,7 @@ module Game {
       })
     }
 
-    public updatePlayers() {
+    private updatePlayers() {
       return this.playersService.getPlayers().then((players) => {
         this.playersById = Util.toMapById(players)
         return players
@@ -62,7 +99,7 @@ module Game {
 
   }
 
-  escobita.controller('GameController', ['$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', Controller]);
+  escobita.controller('GameController', ['$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
 }
 
 // TODO: place in separate file

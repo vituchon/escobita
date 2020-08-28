@@ -22,8 +22,9 @@
     </div>
 
     <div class="game-messages-section">
-      <div class="game-message horizontal" ng-repeat="message in ctr.messages">
-        <strong>{{ctr.playersById[message.playerId].name}}:</strong>&nbsp;
+      <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'">
+        <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
+        <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
         <span>{{message.text}}</span>
       </div>
     </div>
