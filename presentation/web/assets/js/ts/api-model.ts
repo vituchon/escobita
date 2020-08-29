@@ -20,6 +20,14 @@ namespace Api {
     matchCards: MatchCards;
     firstPlayerIndex: number;
     roundNumber: number;
+    currentRound?: Round;
+  }
+
+  export interface Round {
+    match: Match;
+    currentTurnPlayer: Player;
+    consumedTurns: number;
+    number: number;
   }
 
   export interface Game {
