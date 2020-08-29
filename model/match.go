@@ -78,6 +78,6 @@ func newMatchCards(players []Player, deck Deck) MatchCards {
 }
 
 type PlayerMatchCards struct {
-	Taken Deck // the cards on the player has claimed `json:"taken"`
-	Hand  Deck // the cards on the player has to play `json:"hand"`
+	Taken Deck `json:"taken" // the cards on the player has claimed `
+	Hand  Deck `json:"hand"` // the cards on the player has to play
 }
