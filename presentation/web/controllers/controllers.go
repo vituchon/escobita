@@ -130,6 +130,7 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	fmt.Printf("Tenemos este game creado %+v", created)
 	WriteJsonResponse(response, http.StatusOK, created)
 }
 
@@ -165,6 +166,27 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	response.WriteHeader(http.StatusOK)
+}
+
+func StartGame(response http.ResponseWriter, request *http.Request) {
+	var game services.WebGame
+	err := ParseJsonFromReader(request.Body, &game)
+	if err != nil {
+		fmt.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	updated, err := services.StartGame(game)
+	if err != nil {
+		fmt.Printf("error while starting Game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	fmt.Printf("updated=%+v\n", updated)
+	//WriteJsonResponse(response, http.StatusOK, updated)
+	bytes, err := json.Marshal(updated)
+	fmt.Printf("bytes=%+v, err=%+v\n", bytes, err)
+	response.WriteHeader(http.StatusNotModified)
 }
 
 // PLAYERS

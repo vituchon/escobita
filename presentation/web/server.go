@@ -103,6 +103,7 @@ func buildRouter() *mux.Router {
 	apiPost("/games", controllers.CreateGame)
 	apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
 	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame) // TODO (!) : change to DeleteGame
+	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
 
 	apiGet("/players", controllers.GetPlayers)
 	apiGet("/player", controllers.GetClientPlayer)

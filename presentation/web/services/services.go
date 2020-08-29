@@ -90,11 +90,15 @@ func AdvanceGame(id int) (*WebGame, error) {
 			}
 		}
 		return &game, nil
-	} else {
-		err := game.BeginMatch()
+	} else { // match ended, so...
+		err := game.BeginsNewMatch() // ...begin another match
 		return &game, err
 	}
+}
 
+func StartGame(game WebGame) (*WebGame, error) {
+	err := game.BeginsNewMatch()
+	return &game, err
 }
 
 // PLAYERS
