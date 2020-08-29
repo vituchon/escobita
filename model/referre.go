@@ -99,7 +99,7 @@ func (match *Match) NextRound() Round {
 	match.RoundNumber++
 	round := Round{
 		Match:              match,
-		CurrentPlayerIndex: match.FirstPlayerIndex,
+		currentPlayerIndex: match.FirstPlayerIndex,
 		ConsumedTurns:      0,
 		Number:             match.RoundNumber,
 	}
@@ -140,10 +140,11 @@ func shuffle(deck Deck) {
 }
 
 type Round struct {
-	Match              *Match `json:"match"`
-	CurrentPlayerIndex int    `json:"currentPlayerIndex"`
-	ConsumedTurns      int    `json:"consumedTurns"`
-	Number             int    `json:"number"`
+	Match              *Match  `json:"match"`
+	CurrentTurnPlayer  *Player `json:"currentTurnPlayer"`
+	currentPlayerIndex int     `json:"-"`
+	ConsumedTurns      int     `json:"consumedTurns"`
+	Number             int     `json:"number"`
 }
 
 func (r Round) HasNextTurn() bool {
@@ -168,8 +169,9 @@ func (r Round) doHasNextTurnMethod1() bool {
 
 func (r *Round) NextTurn() Player {
 	party := r.Match.Players
-	nextPlayer := party[r.CurrentPlayerIndex%len(party)]
-	r.CurrentPlayerIndex++
+	nextPlayer := party[r.currentPlayerIndex%len(party)]
+	r.CurrentTurnPlayer = &nextPlayer
+	r.currentPlayerIndex++
 	r.ConsumedTurns++
 	return nextPlayer
 }

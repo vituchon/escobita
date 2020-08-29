@@ -57,9 +57,9 @@ func newActionsByPlayer(players []Player) ActionsByPlayer {
 }
 
 type MatchCards struct {
-	Board     Deck                        `json:"board"` // the cards on the table that anyone can reclaim
-	Left      Deck                        `json:"left"`  // the remaining cards to play in the rest of the match
-	PerPlayer map[Player]PlayerMatchCards `json:"perPlayer"`
+	Board     Deck                        `json:"board"`     // the cards on the table that anyone can reclaim
+	Left      Deck                        `json:"left"`      // the remaining cards to play in the rest of the match
+	PerPlayer map[Player]PlayerMatchCards `json:"perPlayer"` // TODO : rename to byPlayer
 }
 
 func newMatchCards(players []Player, deck Deck) MatchCards {

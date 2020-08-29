@@ -10,7 +10,7 @@ type Game struct {
 	PlayedMatchs   []Match        `json:"matchs"`
 	Players        []Player       `json:"players"`
 	ScorePerPlayer map[Player]int `json:"scorePerPlayer"` // TODO : rename to ScoreByPlayer
-	CurrentMatch   *Match         `json:"currentMatch, omitempty"`
+	CurrentMatch   *Match         `json:"currentMatch,omitempty"`
 }
 
 func NewGame(players []Player) Game {
@@ -25,25 +25,27 @@ func NewGame(players []Player) Game {
 	return game
 }
 
-func (game *Game) BeginMatch() error {
+func (game *Game) BeginsNewMatch() error {
 	if game.CurrentMatch == nil {
-		game.beginNewMatch()
-		return nil
+		game.createNewMatch()
 	} else {
 		if game.HasMatchInProgress() {
 			return MatchInProgressErr
 		}
 		game.PlayedMatchs = append(game.PlayedMatchs, *game.CurrentMatch)
-		game.beginNewMatch()
-		return nil
+		game.createNewMatch()
 	}
+	game.CurrentMatch.Begins()
+	game.CurrentMatch.NextRound()
+	game.CurrentMatch.CurrentRound.NextTurn()
+	return nil
 }
 
 func (game Game) HasMatchInProgress() bool {
 	return game.CurrentMatch.HasMoreRounds()
 }
 
-func (game *Game) beginNewMatch() {
+func (game *Game) createNewMatch() {
 	match := CreateMatch(game.Players)
 	game.CurrentMatch = &match
 }
