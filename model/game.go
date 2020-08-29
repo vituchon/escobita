@@ -9,7 +9,7 @@ var MatchInProgressErr error = errors.New("A match is in progress")
 type Game struct {
 	PlayedMatchs  []Match        `json:"matchs"`
 	Players       []Player       `json:"players"`
-	ScoreByPlayer map[Player]int `json:"scoreByPlayer"`
+	ScoreByPlayer map[Player]int `json:"scoreByPlayerName"`
 	CurrentMatch  *Match         `json:"currentMatch,omitempty"`
 }
 
