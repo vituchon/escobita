@@ -7,20 +7,20 @@ import (
 var MatchInProgressErr error = errors.New("A match is in progress")
 
 type Game struct {
-	PlayedMatchs   []Match        `json:"matchs"`
-	Players        []Player       `json:"players"`
-	ScorePerPlayer map[Player]int `json:"scorePerPlayer"` // TODO : rename to ScoreByPlayer
-	CurrentMatch   *Match         `json:"currentMatch,omitempty"`
+	PlayedMatchs  []Match        `json:"matchs"`
+	Players       []Player       `json:"players"`
+	ScoreByPlayer map[Player]int `json:"scoreByPlayer"`
+	CurrentMatch  *Match         `json:"currentMatch,omitempty"`
 }
 
 func NewGame(players []Player) Game {
 	game := Game{
-		Players:        players,
-		ScorePerPlayer: make(map[Player]int),
-		PlayedMatchs:   make([]Match, 0, 2 /** 36/(len(players)*3) <- TODO: no me acuerdo porque esta formula acá!!**/),
+		Players:       players,
+		ScoreByPlayer: make(map[Player]int),
+		PlayedMatchs:  make([]Match, 0, 2 /** 36/(len(players)*3) <- TODO: no me acuerdo porque esta formula acá!!**/),
 	}
 	for _, player := range players {
-		game.ScorePerPlayer[player] = 0
+		game.ScoreByPlayer[player] = 0
 	}
 	return game
 }

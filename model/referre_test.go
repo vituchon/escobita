@@ -62,7 +62,7 @@ func TestMatchFlow(t *testing.T) {
 				t.Log(turnsCountByPlayer)
 				count, _ := turnsCountByPlayer[player]
 				turnsCountByPlayer[player] = count + 1
-				dropAction := NewPlayerDropAction(player, match.Cards.PerPlayer[player].Hand[0])
+				dropAction := NewPlayerDropAction(player, match.Cards.ByPlayer[player].Hand[0])
 
 				//t.Logf("dropAction: %+v por parte de %v\n ", dropAction, player)
 				match.Drop(dropAction) // each players just drops a player

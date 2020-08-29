@@ -94,27 +94,27 @@ func TestEscobita(t *testing.T) {
 
 	beto := round.NextTurn()
 	// take: 1 hand + (5+5+3+1) board = 15, escobita
-	takeCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[1], match.Cards.Board, true)
+	takeCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[1], match.Cards.Board, true)
 
 	pepe := round.NextTurn()
 	// drop: 10
-	dropCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0])
+	dropCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0])
 
 	beto = round.NextTurn()
 	// drop: 3
-	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0])
+	dropCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0])
 
 	pepe = round.NextTurn()
 	// take: 4 hand + (8+3) board = 15, escobita
-	takeCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0], match.Cards.Board, true)
+	takeCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0], match.Cards.Board, true)
 
 	beto = round.NextTurn()
 	// drop: 7
-	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0])
+	dropCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0])
 
 	pepe = round.NextTurn()
 	// drop: 4
-	dropCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0])
+	dropCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0])
 
 	if match.HasMoreRounds() {
 		t.Errorf("Match is one round only")
@@ -174,25 +174,25 @@ func TestGoldSeven(t *testing.T) {
 	beto := round.NextTurn()
 	// take: 7 hand + (3+2+3) board = 15 (GOLD 7)
 	boardCards, err := match.Cards.Board.GetMultiple(1, 2, 3)
-	takeCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0], boardCards, false)
+	takeCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0], boardCards, false)
 	//t.Logf("%+v", match.Cards.PerPlayer[beto])
 
 	pepe := round.NextTurn()
 	// take: 10 hand + (5) board = 15, escobita
 	boardCards, err = match.Cards.Board.GetMultiple(4)
-	takeCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[2], boardCards, true)
+	takeCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[2], boardCards, true)
 
 	beto = round.NextTurn()
 	// drop: 1
-	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[1])
+	dropCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[1])
 
 	pepe = round.NextTurn()
 	// drop: 10
-	dropCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0])
+	dropCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0])
 
 	beto = round.NextTurn()
 	// drop: 3
-	dropCard(t, beto, &match, match.Cards.PerPlayer[beto].Hand[0])
+	dropCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0])
 
 	pepe = round.NextTurn()
 	// take: 4 hand + (11) board = 15,
@@ -200,7 +200,7 @@ func TestGoldSeven(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: '%v'", err)
 	}
-	takeCard(t, pepe, &match, match.Cards.PerPlayer[pepe].Hand[0], boardCards, false)
+	takeCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0], boardCards, false)
 
 	if match.HasMoreRounds() {
 		t.Errorf("Match is one round only")

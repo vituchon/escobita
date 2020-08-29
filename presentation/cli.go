@@ -26,7 +26,7 @@ func RunCLIApp() {
 		round := match.NextRound()
 		for round.HasNextTurn() && !quitGame {
 			player := round.NextTurn()
-			playerCards := match.Cards.PerPlayer[player]
+			playerCards := match.Cards.ByPlayer[player]
 			fmt.Println("Restantes: ", match.Cards.Left)
 
 			playerMustAct := true
@@ -70,7 +70,7 @@ func RunCLIApp() {
 
 func readTakeActionFromStdin(player model.Player, match model.Match) model.PlayerTakeAction {
 	fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
-	playerCards := match.Cards.PerPlayer[player]
+	playerCards := match.Cards.ByPlayer[player]
 	fmt.Print("La de mano, id de carta: ")
 	cardId := ReadSingleIntInput()
 	handCard, err := playerCards.Hand.GetSingle(cardId)
@@ -95,7 +95,7 @@ func readTakeActionFromStdin(player model.Player, match model.Match) model.Playe
 
 func readDropActionFromStdin(player model.Player, match model.Match) model.PlayerDropAction {
 	fmt.Print("La de mano, id de carta: ")
-	playerCards := match.Cards.PerPlayer[player]
+	playerCards := match.Cards.ByPlayer[player]
 	cardId := ReadSingleIntInput()
 	handCard, err := playerCards.Hand.GetSingle(cardId)
 	for err != nil {

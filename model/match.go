@@ -35,8 +35,8 @@ func newMatch(players []Player, deck Deck) Match {
 func (m Match) String() string {
 	playersDescription := make([]string, 0, len(m.Players))
 	for _, player := range m.Players {
-		cardsInHands := Deck(m.Cards.PerPlayer[player].Hand).String()
-		cardsTaken := Deck(m.Cards.PerPlayer[player].Taken).String()
+		cardsInHands := Deck(m.Cards.ByPlayer[player].Hand).String()
+		cardsTaken := Deck(m.Cards.ByPlayer[player].Taken).String()
 		playerDescription := fmt.Sprintf("%s\nCards taken:%v\nCards in hand:%v", player.Name, cardsTaken, cardsInHands)
 		playersDescription = append(playersDescription, playerDescription)
 	}
@@ -57,19 +57,19 @@ func newActionsByPlayer(players []Player) ActionsByPlayer {
 }
 
 type MatchCards struct {
-	Board     Deck                        `json:"board"`     // the cards on the table that anyone can reclaim
-	Left      Deck                        `json:"left"`      // the remaining cards to play in the rest of the match
-	PerPlayer map[Player]PlayerMatchCards `json:"perPlayer"` // TODO : rename to byPlayer
+	Board    Deck                        `json:"board"` // the cards on the table that anyone can reclaim
+	Left     Deck                        `json:"left"`  // the remaining cards to play in the rest of the match
+	ByPlayer map[Player]PlayerMatchCards `json:"byPlayer"`
 }
 
 func newMatchCards(players []Player, deck Deck) MatchCards {
 	matchCards := MatchCards{
-		Board:     nil,
-		Left:      deck,
-		PerPlayer: make(map[Player]PlayerMatchCards),
+		Board:    nil,
+		Left:     deck,
+		ByPlayer: make(map[Player]PlayerMatchCards),
 	}
 	for _, player := range players {
-		matchCards.PerPlayer[player] = PlayerMatchCards{
+		matchCards.ByPlayer[player] = PlayerMatchCards{
 			Taken: nil,
 			Hand:  nil,
 		}

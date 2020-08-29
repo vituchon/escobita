@@ -33,10 +33,10 @@ func (match *Match) Ends() {
 	if len(match.Cards.Board) > 0 {
 		player := match.getLastCardTaker()
 		if player != nil {
-			matchPlayerCards := match.Cards.PerPlayer[*player]
+			matchPlayerCards := match.Cards.ByPlayer[*player]
 			// dev notes: a design decision here may be to track this "movement" as an other type of Action, like CleanBoardAction
 			matchPlayerCards.Taken = append(matchPlayerCards.Taken, match.Cards.Board...)
-			match.Cards.PerPlayer[*player] = matchPlayerCards
+			match.Cards.ByPlayer[*player] = matchPlayerCards
 			match.Cards.Board = match.Cards.Board[:0] // practical way to empty an slice
 			fmt.Printf("The last card taker is %v", *player)
 		} else {
@@ -62,11 +62,11 @@ func (match Match) getLastCardTaker() *Player {
 func (match *Match) Take(action PlayerTakeAction) PlayerAction {
 	player := action.Player
 	match.Cards.Board.Without(action.BoardCards...)
-	matchPlayerCards := match.Cards.PerPlayer[player]
+	matchPlayerCards := match.Cards.ByPlayer[player]
 	matchPlayerCards.Hand.Without(action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.HandCard)
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
-	match.Cards.PerPlayer[player] = matchPlayerCards
+	match.Cards.ByPlayer[player] = matchPlayerCards
 	isEscobita := (len(match.Cards.Board) == 0)
 	action.isEscobita = isEscobita
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
@@ -78,9 +78,9 @@ func (match *Match) Take(action PlayerTakeAction) PlayerAction {
 func (match *Match) Drop(action PlayerDropAction) PlayerAction {
 	player := action.Player
 	match.Cards.Board = append(match.Cards.Board, action.HandCard)
-	matchPlayerCards := match.Cards.PerPlayer[player]
+	matchPlayerCards := match.Cards.ByPlayer[player]
 	matchPlayerCards.Hand.Without(action.HandCard)
-	match.Cards.PerPlayer[player] = matchPlayerCards
+	match.Cards.ByPlayer[player] = matchPlayerCards
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
 	return action
@@ -89,9 +89,9 @@ func (match *Match) Drop(action PlayerDropAction) PlayerAction {
 // Deal cards to each player for starting a new round
 func (match *Match) NextRound() Round {
 	for _, player := range match.Players {
-		matchPlayerCards := match.Cards.PerPlayer[player]
+		matchPlayerCards := match.Cards.ByPlayer[player]
 		matchPlayerCards.Hand = copyDeck(match.Cards.Left[:3])
-		match.Cards.PerPlayer[player] = matchPlayerCards
+		match.Cards.ByPlayer[player] = matchPlayerCards
 		/*fmt.Printf("\nmatchPlayerCards.Hand%+v\n", matchPlayerCards.Hand)
 		fmt.Printf("\nmatch.MatchCards.Left%+v\n", match.MatchCards.Left)*/
 		match.Cards.Left = match.Cards.Left[3:]
@@ -154,7 +154,7 @@ func (r Round) HasNextTurn() bool {
 // this is slower than above but will fit for every quantity of players
 func (r Round) doHasNextTurnMethod2() bool {
 	for _, player := range r.Match.Players {
-		if len(r.Match.Cards.PerPlayer[player].Hand) > 0 {
+		if len(r.Match.Cards.ByPlayer[player].Hand) > 0 {
 			return true
 		}
 	}

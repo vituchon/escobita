@@ -15,7 +15,7 @@ namespace Api {
 
   export interface Match {
     players?: Player[];
-    actionsByPlayer: ActionsByPlayer;
+    actionsByPlayer: ActionsByPlayerName;
     playerAction: any[];
     matchCards: MatchCards;
     firstPlayerIndex: number;
@@ -35,15 +35,15 @@ namespace Api {
     name: string;
     matchs?: Match[];
     players?: Player[];
-    scorePerPlayer?: ScorePerPlayer;
+    scoreByPlayer?: ScoreByPlayerName;
     currentMatch?: Match;
   }
 
-  export interface ScorePerPlayer extends _.Dictionary<number> { // TODO : rename to ScoreByPlayer
+  export interface ScoreByPlayerName extends _.Dictionary<number> {
     [name:string]: number;
   }
 
-  export interface ActionsByPlayer extends _.Dictionary<PlayerAction> {
+  export interface ActionsByPlayerName extends _.Dictionary<PlayerAction> {
     [name:string]: PlayerAction;
   }
 
@@ -54,10 +54,10 @@ namespace Api {
   export interface MatchCards {
     board?: Card[];
     left: Card[];
-    perPlayer: MatchCardsByPlayer; // TODO : rename to byPlayer
+    byPlayer: MatchCardsByPlayerName;
   }
 
-  export interface MatchCardsByPlayer extends _.Dictionary<PlayerMatchCards> {
+  export interface MatchCardsByPlayerName extends _.Dictionary<PlayerMatchCards> {
     [name:string]: PlayerMatchCards;
   }
 
