@@ -18,28 +18,50 @@
     <div class="flex">
       <div class="materialButton colorButton" ng-hide="ctr.matchInProgress" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.startGame(ctr.game)">COMENZAR</div>
       <div ng-if="ctr.matchInProgress">
-        <div ng-repeat="card in ctr.game.currentMatch.matchCards.board">
-          <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isCardSelectedById[card.id]">
-          <card ng-model="card"></card>
+        <!-- DECK CARDS -->
+        <div class="deck-cards-section">
+          <div>En mesa</div>
+          <div ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+            <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]">
+            <card ng-model="card"></card>
+          </div>
         </div>
-        <pre>{{ctr.isCardSelectedById|json}}</pre>
-        <div class="flex">
-          <div class="materialButton raised colorButton" ng-click="ctr.takeAction()">Jugar</div>
+        <!-- HAND CARDS -->
+        <div class="hand-cards-section">
+          <div>En mano</div>
+          <pre>{{ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name]|json}}</pre>
+          <div ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+            <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
+            <card ng-model="card"></card>
+          </div>
+        </div>
+        <pre>{{ctr.selectedHandCard|json}}</pre>
+        <!-- ACTION CONTROLS -->
+        <div ng-if="ctr.isPlayerTurn" class="flex">
+          <div class="materialButton raised colorButton" ng-show="ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</div>
+          <div class="materialButton raised colorButton" ng-show="ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</div>
         </div>
       </div>
     </div>
   </div>
 
+  <div class="section-separator"></div>
+
   <div class="game-chat-section section lobby-section">
-    <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
-    <div class="flex">
-      <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
-    </div>
-    <div class="game-messages-section">
-      <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'">
-        <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
-        <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
-        <span>{{message.text}}</span>
+    <div class="materialButton colorButton" ng-click="ctr.hideChat = !ctr.hideChat">{{ctr.hideChat ? 'Mostrar' : 'Ocultar'}}</div>
+    <div class="flex"></div>
+    <div ng-hide="ctr.hideChat">
+      <div class="flex">
+        <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
+        <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
+        <div class="flex"></div>
+      </div>
+      <div class="game-messages-section">
+        <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'">
+          <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
+          <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
+          <span>{{message.text}}</span>
+        </div>
       </div>
     </div>
   </div>

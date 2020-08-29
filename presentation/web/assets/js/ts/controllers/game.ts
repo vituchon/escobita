@@ -42,10 +42,12 @@ module Game {
     public isPlayerTurn: boolean;
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[]; // all from the server related to this game
-    public isCardSelectedById: _.Dictionary<boolean>;
+    public isBoardCardSelectedById: _.Dictionary<boolean>;
+    public selectedHandCard: Api.Card;
 
     public message: Messages.Message; // buffer for user input
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
+    public hideChat: boolean = true;
     public matchInProgress: boolean = false;
 
     public players: Players.Player[];
