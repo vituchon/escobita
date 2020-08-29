@@ -81,6 +81,11 @@
   border: 2px black solid;
   background-color: yellow;
 }
+.card-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 body {
   height: 100vh;
   margin: 0;
