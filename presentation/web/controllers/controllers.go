@@ -182,11 +182,7 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("updated=%+v\n", updated)
-	//WriteJsonResponse(response, http.StatusOK, updated)
-	bytes, err := json.Marshal(updated)
-	fmt.Printf("bytes=%+v, err=%+v\n", bytes, err)
-	response.WriteHeader(http.StatusNotModified)
+	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
 // PLAYERS

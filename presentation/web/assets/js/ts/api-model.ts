@@ -24,7 +24,6 @@ namespace Api {
   }
 
   export interface Round {
-    match: Match;
     currentTurnPlayer: Player;
     consumedTurns: number;
     number: number;

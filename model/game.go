@@ -35,8 +35,10 @@ func (game *Game) BeginsNewMatch() error {
 		game.PlayedMatchs = append(game.PlayedMatchs, *game.CurrentMatch)
 		game.createNewMatch()
 	}
+	// there is a current match after executing above statements
 	game.CurrentMatch.Begins()
 	game.CurrentMatch.NextRound()
+	// there is a current round after executing above statements
 	game.CurrentMatch.CurrentRound.NextTurn()
 	return nil
 }

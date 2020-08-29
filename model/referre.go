@@ -140,7 +140,7 @@ func shuffle(deck Deck) {
 }
 
 type Round struct {
-	Match              *Match  `json:"match"`
+	Match              *Match  `json:"-"` // avoids circular reference thus avoids an error on marshaling (as is statet at https://golang.org/pkg/encoding/json/#Marshal: "Passing cyclic structures to Marshal will result in an error" )
 	CurrentTurnPlayer  *Player `json:"currentTurnPlayer"`
 	currentPlayerIndex int     `json:"-"`
 	ConsumedTurns      int     `json:"consumedTurns"`
