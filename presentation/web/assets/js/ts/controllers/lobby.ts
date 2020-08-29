@@ -44,7 +44,7 @@ module Lobby {
     }
 
     public doesGameAcceptPlayers(game: Games.Game) {
-      return !Games.isStarted(game)
+      return !Games.hasMatchInProgress(game)
     }
 
     public joinGame(game: Games.Game, player: Players.Player) {

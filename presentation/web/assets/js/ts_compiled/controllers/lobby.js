@@ -41,7 +41,7 @@ var Lobby;
             });
         };
         Controller.prototype.doesGameAcceptPlayers = function (game) {
-            return !Games.isStarted(game);
+            return !Games.hasMatchInProgress(game);
         };
         Controller.prototype.joinGame = function (game, player) {
             var _this = this;

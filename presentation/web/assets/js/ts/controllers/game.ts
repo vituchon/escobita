@@ -8,7 +8,6 @@ module Game {
     return !isNaN(parseFloat(s)) && isFinite(s); // based from: http://stackoverflow.com/a/6449623
   }
 
-
   function unixToReadableClock(unix: number): string {
     return formatUnixTimestamp(unix,"HH:mm")
   }
@@ -38,26 +37,31 @@ module Game {
 
   class Controller {
 
-    public game: Games.Game;
-    public player: Players.Player;
+    public game: Games.Game; // the current game
+    public player: Players.Player; // the client player
+    public isPlayerTurn: boolean;
+    public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[]; // all from the server related to this game
+    public isCardSelectedById: _.Dictionary<boolean>;
 
     public message: Messages.Message; // buffer for user input
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
+    public matchInProgress: boolean = false;
 
-    public playersById: Util.EntityById<Players.Player>
+    public players: Players.Player[];
+    public playersById: Util.EntityById<Players.Player>;
 
     private lastUpdateUnixTimestamp: number = undefined;
 
     public formatUnixTimestamp = unixToReadableClock
 
-    constructor(private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
+    constructor(private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
       private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
       private $q: ng.IQService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
 
-      this.$interval(() => {
+      /*this.$interval(() => {
         this.updatePlayers()
           .then(() => this.updateGameMessages ())
           .then(() => {
@@ -68,7 +72,19 @@ module Game {
             }
             this.lastUpdateUnixTimestamp = 	Math.floor(new Date().getTime()/1000.0)
           })
-      },2000)
+      },2000)*/
+
+      this.$scope.$watch(() => {
+        if (_.isUndefined(this.game.currentMatch)) {
+          return undefined
+        }
+        return this.game.currentMatch.currentRound.currentTurnPlayer
+      }, (currentTurnPlayer,previousTurnPlayer) => {
+        if (!_.isUndefined(currentTurnPlayer)) {
+          this.currentTurnPlayer = currentTurnPlayer;
+          this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.currentTurnPlayer)
+        }
+      })
     }
 
     public updateGameMessages() {
@@ -81,6 +97,7 @@ module Game {
     private updatePlayers() {
       return this.playersService.getPlayers().then((players) => {
         this.playersById = Util.toMapById(players)
+        this.players = players;
         return players
       })
     }
@@ -97,9 +114,18 @@ module Game {
       }, 2000)
     }
 
+    public startGame(game: Games.Game, players: Players.Player[]) {
+      // TODO : Use loading flag for UI
+      this.gamesService.startGame(game).then((game) => {
+        console.log(game);
+        this.game = game;
+        this.matchInProgress = true;
+      })
+    }
+
   }
 
-  escobita.controller('GameController', ['$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
+  escobita.controller('GameController', ['$scope','$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
 }
 
 // TODO: place in separate file

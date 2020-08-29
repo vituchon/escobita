@@ -8,8 +8,8 @@ namespace Games {
   export interface Game extends Api.Game {
   }
 
-  export function isStarted(game :Game) : boolean{
-    return false
+  export function hasMatchInProgress(game :Game) : boolean{
+    return !_.isUndefined(game.currentMatch)
   }
 
   export function addPlayer(game :Game, player: Players.Player) {
@@ -80,11 +80,26 @@ namespace Games {
       })
     }
 
+    startGame(game: Game): ng.IPromise<Game> {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/start`,game).then((response) => {
+        return response.data
+      })
+    }
+
   }
 
   escobita.service('GamesService', ['$http', '$q', Service]);
 }
 
+namespace Rounds {
+
+  export interface Round extends Api.Round {
+  }
+
+  export function isPlayerTurn(round: Round, player: Players.Player): boolean {
+    return round.currentTurnPlayer.name == player.name;
+  }
+}
 
 namespace Players {
 

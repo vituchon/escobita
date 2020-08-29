@@ -13,14 +13,28 @@
     </div>
   </div>
 
+  <div class="section game-section">
+    <div class="section-title">Partida</div>
+    <div class="flex">
+      <div class="materialButton colorButton" ng-hide="ctr.matchInProgress" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.startGame(ctr.game)">COMENZAR</div>
+      <div ng-if="ctr.matchInProgress">
+        <div ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+          <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isCardSelectedById[card.id]">
+          <card ng-model="card"></card>
+        </div>
+        <pre>{{ctr.isCardSelectedById|json}}</pre>
+        <div class="flex">
+          <div class="materialButton raised colorButton" ng-click="ctr.takeAction()">Jugar</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="game-chat-section section lobby-section">
-
     <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
     <div class="flex">
       <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
     </div>
-
     <div class="game-messages-section">
       <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'">
         <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
