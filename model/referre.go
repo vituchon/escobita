@@ -68,7 +68,7 @@ func (match *Match) Take(action PlayerTakeAction) PlayerAction {
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
 	match.Cards.ByPlayer[player] = matchPlayerCards
 	isEscobita := (len(match.Cards.Board) == 0)
-	action.isEscobita = isEscobita
+	action._IsEscobita = isEscobita
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
 	return action
@@ -186,9 +186,9 @@ func (bpa basePlayerAction) GetPlayer() Player {
 
 type PlayerTakeAction struct {
 	basePlayerAction
-	BoardCards []Card `json:"boardCards"`
-	HandCard   Card   `json:"handCard"`
-	isEscobita bool   `json:"isEscobita"`
+	BoardCards  []Card `json:"boardCards"`
+	HandCard    Card   `json:"handCard"`
+	_IsEscobita bool   `json:"isEscobita"` // the _ is for not confuss with method IsEscobita, i had to make this public in order to be compliant with json marshall
 }
 
 func NewPlayerTakeAction(player Player, handCard Card, boardCards []Card) PlayerTakeAction {
@@ -202,7 +202,7 @@ func NewPlayerTakeAction(player Player, handCard Card, boardCards []Card) Player
 }
 
 func (a PlayerTakeAction) IsEscobita() bool {
-	return a.isEscobita
+	return a._IsEscobita
 }
 
 type PlayerDropAction struct {
