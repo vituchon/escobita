@@ -91,13 +91,9 @@ namespace Api {
       statictics: PlayerStatictics;
   }
 
-export interface ScoreSummaryByPlayerName extends _.Dictionary<number> {
-  [name:string]: number;
-}
-
-export interface RootObject {
-    ss: Ss;
-}
+  export interface ScoreSummaryByPlayerName extends _.Dictionary<number> {
+    [name:string]: number;
+  }
 
   export interface Message {
     id?: number;
