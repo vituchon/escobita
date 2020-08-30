@@ -71,12 +71,30 @@ func DeleteGame(id int) error {
 	return nil
 }
 
-// advances the game into his next state, that is, a new match or a new round or ends
-func AdvanceGame(id int) (*WebGame, error) {
-	game, exists := gamesById[id]
-	if !exists {
-		return nil, EntityNotExistsErr
+// Escobita Oriented Functions
+
+func StartGame(game WebGame) (*WebGame, error) {
+	if game.HasMatchInProgress() {
+		return nil, model.MatchInProgressErr
 	}
+	updatedGame, err := advanceGame(game)
+	return updatedGame, err
+}
+
+func PerformTakeAction(game WebGame, action model.PlayerTakeAction) (*WebGame, model.PlayerAction, error) {
+	updatedAction := game.CurrentMatch.Take(action)
+	updatedGame, err := advanceGame(game)
+	return updatedGame, updatedAction, err
+}
+
+func PerformDropAction(game WebGame, action model.PlayerDropAction) (*WebGame, model.PlayerAction, error) {
+	updatedAction := game.CurrentMatch.Drop(action)
+	updatedGame, err := advanceGame(game)
+	return updatedGame, updatedAction, err
+}
+
+// advances the game into his next state, that is, a new match or a new round or ends
+func advanceGame(game WebGame) (*WebGame, error) {
 	if game.HasMatchInProgress() {
 		currentRound := game.CurrentMatch.CurrentRound
 		if currentRound.HasNextTurn() {
@@ -89,16 +107,15 @@ func AdvanceGame(id int) (*WebGame, error) {
 				game.CurrentMatch.Ends()
 			}
 		}
-		return &game, nil
-	} else { // match ended, so...
-		err := game.BeginsNewMatch() // ...begin another match
+		_, err := UpdateGame(game)
 		return &game, err
-	}
-}
+	} else { // puede que al terminar el partido NO haya porque empezar otro partido... esto me ahorra un ida y vuelta tal vez.. no estoy seguro..
+		// match ended, so...
+		game.BeginsNewMatch() // ...begin another match is a no error operation thus there is no need to verify an error
+		_, err := UpdateGame(game)
+		return &game, err
 
-func StartGame(game WebGame) (*WebGame, error) {
-	err := game.BeginsNewMatch()
-	return &game, err
+	}
 }
 
 // PLAYERS

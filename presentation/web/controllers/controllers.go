@@ -185,6 +185,74 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
+type gameActionResponseData struct {
+	Game   *services.WebGame  `json:"game"`
+	Action model.PlayerAction `json:"action"`
+}
+
+func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
+	paramId := RouteParam(request, "id")
+	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		fmt.Printf("Can not parse id from '%s'", paramId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	game, err := services.GetGameById(id)
+	if err != nil {
+		fmt.Printf("error getting game by id: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest) // dev note: it may be 404 NotFound is the case the game with the given id doesn't exists
+		return
+	}
+	fmt.Printf("==========\ngame: %+v,\n============\n", *game)
+	var takeAction model.PlayerTakeAction
+	err = ParseJsonFromReader(request.Body, &takeAction)
+	if err != nil {
+		fmt.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	game, action, err := services.PerformTakeAction(*game, takeAction)
+	if err != nil {
+		fmt.Printf("error while doing take action: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	WriteJsonResponse(response, http.StatusOK, gameActionResponseData{game, action})
+}
+
+func PerformDropAction(response http.ResponseWriter, request *http.Request) {
+	paramId := RouteParam(request, "id")
+	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		fmt.Printf("Can not parse id from '%s'", paramId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	game, err := services.GetGameById(id)
+	if err != nil {
+		fmt.Printf("error getting game by id: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest) // dev note: it may be 404 NotFound is the case the game with the given id doesn't exists
+		return
+	}
+	var dropAction model.PlayerDropAction
+	err = ParseJsonFromReader(request.Body, &dropAction)
+	if err != nil {
+		fmt.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	game, action, err := services.PerformDropAction(*game, dropAction)
+	if err != nil {
+		fmt.Printf("error while doing drop action: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	WriteJsonResponse(response, http.StatusOK, gameActionResponseData{game, action})
+}
+
 // PLAYERS
 
 func getWebPlayerId(request *http.Request) int {
