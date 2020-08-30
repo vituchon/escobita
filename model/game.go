@@ -44,7 +44,7 @@ func (game *Game) BeginsNewMatch() error {
 }
 
 func (game Game) HasMatchInProgress() bool {
-	return game.CurrentMatch.HasMoreRounds()
+	return game.CurrentMatch != nil && game.CurrentMatch.HasMoreRounds()
 }
 
 func (game *Game) createNewMatch() {
