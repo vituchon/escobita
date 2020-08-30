@@ -68,7 +68,7 @@ namespace Api {
   export interface PlayerTakeAction extends BasePlayerAction {
     boardCards: Card[];
     handCard: Card;
-    isEscobita: boolean;
+    isEscobita?: boolean; // resolved on server (by courtesy, cuz the client has the tools to do for itself as well)
   }
 
   export interface PlayerDropAction extends BasePlayerAction  {
