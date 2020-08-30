@@ -50,7 +50,7 @@ module Game {
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
     public isChatEnabled: boolean = false;
     private updateChatInterval: ng.IPromise<any>; // "handler" to the update interval using to update the chat
-    public matchInProgress: boolean = false; // TODO :renamte to isMatchInProgress
+    public isMatchInProgress: boolean = false; // TODO :renamte to isMatchInProgress
 
     public players: Players.Player[];
     public playersById: Util.EntityById<Players.Player>;
@@ -152,7 +152,7 @@ module Game {
       this.gamesService.startGame(game).then((game) => {
         console.log(game);
         this.game = game;
-        this.matchInProgress = true;
+        this.isMatchInProgress = true;
       })
     }
 
@@ -206,7 +206,7 @@ module Game {
     public refreshGame() {
       return this.gamesService.getGameById(this.game.id).then((game) => {
         this.game = game;
-        this.matchInProgress = Games.hasMatchInProgress(game)
+        this.isMatchInProgress = Games.hasMatchInProgress(game)
         return game
       })
     }

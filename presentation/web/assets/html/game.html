@@ -19,8 +19,8 @@
   <div class="section game-section">
     <div class="section-title">Partida</div>
     <div class="flex">
-      <div class="materialButton colorButton" ng-hide="ctr.matchInProgress" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.startGame(ctr.game)">COMENZAR</div>
-      <div ng-if="ctr.matchInProgress">
+      <div class="materialButton colorButton" ng-hide="ctr.isMatchInProgress" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.startGame(ctr.game)">COMENZAR</div>
+      <div ng-if="ctr.isMatchInProgress">
         <!-- DECK CARDS -->
         <div class="deck-cards-section">
           <div>En mesa</div>
