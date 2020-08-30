@@ -16,11 +16,17 @@
     <div class="materialButton colorButton" ng-click="ctr.refreshGame()">Actualizar Partida</div>
   </div>
 
-  <div class="section game-section">
+  <div class="section game-section game-match-section">
     <div class="section-title">Partida</div>
     <div class="flex">
       <div class="materialButton colorButton" ng-hide="ctr.isMatchInProgress" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.startGame(ctr.game)">COMENZAR</div>
       <div ng-if="ctr.isMatchInProgress">
+        <!-- MATCH STATS -->
+        <div class="stats-section">
+          <div>Estadísticas del partido</div>
+          <pre>{{ctr.currentMatchStats|json}}</pre>
+        </div>
+
         <!-- DECK CARDS -->
         <div class="deck-cards-section">
           <div>En mesa</div>
@@ -38,8 +44,9 @@
           </div>
         </div>
         <!-- ACTION CONTROLS -->
-        <div ng-if="ctr.isPlayerTurn" class="flex">
+        <div ng-if="ctr.isPlayerTurn" style="width: 200px; display:flex; flex-direction: row;">
           <div class="materialButton raised colorButton" ng-show="ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</div>
+          <div></div>
           <div class="materialButton raised colorButton" ng-show="ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</div>
         </div>
       </div>

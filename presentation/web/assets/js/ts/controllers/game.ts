@@ -50,7 +50,8 @@ module Game {
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
     public isChatEnabled: boolean = false;
     private updateChatInterval: ng.IPromise<any>; // "handler" to the update interval using to update the chat
-    public isMatchInProgress: boolean = false; // TODO :renamte to isMatchInProgress
+    public isMatchInProgress: boolean = false;
+    public currentMatchStats: Api.ScoreSummaryByPlayerName;
 
     public players: Players.Player[];
     public playersById: Util.EntityById<Players.Player>;
@@ -157,7 +158,13 @@ module Game {
     }
 
     public hasValidTakeAction() {
+      if (_.isEmpty(this.selectedHandCard)) {
+        return false
+      }
       const selectedBoardCards = this.getSelectedBoardCards()
+      if (_.isEmpty(selectedBoardCards)) {
+        return false
+      }
       return Matchs.Rules.canTakeCards(this.selectedHandCard,selectedBoardCards)
     }
 
@@ -207,6 +214,11 @@ module Game {
       return this.gamesService.getGameById(this.game.id).then((game) => {
         this.game = game;
         this.isMatchInProgress = Games.hasMatchInProgress(game)
+        if (this.isMatchInProgress) {
+          this.gamesService.calculateStatsByGameId(this.game.id).then((stats) => {
+            this.currentMatchStats = stats;
+          })
+        }
         return game
       })
     }
