@@ -144,7 +144,7 @@ type PlayerScoreSummary struct {
 
 type ScoreSummaryByPlayer map[Player]PlayerScoreSummary
 
-func (staticticsByPlayer StaticticsByPlayer) BuildScoreBoard() ScoreSummaryByPlayer {
+func (staticticsByPlayer StaticticsByPlayer) BuildScoreSummaryByPlayer() ScoreSummaryByPlayer {
 	scoreSummaryByPlayer := make(ScoreSummaryByPlayer)
 	mostCardsPlayer := staticticsByPlayer.calculateMostCardsPlayer()
 	seventiesPlayer := staticticsByPlayer.calculateSeventiesPlayer()

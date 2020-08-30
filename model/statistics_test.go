@@ -207,7 +207,7 @@ func TestGoldSeven(t *testing.T) {
 	}
 	match.Ends()
 	staticticsByPlayer := match.CalculateStaticticsByPlayer()
-	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreBoard()
+	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
 	//t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
 
 	if !staticticsByPlayer[beto].HasGoldSeven {

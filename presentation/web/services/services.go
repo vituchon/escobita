@@ -93,6 +93,12 @@ func PerformDropAction(game WebGame, action model.PlayerDropAction) (*WebGame, m
 	return updatedGame, updatedAction, err
 }
 
+func CalculateGameStats(game WebGame) model.ScoreSummaryByPlayer {
+	staticticsByPlayer := game.CurrentMatch.CalculateStaticticsByPlayer()
+	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
+	return scoreSummaryByPlayer
+}
+
 // advances the game into his next state, that is, a new match or a new round or ends
 func advanceGame(game WebGame) (*WebGame, error) {
 	if game.HasMatchInProgress() {

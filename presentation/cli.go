@@ -60,7 +60,7 @@ func RunCLIApp() {
 				}
 				staticticsByPlayer := match.CalculateStaticticsByPlayer()
 				//fmt.Printf("===ESTADISTICAS DEL PARTIDO===\n%+v\n", staticticsByPlayer)
-				fmt.Printf("===Resutaldos===\n%+v\n", staticticsByPlayer.BuildScoreBoard())
+				fmt.Printf("===Resutaldos===\n%+v\n", staticticsByPlayer.BuildScoreSummaryByPlayer())
 			}
 
 		}

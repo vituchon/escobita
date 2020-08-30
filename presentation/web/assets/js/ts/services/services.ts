@@ -103,6 +103,12 @@ namespace Games {
       })
     }
 
+    calculateStatsByGameId(id: number) {
+      return this.$http.get<Api.ScoreSummaryByPlayerName>(`/api/v1/games/${id}/calculate-stats`,).then((response) => {
+        return response.data
+      })
+    }
+
   }
 
   escobita.service('GamesService', ['$http', '$q', Service]);

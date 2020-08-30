@@ -253,6 +253,30 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, gameActionResponseData{game, action})
 }
 
+func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
+	paramId := RouteParam(request, "id")
+	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		fmt.Printf("Can not parse id from '%s'", paramId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	game, err := services.GetGameById(id)
+	if err != nil {
+		fmt.Printf("error getting game by id: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest) // dev note: it may be 404 NotFound is the case the game with the given id doesn't exists
+		return
+	}
+
+	stats := services.CalculateGameStats(*game)
+	if err != nil {
+		fmt.Printf("error while calculating game stats action: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	WriteJsonResponse(response, http.StatusOK, stats)
+}
+
 // PLAYERS
 
 func getWebPlayerId(request *http.Request) int {
