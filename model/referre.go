@@ -68,7 +68,7 @@ func (match *Match) Take(action PlayerTakeAction) PlayerAction {
 	matchPlayerCards.Taken = append(matchPlayerCards.Taken, action.BoardCards...)
 	match.Cards.ByPlayer[player] = matchPlayerCards
 	isEscobita := (len(match.Cards.Board) == 0)
-	action.isEscobita = isEscobita
+	action.IsEscobita = isEscobita
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
 	return action
@@ -188,7 +188,7 @@ type PlayerTakeAction struct {
 	basePlayerAction
 	BoardCards []Card `json:"boardCards"`
 	HandCard   Card   `json:"handCard"`
-	isEscobita bool   `json:"isEscobita"`
+	IsEscobita bool   `json:"isEscobita"`
 }
 
 func NewPlayerTakeAction(player Player, handCard Card, boardCards []Card) PlayerTakeAction {
@@ -202,7 +202,7 @@ func NewPlayerTakeAction(player Player, handCard Card, boardCards []Card) Player
 }
 
 func (a PlayerTakeAction) IsEscobita() bool {
-	return a.isEscobita
+	return a.IsEscobita
 }
 
 type PlayerDropAction struct {
