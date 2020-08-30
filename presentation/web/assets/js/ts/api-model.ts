@@ -78,6 +78,26 @@ namespace Api {
 
   export type PlayerAction = PlayerTakeAction | PlayerDropAction
 
+  export interface PlayerStatictics {
+    cardsTakenCount: number;
+    escobitasCount: number;
+    seventiesScore: number;
+    hasGoldSeven: boolean;
+    goldCardsCount: number;
+}
+
+  export interface PlayerScoreSummary {
+      score: number;
+      statictics: PlayerStatictics;
+  }
+
+export interface ScoreSummaryByPlayerName extends _.Dictionary<number> {
+  [name:string]: number;
+}
+
+export interface RootObject {
+    ss: Ss;
+}
 
   export interface Message {
     id?: number;
