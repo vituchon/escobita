@@ -46,6 +46,11 @@ namespace Games {
     }
   }
 
+  export interface GameActionResponse {
+    game: Api.Game;
+    action: Api.PlayerTakeAction;
+  }
+
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
@@ -86,9 +91,86 @@ namespace Games {
       })
     }
 
+    performTakeAction(game: Game,takeAction: Api.PlayerTakeAction) {
+      return this.$http.post<GameActionResponse>(`/api/v1/games/${game.id}/perform-take-action`,takeAction).then((response) => {
+        return response.data
+      })
+    }
+
+    performDropAction(game: Game,dropAction: Api.PlayerDropAction) {
+      return this.$http.post<GameActionResponse>(`/api/v1/games/${game.id}/perform-drop-action`,dropAction).then((response) => {
+        return response.data
+      })
+    }
+
   }
 
   escobita.service('GamesService', ['$http', '$q', Service]);
+}
+
+namespace Matchs {
+
+  export namespace Rules {
+    function sumValues(cards :Api.Card[]){
+      const total = _.reduce(cards,(acc,card) => {
+        return acc + determineValue(card)
+      },0)
+      return total
+    }
+
+    function determineValue(card: Api.Card) {
+      if (card.rank < 8) {
+        return card.rank
+      } else {
+        return card.rank - 2
+      }
+    }
+
+    // Determines if a valid take action can be performed
+    export function canTakeCards(handCard: Api.Card, boardCards: Api.Card[]) {
+      return sumValues(boardCards.concat(handCard)) == 15
+    }
+
+  }
+
+  export function createTakeAction(player: Api.Player,boardCards: Api.Card[], handCard: Api.Card): Api.PlayerTakeAction {
+    return {
+      player: player,
+      boardCards: boardCards,
+      handCard: handCard,
+    }
+  }
+
+  export function createDropAction(player: Api.Player, handCard: Api.Card): Api.PlayerDropAction {
+    return {
+      player: player,
+      handCard: handCard,
+    }
+  }
+
+}
+
+namespace Cards {
+
+  export namespace Suits {
+    // dev notes: the values must match some at /local/escobita/model/card.go#Line:25
+    export const sword = 0
+    export const club = 1
+    export const gold = 2
+    export const cup = 3
+    export const all = [sword, gold, club, cup]
+
+    export const labels: _.Dictionary<string> = {
+      [sword]: "espada",
+      [gold]: "oro",
+      [club]: "palo",
+      [cup]: "copa",
+    }
+
+    export function translate(suit: number) {
+      return labels[suit]
+    }
+  }
 }
 
 namespace Rounds {

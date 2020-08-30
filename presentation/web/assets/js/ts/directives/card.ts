@@ -20,11 +20,12 @@ namespace Cards {
       template: `
         <div class="card-container">
           <div class="lightText" style="font-size:12px">Palo:&nbsp;</div>
-          <div>{{::card.suit}}&nbsp;</div>
+          <div>{{::translateSuit(card.suit)}}&nbsp;</div>
           <div class="lightText" style="font-size:12px">Número:&nbsp;</div>
           <div>{{::card.rank}}</div>
         </div>`,
       link: function ($scope: ng.IScope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
+        $scope.translateSuit = Cards.Suits.translate
       }
     }
 

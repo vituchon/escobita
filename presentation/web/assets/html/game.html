@@ -8,9 +8,12 @@
     <div class="section-title">Jugadores</div>
     <div ng-repeat="player in ctr.game.players">
       <div class="horizontal">
-        <span>{{player.name}}</span>
+        <span>{{player.name}}</span> <!-- recall game players doesn't have id -->
       </div>
     </div>
+    <div><span>Tu eres:</span>&nbsp;
+      <strong>{{ctr.player.name}}(id={{ctr.player.id}})</strong>
+    <div class="materialButton colorButton" ng-click="ctr.refreshGame()">Actualizar Partida</div>
   </div>
 
   <div class="section game-section">
@@ -29,13 +32,11 @@
         <!-- HAND CARDS -->
         <div class="hand-cards-section">
           <div>En mano</div>
-          <pre>{{ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name]|json}}</pre>
           <div ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
             <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
             <card ng-model="card"></card>
           </div>
         </div>
-        <pre>{{ctr.selectedHandCard|json}}</pre>
         <!-- ACTION CONTROLS -->
         <div ng-if="ctr.isPlayerTurn" class="flex">
           <div class="materialButton raised colorButton" ng-show="ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</div>
@@ -48,9 +49,9 @@
   <div class="section-separator"></div>
 
   <div class="game-chat-section section lobby-section">
-    <div class="materialButton colorButton" ng-click="ctr.hideChat = !ctr.hideChat">{{ctr.hideChat ? 'Mostrar' : 'Ocultar'}}</div>
+    <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Ocultar' : 'Mostrar'}}</div>
     <div class="flex"></div>
-    <div ng-hide="ctr.hideChat">
+    <div ng-show="ctr.isChatEnabled">
       <div class="flex">
         <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
         <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>

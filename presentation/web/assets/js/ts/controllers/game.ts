@@ -33,13 +33,14 @@ module Game {
       return '';
     }
   }
-  // END :  move to util.js
 
+  // END :  move to util.js
   class Controller {
 
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean;
+    private refreshGameInterval: ng.IPromise<any>; // "handler" to the update interval using for refresh game status while is not the client player's turn
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[]; // all from the server related to this game
     public isBoardCardSelectedById: _.Dictionary<boolean>;
@@ -47,8 +48,9 @@ module Game {
 
     public message: Messages.Message; // buffer for user input
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
-    public hideChat: boolean = true;
-    public matchInProgress: boolean = false;
+    public isChatEnabled: boolean = false;
+    private updateChatInterval: ng.IPromise<any>; // "handler" to the update interval using to update the chat
+    public matchInProgress: boolean = false; // TODO :renamte to isMatchInProgress
 
     public players: Players.Player[];
     public playersById: Util.EntityById<Players.Player>;
@@ -56,25 +58,13 @@ module Game {
     private lastUpdateUnixTimestamp: number = undefined;
 
     public formatUnixTimestamp = unixToReadableClock
+    public translateSuit = Cards.Suits.translate
 
     constructor(private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
       private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
       private $q: ng.IQService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
-
-      /*this.$interval(() => {
-        this.updatePlayers()
-          .then(() => this.updateGameMessages ())
-          .then(() => {
-            console.log("Updated players and messages OK!")
-            if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
-              const now = 	Math.floor(new Date().getTime()/1000.0)
-              console.log("demora aproximada ", now - this.lastUpdateUnixTimestamp)
-            }
-            this.lastUpdateUnixTimestamp = 	Math.floor(new Date().getTime()/1000.0)
-          })
-      },2000)*/
 
       this.$scope.$watch(() => {
         if (_.isUndefined(this.game.currentMatch)) {
@@ -84,7 +74,48 @@ module Game {
       }, (currentTurnPlayer,previousTurnPlayer) => {
         if (!_.isUndefined(currentTurnPlayer)) {
           this.currentTurnPlayer = currentTurnPlayer;
-          this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.currentTurnPlayer)
+          this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)// dev pnote: was using this.currentTurnPlayer instead of this.player >( !!! afff
+        }
+      })
+
+      this.$scope.$watch(() => {
+        return this.isChatEnabled
+      }, (isEnabled) => {
+        if (_.isUndefined(isEnabled)) {
+          return
+        }
+        if (isEnabled) {
+          this.updateChatInterval = this.$interval(() => {
+            this.updatePlayers()
+              .then(() => this.updateGameMessages ())
+              .then(() => {
+                console.log("Updated players and messages OK!")
+                if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
+                  const now = 	Math.floor(new Date().getTime()/1000.0)
+                  console.log("demora aproximada ", now - this.lastUpdateUnixTimestamp)
+                }
+                this.lastUpdateUnixTimestamp = 	Math.floor(new Date().getTime()/1000.0) // USE MOMENTjs
+              })
+          },2000)
+        } else if (!_.isUndefined(this.updateChatInterval)) {
+          this.$interval.cancel(this.updateChatInterval)
+          this.updateChatInterval = undefined;
+        }
+      })
+
+      this.$scope.$watch(() => {
+        return this.isPlayerTurn
+      }, (isPlayerTurn) => {
+        if (_.isUndefined(isPlayerTurn)) {
+          return
+        }
+        if (!isPlayerTurn) { // auto refresh when is not player turn
+          this.refreshGameInterval = this.$interval(() => {
+            return this.refreshGame()
+          },2000)
+        } else if (!_.isUndefined(this.refreshGameInterval)) {
+          this.$interval.cancel(this.refreshGameInterval)
+          this.refreshGameInterval = undefined;
         }
       })
     }
@@ -124,6 +155,62 @@ module Game {
         this.matchInProgress = true;
       })
     }
+
+    public hasValidTakeAction() {
+      const selectedBoardCards = this.getSelectedBoardCards()
+      return Matchs.Rules.canTakeCards(this.selectedHandCard,selectedBoardCards)
+    }
+
+    public performTakeAction() {
+      const selectedBoardCards = this.getSelectedBoardCards()
+      const takeAction = Matchs.createTakeAction(this.player,selectedBoardCards,this.selectedHandCard)
+      this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
+        this.game = data.game
+        if (data.action.isEscobita) {
+          alert("Escobita jopu!!")
+        }
+      }).finally(() => {
+        this.isBoardCardSelectedById = {}
+      })
+    }
+
+    private getSelectedBoardCards() {
+       return _.reduce(this.isBoardCardSelectedById,(acc,selected,id) => {
+        if (selected) {
+          const card = _.find(this.game.currentMatch.matchCards.board,(boardCard) => boardCard.id === +id)
+          const isNotInBoard = _.isUndefined(card)
+          if (isNotInBoard) {
+            console.warn("suspicious things, programmer must check something...")
+          } else {
+            acc.push(card)
+          }
+        }
+        return acc
+      },<Api.Card[]>[])
+    }
+
+    public hasValidDropAction() {
+      return !_.isEmpty(this.selectedHandCard)
+    }
+
+    public performDropAction() {
+      const selectedBoardCards = this.getSelectedBoardCards()
+      const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
+      this.gamesService.performDropAction(this.game,dropAction).then((data) => {
+        this.game = data.game
+      }).finally(() => {
+        this.selectedHandCard = undefined
+      })
+    }
+
+    public refreshGame() {
+      return this.gamesService.getGameById(this.game.id).then((game) => {
+        this.game = game;
+        this.matchInProgress = Games.hasMatchInProgress(game)
+        return game
+      })
+    }
+
 
   }
 
