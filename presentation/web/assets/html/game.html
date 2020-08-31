@@ -65,7 +65,7 @@
         <div class="flex"></div>
       </div>
       <div class="game-messages-section">
-        <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'">
+        <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'" ng-style="{'font-size': ctr.getFontSize(ctr.playersById[message.playerId])}">
           <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
           <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
           <span>{{message.text}}</span>

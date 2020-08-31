@@ -34,6 +34,29 @@ module Game {
     }
   }
 
+  namespace UIMessages {
+
+    export const baseFontSize = 12;
+    const maxFontSize = 24;
+    const fontSizeAmplitude = baseFontSize - maxFontSize;
+
+    function determineFontSize(position: number) {
+        const size = baseFontSize + (fontSizeAmplitude) / position; // B + M/X (Homográfica desplazada)
+        return size;
+    }
+
+    export interface FontSizeByPlayerName extends _.Dictionary<number> {
+      [name:string]: number;
+    }
+
+    export function calculateFontSizeByPlayerName(positionsByPlayerName: Matchs.Rules.PositionByPlayerName) : FontSizeByPlayerName {
+      return _.reduce(positionsByPlayerName,(acc, position, name) => {
+        acc[name] = determineFontSize(position + 1) // position starts at 0
+        return acc
+      },<FontSizeByPlayerName>{})
+    }
+  }
+
   // END :  move to util.js
   class Controller {
 
@@ -50,6 +73,9 @@ module Game {
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
     public isChatEnabled: boolean = false;
     private updateChatInterval: ng.IPromise<any>; // "handler" to the update interval using to update the chat
+    private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
+    private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
+
     public isMatchInProgress: boolean = false;
     public currentMatchStats: Api.ScoreSummaryByPlayerName;
 
@@ -150,11 +176,11 @@ module Game {
 
     public startGame(game: Games.Game, players: Players.Player[]) {
       // TODO : Use loading flag for UI
-      this.gamesService.startGame(game).then((game) => {
-        console.log(game);
-        this.game = game;
-        this.isMatchInProgress = true;
-      })
+        return this.gamesService.startGame(game).then((game) => {
+          this.game = game;
+          this.isMatchInProgress = true;
+          return game
+        })
     }
 
     public hasValidTakeAction() {
@@ -217,10 +243,20 @@ module Game {
         if (this.isMatchInProgress) {
           this.gamesService.calculateStatsByGameId(this.game.id).then((stats) => {
             this.currentMatchStats = stats;
+            this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
+            this.currentFontSizeByPlayerName = UIMessages.calculateFontSizeByPlayerName(this.currentPositionByPlayerName)
           })
         }
         return game
       })
+    }
+
+    public getFontSize(player: Players.Player) {
+      if (_.isEmpty(this.currentFontSizeByPlayerName)) {
+        return UIMessages.baseFontSize;
+      } else {
+        return this.currentFontSizeByPlayerName[player.name]
+      }
     }
 
 
