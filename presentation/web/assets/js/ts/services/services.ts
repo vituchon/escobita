@@ -131,10 +131,32 @@ namespace Matchs {
         return card.rank - 2
       }
     }
-
     // Determines if a valid take action can be performed
     export function canTakeCards(handCard: Api.Card, boardCards: Api.Card[]) {
       return sumValues(boardCards.concat(handCard)) == 15
+    }
+
+    export interface PositionByPlayerName extends _.Dictionary<number> {
+      [name:string]: number;
+    }
+
+    interface PlayerScore {
+      name: string,
+      score: number,
+    }
+    export function calculatePositionByPlayerName(stats: Api.ScoreSummaryByPlayerName): PositionByPlayerName {
+      const asArray: PlayerScore[] = _.map(stats,(summary,playerName) => {
+        return {
+          name: playerName,
+          score: summary.score,
+        }
+      })
+      const sorted = _.sortBy(asArray,"score")
+      const asMap = _.reduce(sorted,(acc, playerScore, index) => {
+        acc[playerScore.name] = index
+        return acc
+      },<PositionByPlayerName>{})
+      return asMap
     }
 
   }
