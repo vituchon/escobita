@@ -43,3 +43,23 @@ module App {
 
   escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);
 }
+
+// TODO : move to presentation/web/assets/js/ts/directives and make proper inclusion
+escobita.directive('loading', [() => {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      message: '@?'
+    },
+    template:
+    `<div class="verticalLayout center" style="opacity:0.7">
+        <div class="loader">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+        <span style="font-size:18px;font-weight:200" ng-show="message">{{message}}</span>
+     </div>`
+  }
+}]);
