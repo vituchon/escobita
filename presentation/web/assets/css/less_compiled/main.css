@@ -228,7 +228,6 @@ ui-view {
   cursor: pointer;
   font-weight: 700;
   font-size: 13px;
-  text-transform: uppercase;
 }
 .materialButton.raised {
   box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
