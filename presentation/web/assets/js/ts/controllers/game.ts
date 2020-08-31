@@ -38,7 +38,7 @@ module Game {
 
     export const baseFontSize = 12;
     const maxFontSize = 24;
-    const fontSizeAmplitude = baseFontSize - maxFontSize;
+    const fontSizeAmplitude = maxFontSize - baseFontSize;
 
 
     function determineFontSize(position: number) {
