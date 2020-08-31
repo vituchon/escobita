@@ -40,6 +40,7 @@ module Game {
     const maxFontSize = 24;
     const fontSizeAmplitude = baseFontSize - maxFontSize;
 
+
     function determineFontSize(position: number) {
         const size = baseFontSize + (fontSizeAmplitude) / position; // B + M/X (Homográfica desplazada)
         return size;
@@ -86,6 +87,8 @@ module Game {
 
     public formatUnixTimestamp = unixToReadableClock
     public translateSuit = Cards.Suits.translate
+
+    public loading: boolean = false;
 
     constructor(private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
       private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
@@ -175,13 +178,15 @@ module Game {
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
-      // TODO : Use loading flag for UI
+      this.loading = true;
       return this.gamesService.getGameById(this.game.id).then((game) => { // update the game (in case another player join on other client AND this client is outdated)
         return this.gamesService.startGame(game).then((game) => {
           this.game = game;
           this.isMatchInProgress = true;
           return game
         })
+      }).finally(() => {
+        this.loading = false
       })
     }
 
@@ -199,6 +204,7 @@ module Game {
     public performTakeAction() {
       const selectedBoardCards = this.getSelectedBoardCards()
       const takeAction = Matchs.createTakeAction(this.player,selectedBoardCards,this.selectedHandCard)
+      this.loading = true;
       this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
         this.game = data.game
         if (data.action.isEscobita) {
@@ -206,6 +212,7 @@ module Game {
         }
       }).finally(() => {
         this.isBoardCardSelectedById = {}
+        this.loading = false;
       })
     }
 
@@ -231,10 +238,12 @@ module Game {
     public performDropAction() {
       const selectedBoardCards = this.getSelectedBoardCards()
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
+      this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
         this.game = data.game
       }).finally(() => {
         this.selectedHandCard = undefined
+        this.loading = false;
       })
     }
 

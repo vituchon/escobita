@@ -11,22 +11,26 @@
         <span>{{player.name}}</span> <!-- recall game players doesn't have id -->
       </div>
     </div>
-    <div><span>Tu eres:</span>&nbsp;
-      <strong>{{ctr.player.name}}(id={{ctr.player.id}})</strong>
+    <div>
+      <span>Tu eres:</span>&nbsp;<strong>{{ctr.player.name}}(id={{ctr.player.id}})</strong>
+    </div>
+    <div ng-hide="ctr.isMatchInProgress">
+      <span>Turno de:</span>&nbsp;<strong>{{ctr.currentTurnPlayer.name}}(id={{ctr.currentTurnPlayer.id}})</strong>
+    </div>
     <div class="materialButton colorButton" ng-click="ctr.refreshGame()">Actualizar Partida</div>
   </div>
 
   <div class="section game-section game-match-section">
     <div class="section-title">Partida</div>
     <div class="flex">
-      <div class="materialButton colorButton" ng-hide="ctr.isMatchInProgress" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.startGame(ctr.game)">COMENZAR</div>
-      <div ng-if="ctr.isMatchInProgress">
+      <div class="materialButton colorButton" ng-hide="ctr.isMatchInProgress" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.startGame(ctr.game)">COMENZAR</div>
+      <loading message="Cargando..." ng-if="ctr.loading"></loading>
+      <div ng-if="ctr.isMatchInProgress && !ctr.loading">
         <!-- MATCH STATS -->
         <div class="stats-section">
           <div>Estadísticas del partido</div>
           <pre>{{ctr.currentMatchStats|json}}</pre>
         </div>
-
         <!-- DECK CARDS -->
         <div class="deck-cards-section">
           <div>En mesa</div>
@@ -45,9 +49,9 @@
         </div>
         <!-- ACTION CONTROLS -->
         <div ng-if="ctr.isPlayerTurn" style="width: 200px; display:flex; flex-direction: row;">
-          <div class="materialButton raised colorButton" ng-show="ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</div>
+          <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-show="ctr.hasValidTakeAction()" ng-click="!ctr.loading && ctr.performTakeAction()">Levantar</div>
           <div></div>
-          <div class="materialButton raised colorButton" ng-show="ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</div>
+          <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-show="ctr.hasValidDropAction()" ng-click="!ctr.loading && ctr.performDropAction()">Descartar</div>
         </div>
       </div>
     </div>
