@@ -45,12 +45,14 @@ var Lobby;
         };
         Controller.prototype.joinGame = function (game, player) {
             var _this = this;
-            Games.addPlayer(game, player);
-            this.gamesService.updateGame(game).then(function () {
-                _this.$state.go("game", {
-                    game: game,
-                    player: player
-                }, { relative: false });
+            this.gamesService.getGameById(game.id).then(function (game) {
+                Games.addPlayer(game, player);
+                _this.gamesService.updateGame(game).then(function () {
+                    _this.$state.go("game", {
+                        game: game,
+                        player: player
+                    }, { relative: false });
+                });
             });
         };
         return Controller;

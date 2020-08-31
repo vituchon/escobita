@@ -176,11 +176,13 @@ module Game {
 
     public startGame(game: Games.Game, players: Players.Player[]) {
       // TODO : Use loading flag for UI
+      return this.gamesService.getGameById(this.game.id).then((game) => { // update the game (in case another player join on other client AND this client is outdated)
         return this.gamesService.startGame(game).then((game) => {
           this.game = game;
           this.isMatchInProgress = true;
           return game
         })
+      })
     }
 
     public hasValidTakeAction() {
