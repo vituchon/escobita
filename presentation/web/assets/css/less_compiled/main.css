@@ -125,6 +125,25 @@
   border: 2px black solid;
   background-color: yellow;
 }
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+.stats-section .player-stats {
+  margin-left: 20px;
+}
+.stats-section .player-stats .player-name {
+  color: darkgrey;
+  font-weight: bold;
+}
+.stats-section .player-stats .stats-name {
+  font-weight: normal;
+}
+.stats-section .player-stats .stats-value {
+  font-weight: bold;
+  color: darkgreen;
+}
 .card-container {
   display: flex;
   flex-direction: row;
