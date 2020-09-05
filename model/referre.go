@@ -38,7 +38,7 @@ func (match *Match) Ends() {
 			matchPlayerCards.Taken = append(matchPlayerCards.Taken, match.Cards.Board...)
 			match.Cards.ByPlayer[*player] = matchPlayerCards
 			match.Cards.Board = match.Cards.Board[:0] // practical way to empty an slice
-			fmt.Printf("The last card taker is %v", *player)
+			fmt.Printf("The last card taker is %v\n", *player)
 		} else {
 			fmt.Println("Nobody takes cards")
 		}

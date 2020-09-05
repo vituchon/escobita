@@ -42,11 +42,11 @@ const (
 func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
 	if util.FileExists(filepath) {
 		key, err = ioutil.ReadFile(storeKeyFilePath)
-		fmt.Printf("Using existing key %s\n", string(key))
+		//fmt.Printf("Using existing key %s\n", string(key))
 	} else {
 		key = securecookie.GenerateRandomKey(32)
 		ioutil.WriteFile(storeKeyFilePath, key, 0644)
-		fmt.Printf("Generated new key %s and stored at %s\n", string(key), storeKeyFilePath)
+		//fmt.Printf("Generated new key %s and stored at %s\n", string(key), storeKeyFilePath)
 	}
 	return
 }
