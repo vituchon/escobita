@@ -101,40 +101,40 @@ type Tracker struct {
 	count int
 }
 
-func (staticticsByPlayer StaticticsByPlayer) calculateMostCardsPlayer() Player {
+func (staticticsByPlayer StaticticsByPlayer) calculateMostCardsPlayer() *Player {
 	var tracker Tracker = Tracker{nil, 0}
 	for player, statictics := range staticticsByPlayer {
-		if statictics.CardsTakenCount >= tracker.count {
+		if statictics.CardsTakenCount > tracker.count {
 			playerCopy := player // "player" variable is "re used" with a new value in each loop, so a copy is required
 			tracker.count = statictics.CardsTakenCount
 			tracker.who = &playerCopy
 		}
 	}
-	return *tracker.who
+	return tracker.who
 }
 
-func (staticticsByPlayer StaticticsByPlayer) calculateSeventiesPlayer() Player {
+func (staticticsByPlayer StaticticsByPlayer) calculateSeventiesPlayer() *Player {
 	var tracker Tracker = Tracker{nil, 0}
 	for player, statictics := range staticticsByPlayer {
-		if statictics.SeventiesScore >= tracker.count {
+		if statictics.SeventiesScore > tracker.count {
 			playerCopy := player // "player" variable is "re used" with a new value in each loop, so a copy is required
 			tracker.count = statictics.SeventiesScore
 			tracker.who = &playerCopy
 		}
 	}
-	return *tracker.who
+	return tracker.who
 }
 
-func (staticticsByPlayer StaticticsByPlayer) calculateMostGoldCardsPlayer() Player {
+func (staticticsByPlayer StaticticsByPlayer) calculateMostGoldCardsPlayer() *Player {
 	var tracker Tracker = Tracker{nil, 0}
 	for player, statictics := range staticticsByPlayer {
-		if statictics.GoldCardsCount >= tracker.count {
+		if statictics.GoldCardsCount > tracker.count {
 			playerCopy := player // "player" variable is "re used" with a new value in each loop, so a copy is required
 			tracker.count = statictics.GoldCardsCount
 			tracker.who = &playerCopy
 		}
 	}
-	return *tracker.who
+	return tracker.who
 }
 
 type PlayerScoreSummary struct {
@@ -150,23 +150,26 @@ func (staticticsByPlayer StaticticsByPlayer) BuildScoreSummaryByPlayer() ScoreSu
 	seventiesPlayer := staticticsByPlayer.calculateSeventiesPlayer()
 	mostGoldCardsPlayer := staticticsByPlayer.calculateMostGoldCardsPlayer()
 
-	fmt.Printf("\nmostCardsPlayer = %v\n", mostCardsPlayer)
-	fmt.Printf("\nseventiesPlayer = %v\n", seventiesPlayer)
+	fmt.Printf("mostCardsPlayer = %p\n", mostCardsPlayer)
+	fmt.Printf("seventiesPlayer = %p\n", seventiesPlayer)
+	fmt.Printf("mostGoldCardsPlayer = %p\n", mostGoldCardsPlayer)
 	for player, statictics := range staticticsByPlayer {
+		fmt.Printf("player %s at %p\n", player.Name, &player)
 		score := 0
-		if player == mostCardsPlayer {
+		if mostCardsPlayer != nil && player == *mostCardsPlayer {
 			score += 1
 		}
-		if player == seventiesPlayer {
+		if seventiesPlayer != nil && player == *seventiesPlayer {
 			score += 1
 		}
-		if player == mostGoldCardsPlayer {
+		if mostGoldCardsPlayer != nil && player == *mostGoldCardsPlayer {
 			score += 1
 		}
 		if statictics.HasGoldSeven {
 			score += 1
 		}
 		score += statictics.EscobitasCount
+		fmt.Printf("Sumo %d por escobitas para %v, score es %d\n", statictics.EscobitasCount, player, score)
 		scoreSummaryByPlayer[player] = PlayerScoreSummary{
 			Score:      score,
 			Statictics: statictics,

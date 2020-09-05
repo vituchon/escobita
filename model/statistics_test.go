@@ -4,6 +4,40 @@ import (
 	"testing"
 )
 
+func TestScoreCalculationOnBeginMatch(t *testing.T) {
+	var beto = Player{Name: "beto"}
+	var pepe = Player{Name: "pepe"}
+	var players []Player = []Player{
+		beto,
+		pepe,
+	}
+
+	var oneRoundTwoPlayersDeck Deck = Deck{
+		Card{1, GOLD, 3},  // 1 t (beto)
+		Card{2, CUP, 2},   // 1 t (beto)
+		Card{3, CLUB, 3},  // 1 t (beto)
+		Card{4, SWORD, 5}, // 2 t (pepe)
+		// las de beto
+		Card{5, GOLD, 7}, // 1 t (beto)
+		Card{6, CUP, 3},  // 5 d (beto)
+		Card{7, CLUB, 1}, // 3 d (beto) - 6 t (pepe)
+		// las de pepe
+		Card{8, SWORD, 12}, // 4 d (pepe) - 6 t (pepe)
+		Card{9, GOLD, 4},   // 6 t (pepe)
+		Card{10, CUP, 12},  // 2 t (pepe)
+	}
+	match := newMatch(players, oneRoundTwoPlayersDeck)
+	staticticsByPlayer := match.CalculateStaticticsByPlayer()
+	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
+
+	if scoreSummaryByPlayer[beto].Score != 0 {
+		t.Errorf("beto hasn't make any action and computed score is %d, is must be 0", scoreSummaryByPlayer[beto].Score)
+	}
+	if scoreSummaryByPlayer[pepe].Score != 0 {
+		t.Errorf("pepe hasn't make any action and computed score is %d, is must be 0", scoreSummaryByPlayer[pepe].Score)
+	}
+}
+
 func TestSeventiesCalculation(t *testing.T) {
 	testRuns := []struct {
 		title         string
@@ -163,6 +197,7 @@ func TestGoldSeven(t *testing.T) {
 
 	match := newMatch(players, oneRoundTwoPlayersDeck)
 
+	// TODO : try to use match.Serve()
 	// begin: hardcoding a serve
 	match.FirstPlayerIndex = 0                               // beto
 	match.Cards.Board = copyDeck(oneRoundTwoPlayersDeck[:4]) // 12 de puntaje en la mesa
@@ -208,23 +243,23 @@ func TestGoldSeven(t *testing.T) {
 	match.Ends()
 	staticticsByPlayer := match.CalculateStaticticsByPlayer()
 	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
-	//t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
+	t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
 
 	if !staticticsByPlayer[beto].HasGoldSeven {
-		t.Errorf("Beto shall have gold seven!")
+		t.Errorf("beto shall have gold seven!")
 	}
 	if staticticsByPlayer[beto].EscobitasCount != 0 {
-		t.Errorf("Pepe shall have no escobita")
+		t.Errorf("beto shall have no escobita")
 	}
 	if staticticsByPlayer[pepe].EscobitasCount != 1 {
-		t.Errorf("Pepe shall have 1 escobita")
+		t.Errorf("pepe shall have 1 escobita")
 	}
-	if staticticsByPlayer.calculateMostGoldCardsPlayer() != beto {
+	if *staticticsByPlayer.calculateMostGoldCardsPlayer() != beto {
 		t.Errorf("beto shall be the player with most gold cards")
 	}
 
 	if scoreSummaryByPlayer[beto].Score != 3 {
-		t.Errorf("pepe shall have score 3 and pepe computed is %d", scoreSummaryByPlayer[beto].Score)
+		t.Errorf("beto shall have score 3 and pepe computed is %d", scoreSummaryByPlayer[beto].Score)
 	}
 	if scoreSummaryByPlayer[pepe].Score != 2 {
 		t.Errorf("pepe shall have score 2 and pepe computed is %d", scoreSummaryByPlayer[pepe].Score)
