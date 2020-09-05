@@ -1,9 +1,5 @@
 package model
 
-import (
-	"fmt"
-)
-
 // TODO : needs to implement what happens in draw, right now only one winner can be and would be "the first" that the algorithm find
 type PlayerStatictics struct {
 	CardsTakenCount int  `json:"cardsTakenCount"`
@@ -150,11 +146,10 @@ func (staticticsByPlayer StaticticsByPlayer) BuildScoreSummaryByPlayer() ScoreSu
 	seventiesPlayer := staticticsByPlayer.calculateSeventiesPlayer()
 	mostGoldCardsPlayer := staticticsByPlayer.calculateMostGoldCardsPlayer()
 
-	fmt.Printf("mostCardsPlayer = %p\n", mostCardsPlayer)
-	fmt.Printf("seventiesPlayer = %p\n", seventiesPlayer)
-	fmt.Printf("mostGoldCardsPlayer = %p\n", mostGoldCardsPlayer)
+	//fmt.Printf("mostCardsPlayer = %p\n", mostCardsPlayer)
+	//fmt.Printf("seventiesPlayer = %p\n", seventiesPlayer)
+	//fmt.Printf("mostGoldCardsPlayer = %p\n", mostGoldCardsPlayer)
 	for player, statictics := range staticticsByPlayer {
-		fmt.Printf("player %s at %p\n", player.Name, &player)
 		score := 0
 		if mostCardsPlayer != nil && player == *mostCardsPlayer {
 			score += 1
@@ -169,7 +164,6 @@ func (staticticsByPlayer StaticticsByPlayer) BuildScoreSummaryByPlayer() ScoreSu
 			score += 1
 		}
 		score += statictics.EscobitasCount
-		fmt.Printf("Sumo %d por escobitas para %v, score es %d\n", statictics.EscobitasCount, player, score)
 		scoreSummaryByPlayer[player] = PlayerScoreSummary{
 			Score:      score,
 			Statictics: statictics,
