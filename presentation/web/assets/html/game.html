@@ -29,12 +29,34 @@
         <!-- MATCH STATS -->
         <div class="stats-section">
           <div>Estadísticas del partido</div>
-          <pre>{{ctr.currentMatchStats|json}}</pre>
+          <div ng-repeat="(playerName,stats) in ctr.currentMatchStats" class="player-stats">
+              <div>
+                <span class="player-name">{{playerName}}</span>&nbsp;
+                <span style="font-size:80%;">
+                  &lpar;<span class="stats-name">puntaje:</span>&nbsp;<span class="stats-value">{{stats.score}}</span>&rpar;
+                </span>
+              </div>
+              <div>
+                <span class="stats-name">Cartas levantadas:</span>&nbsp;
+                <span class="stats-value">{{stats.statictics.cardsTakenCount}}</span>
+                &nbsp;&comma;
+                <span class="stats-name">Oros:</span>&nbsp;
+                <span class="stats-value">{{stats.statictics.goldCardsCount}}</span>
+              </div>
+              <div>
+                <span class="stats-name">Escobitas:</span>&nbsp;
+                <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
+              </div>
+              <div>
+                <span class="stats-name">Puntaje de setentas:</span>&nbsp;
+                <span class="stats-value">{{stats.statictics.seventiesScore}}</span>
+              </div>
+          </div>
         </div>
         <!-- DECK CARDS -->
         <div class="deck-cards-section">
           <div>En mesa</div>
-          <div ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+          <div ng-repeat="card in ctr.game.currentMatch.matchCards.board" style=" display:flex; flex-direction: row;">
             <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]">
             <card ng-model="card"></card>
           </div>
@@ -42,7 +64,7 @@
         <!-- HAND CARDS -->
         <div class="hand-cards-section">
           <div>En mano</div>
-          <div ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+          <div ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand" style=" display:flex; flex-direction: row;">
             <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
             <card ng-model="card"></card>
           </div>
