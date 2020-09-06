@@ -183,7 +183,9 @@ module Game {
         return this.gamesService.startGame(game).then((game) => {
           this.game = game;
           this.isMatchInProgress = true;
-          return game
+          return this.updateGameStats().then(() => {
+            return game
+          })
         })
       }).finally(() => {
         this.loading = false
@@ -252,13 +254,18 @@ module Game {
         this.game = game;
         this.isMatchInProgress = Games.hasMatchInProgress(game)
         if (this.isMatchInProgress) {
-          this.gamesService.calculateStatsByGameId(this.game.id).then((stats) => {
-            this.currentMatchStats = stats;
-            this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
-            this.currentFontSizeByPlayerName = UIMessages.calculateFontSizeByPlayerName(this.currentPositionByPlayerName)
-          })
+          this.updateGameStats()
         }
         return game
+      })
+    }
+
+    private updateGameStats() {
+      return this.gamesService.calculateStatsByGameId(this.game.id).then((stats) => {
+        this.currentMatchStats = stats;
+        this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
+        this.currentFontSizeByPlayerName = UIMessages.calculateFontSizeByPlayerName(this.currentPositionByPlayerName)
+        return stats
       })
     }
 
