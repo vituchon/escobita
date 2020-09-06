@@ -40,20 +40,17 @@
   font-weight: 900;
   font-style: normal;
 }
-.main-title {
-  font-size: 16px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+.panel .title {
+  font-size: 24px;
+  padding: 10px;
   font-weight: bold;
   color: #477ACD;
 }
-.section-title {
+.flex-space-filler {
+  flex-grow: 2;
+}
+.section .title {
   font-size: 16px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-weight: bold;
-  color: #477ACD;
-  font-size: 14px;
 }
 .section-separator {
   height: 20px;
@@ -110,11 +107,53 @@
     transform: scale(1);
   }
 }
+.nav-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.nav-title {
+  font-size: 200%;
+  font-weight: bold;
+  padding: 10px;
+}
+.nav-panel {
+  background-color: lightblue;
+  display: flex;
+  flex-flow: column;
+}
+.lobby-container {
+  width: 500px;
+}
+.lobby-container .player-data-section {
+  display: flex;
+  flex-direction: column;
+}
+.lobby-container .player-data-section .player-name {
+  display: flex;
+  flex-direction: row;
+}
+.lobby-container .game-list-section {
+  display: flex;
+  flex-direction: column;
+}
+.lobby-container .game-list-section .game-list-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 .lobby-title {
   font-size: 16px;
 }
-.lobby-section {
-  width: 600px;
+.game-player-list-section {
+  margin: 20px;
+}
+.game-container {
+  width: 700px;
+}
+.game-match-section {
+  margin: 20px;
 }
 .game-message {
   color: blue;
@@ -125,13 +164,30 @@
   border: 2px black solid;
   background-color: yellow;
 }
+.cards {
+  display: flex;
+  flex-direction: row;
+}
+.deck-cards-section {
+  display: flex;
+  flex-direction: column;
+}
+.hand-cards-section {
+  display: flex;
+  flex-direction: column;
+}
+.game-player-list-section {
+  display: flex;
+  flex-direction: column;
+}
 .stats-section {
   display: flex;
   flex-direction: column;
   font-size: 12px;
+  margin-top: 10px;
 }
 .stats-section .player-stats {
-  margin-left: 20px;
+  margin-top: 10px;
 }
 .stats-section .player-stats .player-name {
   color: darkgrey;

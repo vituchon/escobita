@@ -63,18 +63,23 @@
 
 // COMMON STYLES
 
-.main-title {
-  font-size: 16px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-weight: bold;
-  color: @mainColor;
+.panel {
+  .title {
+    font-size: 24px;
+    padding: 10px;
+    font-weight: bold;
+    color: @mainColor;
+  }
 }
 
-.section-title {
-  .main-title();
-  font-size: 14px;
+.flex-space-filler {
+  flex-grow: 2;
+}
 
+.section {
+  .title {
+    font-size: 16px;
+  }
 }
 
 .section-separator {
@@ -132,17 +137,72 @@
 
 // FINISH LOADER
 
+
+// ROOT STYLES
+
+.nav-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-title {
+  font-size: 200%;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.nav-panel {
+  background-color:lightblue;
+  display: flex;
+  flex-flow: column;
+}
+
 // LOBBY STYLES
+
+.lobby-container {
+  width: 500px;
+
+  .player-data-section {
+    display: flex;
+    flex-direction: column;
+
+    .player-name {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .game-list-section {
+    display:flex;
+    flex-direction: column;
+
+    .game-list-header {
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+}
 
 .lobby-title {
   font-size: 16px;
 }
 
-.lobby-section {
-  width: 600px;
+.game-player-list-section {
+  margin:20px;
 }
 
 // GAME STYLES
+
+.game-container {
+  width: 700px;
+}
+
+.game-match-section {
+  margin: 20px;
+}
 
 .game-message {
   color: blue;
@@ -155,13 +215,35 @@
   background-color: yellow;
 }
 
+.cards {
+  display:flex;
+  flex-direction: row;
+}
+
+.deck-cards-section{
+  display:flex;
+  flex-direction: column;
+}
+
+.hand-cards-section
+{
+  display:flex;
+  flex-direction: column;
+}
+
+.game-player-list-section {
+  display:flex;
+  flex-direction: column;
+}
+
 .stats-section{
   display:flex;
   flex-direction: column;
   font-size: 12px;
+  margin-top: 10px;
 
   .player-stats{
-    margin-left: 20px;
+    margin-top: 10px;
 
     .player-name {
       color:darkgrey;
@@ -442,6 +524,7 @@ select, input{
   background-position: center;
   margin:              30px 0 0;
 }
+
 .loginContainer{
   position:           absolute;
   top:                0;

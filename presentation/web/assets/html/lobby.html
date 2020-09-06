@@ -1,36 +1,42 @@
-<div class="main-container lobby-container" class="vertical layout flex">
+<div class="panel lobby-container">
 
-  <div class="main-title lobby-title">Esto es el lobby</div>
-
-  <div class="section-separator"></div>
-
-  <div class="section lobby-section">
-    <div class="section-title">Jugador</div>
-    <span>Nombre:</span><input class="loginInput" placeholder="Escribe tu nombre" ng-model="ctr.playerName"></input>
-    &nbsp;<span>Id:</span><strong>{{ctr.player.id}}</strong>
-    <div class="flex">
-      <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.updatePlayerName(ctr.playerName)">Guardar</div>
-    </div>
-    <div class="flex"></div>
-    <span ng-show="!ctr.player.name">Primero debes ingresar un nombre y luego guardar</span>
-  </div>
-
-  <div class="section-separator"></div>
+  <div class="title lobby-title">Lobby</div>
 
   <loading message="Cargando..." ng-if="ctr.loading"></loading>
 
-  <div class="section lobby-section" ng-if="ctr.player.name">
+  <div class="section player-data-section">
+    <div class="title">Datos de jugador</div>
+    <div class="player-name">
+      <span>Nombre:</span>
+      <input class="loginInput" placeholder="Escribe tu nombre" ng-model="ctr.playerName"></input>
+      <span class="flex-space-filler"></span>
+      <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.updatePlayerName(ctr.playerName)">Guardar</div>
+    </div>
+    <span style="font-size: 75%;">
+      <span>Identificador interno asignado:</span>&nbsp;<strong>{{ctr.player.id}}</strong>
+    </span>
+    <i ng-show="!ctr.player.name">Para ingresar debés introducir un nombre y luego guardar</i>
+  </div>
 
-      <div class="section lobby-sub-section">
-        <div class="section-title">Listado de juegos</div>
-        <div class="flex">
+
+
+  <div class="section" ng-if="ctr.player.name">
+
+      <div class="section game-list-section">
+        <div class="title">Listado de juegos</div>
+        <div class="game-list-header">
+          <span>
+            <span>Cantidad de juegos existentes:</span>&nbsp;<span>{{ctr.games.length}}</span>
+          </span>
+          <span class="flex-space-filler"></span>
           <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.updateGameList()">Actualizar listado de juegos</div>
         </div>
         <div style="height: 20px;"></div>
         <div ng-repeat="game in ctr.games">
-          <div style="display:flex; flex-direction: row;  align-items: center;">
+          <div style="display:flex; flex-direction: row;  align-items: center; margin-top: 10px;">
             <span>{{game.name}}</span>
             <div style="width: 20px;"></div>
+            <span class="flex-space-filler"></span>
             <div class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-class="{'disabled-button': ctr.loading}"  ng-click="!ctr.loading && ctr.joinGame(game, ctr.player)">Unirse</div>
           </div>
         </div>
@@ -38,12 +44,12 @@
 
       <div class="section-separator"></div>
 
-      <div class="section lobby-sub-section">
-        <div class="section-title">Crear un nuevo juego</div>
+      <div class="section">
+        <div class="title">Crear un nuevo juego</div>
         <div style="display:flex; flex-direction: row;  align-items: center;">
           <input class="loginInput"  placeholder="Nombre del juego" ng-model="game.name">
-          <div style="width: 20px;"></div>
-          <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.createGame(game)">Crear</div>
+          <span class="flex-space-filler"></span>
+          <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.createGame(game)">Crear nuevo juego</div>
         </div>
       </div>
 
