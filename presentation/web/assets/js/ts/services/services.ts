@@ -207,7 +207,7 @@ namespace Rounds {
   }
 
   export function isPlayerTurn(round: Round, player: Players.Player): boolean {
-    return round.currentTurnPlayer.name == player.name;
+    return !_.isEmpty(round.currentTurnPlayer) && round.currentTurnPlayer.name == player.name;
   }
 }
 
