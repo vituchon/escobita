@@ -58,23 +58,6 @@ module Game {
     }
   }
 
-  // TODO : employ this!
-  interface Task {
-    func: Function;
-    interval: ng.IPromise<any>;
-  }
-
-  function doTask(flag: boolean, task: Task, delayInMilis: number, $interval: ng.IIntervalService) {
-    if (!flag) {
-      task.interval = $interval(() => {
-        return task.func()
-      },delayInMilis)
-    } else if (!_.isUndefined(task.interval)) {
-      $interval.cancel(task.interval)
-      task.interval = undefined;
-    }
-  }
-
   // END :  move to util.js
   class Controller {
 
@@ -150,11 +133,14 @@ module Game {
       this.$scope.$watch(() => {
         return this.isPlayerTurn
       }, (isPlayerTurn) => {
-        if (!isPlayerTurn) { // auto refresh when is not player turn
-          this.refreshGameInterval = this.$interval(() => {
-            return this.refreshGame()
-          },2000)
-        } else if (!_.isUndefined(this.refreshGameInterval)) {
+        const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
+        if (!this.isPlayerTurn && this.isMatchInProgress) {
+          if (!isIntervalSet) {
+            this.refreshGameInterval = this.$interval(() => {
+              return this.refreshGame()
+            },2000)
+          }
+        } else if (isIntervalSet) {
           this.$interval.cancel(this.refreshGameInterval)
           this.refreshGameInterval = undefined;
         }
@@ -163,11 +149,14 @@ module Game {
       this.$scope.$watch(() => {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
-        if (!isMatchInProgress) { // auto refresh when is not match in progess
-          this.refreshGameInterval = this.$interval(() => {
-            return this.refreshGame()
-          },2000)
-        } else if (!_.isUndefined(this.refreshGameInterval)) {
+        const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
+        if (!isMatchInProgress) {
+          if (!isIntervalSet) {
+            this.refreshGameInterval = this.$interval(() => {
+              return this.refreshGame()
+            },2000)
+          }
+        } else if (isIntervalSet) {
           this.$interval.cancel(this.refreshGameInterval)
           this.refreshGameInterval = undefined;
         }
