@@ -154,6 +154,8 @@
 }
 .game-match-section {
   margin: 20px;
+  display: flex;
+  flex-direction: row;
 }
 .game-message {
   color: blue;
