@@ -63,7 +63,7 @@ module Game {
 
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
-    public isPlayerTurn: boolean;
+    public isPlayerTurn: boolean = false;
     private refreshGameInterval: ng.IPromise<any>; // "handler" to the update interval using for refresh game status while is not the client player's turn
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[]; // all from the server related to this game
@@ -111,9 +111,6 @@ module Game {
       this.$scope.$watch(() => {
         return this.isChatEnabled
       }, (isEnabled) => {
-        if (_.isUndefined(isEnabled)) {
-          return
-        }
         if (isEnabled) {
           this.updateChatInterval = this.$interval(() => {
             this.updatePlayers()
@@ -136,9 +133,6 @@ module Game {
       this.$scope.$watch(() => {
         return this.isPlayerTurn
       }, (isPlayerTurn) => {
-        if (_.isUndefined(isPlayerTurn)) {
-          return
-        }
         if (!isPlayerTurn) { // auto refresh when is not player turn
           this.refreshGameInterval = this.$interval(() => {
             return this.refreshGame()
@@ -152,9 +146,6 @@ module Game {
       this.$scope.$watch(() => {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
-        if (_.isUndefined(isMatchInProgress)) {
-          return
-        }
         if (!isMatchInProgress) { // auto refresh when is not match in progess
           this.refreshGameInterval = this.$interval(() => {
             return this.refreshGame()
