@@ -124,6 +124,7 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	game.PlayerId = getWebPlayerId(request) // asign owner
 	created, err := services.CreateGame(game)
 	if err != nil {
 		fmt.Printf("error while creating Game: '%v'", err)

@@ -21,6 +21,7 @@ type WebGame struct {
 	model.Game        // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
 	Id         *int   `json:"id,omitempty"`
 	Name       string `json:"name"`
+	PlayerId   int    `json:"playerId"` // owner
 }
 
 // meet the actual storate...
@@ -48,7 +49,6 @@ func CreateGame(game WebGame) (created *WebGame, err error) {
 	if game.Id != nil {
 		return nil, DuplicatedEntityErr
 	}
-
 	// not treat safe
 	nextId := idSequence + 1
 	game.Id = &nextId

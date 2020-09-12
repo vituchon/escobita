@@ -32,6 +32,7 @@ namespace Api {
   export interface Game {
     id?: number;
     name: string;
+    playerId?: number; // owner
     matchs?: Match[];
     players?: Player[];
     scoreByPlayerName?: ScoreByPlayerName;
