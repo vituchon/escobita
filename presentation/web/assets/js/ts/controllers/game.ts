@@ -148,6 +148,22 @@ module Game {
           this.refreshGameInterval = undefined;
         }
       })
+
+      this.$scope.$watch(() => {
+        return this.isMatchInProgress
+      },(isMatchInProgress,wasMatchInProgress) => {
+        if (_.isUndefined(isMatchInProgress)) {
+          return
+        }
+        if (!isMatchInProgress) { // auto refresh when is not match in progess
+          this.refreshGameInterval = this.$interval(() => {
+            return this.refreshGame()
+          },2000)
+        } else if (!_.isUndefined(this.refreshGameInterval)) {
+          this.$interval.cancel(this.refreshGameInterval)
+          this.refreshGameInterval = undefined;
+        }
+      })
     }
 
     public updateGameMessages() {
