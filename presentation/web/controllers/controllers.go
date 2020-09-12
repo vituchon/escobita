@@ -71,14 +71,14 @@ func GetOrCreateClientSession(request *http.Request) *sessions.Session {
 		fmt.Printf("error while retrieving 'client_session' from session store: %+v\n", err)
 	}
 	if clientSession.IsNew {
-		fmt.Print("creating new session\n")
+		fmt.Printf("creating new session\n")
 		// begin not thread safe
 		nextId := clientSequenceId + 1
 		clientSession.Values["clientId"] = nextId
 		clientSequenceId++
 		// end not thread safe
 	} else {
-		fmt.Print("using existing session\n")
+		fmt.Printf("using existing session, clientId = %v\n", clientSession.Values["clientId"])
 	}
 	return clientSession
 }
