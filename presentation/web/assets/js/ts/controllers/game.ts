@@ -64,6 +64,7 @@ module Game {
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean = false;
+    public isPlayerGameOwner: boolean;
     private refreshGameInterval: ng.IPromise<any>; // "handler" to the update interval using for refresh game status while is not the client player's turn
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[]; // all from the server related to this game
@@ -95,6 +96,7 @@ module Game {
       private $q: ng.IQService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
+      this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
 
       this.$scope.$watch(() => {
         if (_.isUndefined(this.game.currentMatch)) {

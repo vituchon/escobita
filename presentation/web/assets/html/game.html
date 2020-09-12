@@ -10,6 +10,17 @@
       <span>{{$index+1}}. {{player.name}}</span> <!-- recall game players doesn't have id -->
     </div>
 
+    <div ng-show="ctr.isPlayerGameOwner">
+      <strong >Eres el administrador</strong>&nbsp;
+      <span>Solo vos podés comenzar la partida, una vez comenzada se cierran las puertas!</span><br/>
+      <span>Se puede usar el chat para charlar mientras tanto, usar el botón mostrar chat un poco más abajo.</span>
+    </div>
+
+    <div ng-show="!ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
+      <span>El administrador esta configurando la partida para el gusto de todos.</span><br/>
+      <span>Se puede usar el chat para charlar mientras tanto, usar el botón mostrar chat un poco más abajo</span>
+    </div>
+
     <div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
      <span>Turno de:</span>&nbsp;<span>{{ctr.currentTurnPlayer.name}}</span>
      &nbsp;<strong ng-show="ctr.isPlayerTurn">Es tu turno! Juega!</strong>

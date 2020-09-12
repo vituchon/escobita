@@ -25,6 +25,14 @@ namespace Games {
     }
   }
 
+  export function isPlayerOwner(player: Players.Player, game :Game) {
+    if (_.isUndefined(game.playerId)) {
+      console.warn("suspicious things, programmer must check something...")
+    }
+    return player.id === game.playerId
+  }
+
+
   export namespace Periods {
     const dayInSeconds = 24 * 60 * 60;
     const weekInSeconds = dayInSeconds * 7;
