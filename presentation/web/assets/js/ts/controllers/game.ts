@@ -58,6 +58,23 @@ module Game {
     }
   }
 
+  // TODO : employ this!
+  interface Task {
+    func: Function;
+    interval: ng.IPromise<any>;
+  }
+
+  function doTask(flag: boolean, task: Task, delayInMilis: number, $interval: ng.IIntervalService) {
+    if (!flag) {
+      task.interval = $interval(() => {
+        return task.func()
+      },delayInMilis)
+    } else if (!_.isUndefined(task.interval)) {
+      $interval.cancel(task.interval)
+      task.interval = undefined;
+    }
+  }
+
   // END :  move to util.js
   class Controller {
 
