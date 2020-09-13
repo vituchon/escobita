@@ -103,7 +103,7 @@
     <div class="section game-chat-section">
       <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Ocultar' : 'Mostrar'}} chat</div>
       <div class="flex"></div>
-      <div ng-show="ctr.isChatEnabled">
+      <div ng-if="ctr.isChatEnabled">
         <div class="flex">
           <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
           <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
