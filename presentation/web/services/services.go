@@ -107,7 +107,8 @@ func advanceGame(game WebGame) (*WebGame, error) {
 			currentRound.NextTurn()
 		} else {
 			if game.CurrentMatch.HasMoreRounds() {
-				game.CurrentMatch.NextRound()
+				round := game.CurrentMatch.NextRound()
+				round.NextTurn()
 			} else {
 				// game ends
 				game.CurrentMatch.Ends()
