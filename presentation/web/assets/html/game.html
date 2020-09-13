@@ -23,7 +23,7 @@
 
     <div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
      <span>Turno de:</span>&nbsp;<span>{{ctr.currentTurnPlayer.name}}</span>
-     &nbsp;<strong ng-show="ctr.isPlayerTurn">Es tu turno! Juega!</strong>
+     &nbsp;<strong ng-show="ctr.isPlayerTurn" style="color: red; background-color: yellow;">Es tu turno! Juega!</strong>
     </div>
 
     <div class="materialButton colorButton" ng-click="ctr.refreshGame()">Actualizar Partida</div>
@@ -39,8 +39,8 @@
         <!-- DECK -->
         <div class="deck-cards-section">
           <div>En mesa</div>
-          <div ng-repeat="card in ctr.game.currentMatch.matchCards.board">
-            <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]">
+          <div class="deck-card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+            <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
             <card ng-model="card"></card>
           </div>
         </div>
@@ -50,7 +50,7 @@
         <!-- HAND -->
         <div class="hand-cards-section">
           <div>En mano</div>
-          <div ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+          <div class="deck-card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
             <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
             <card ng-model="card"></card>
           </div>
@@ -83,6 +83,10 @@
             </div>
             <div>
               <span class="stats-name">Escobitas:</span>&nbsp;
+              <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
+            </div>
+            <div>
+              <span class="stats-name">Siete de oro:</span>&nbsp;
               <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
             </div>
             <div>
