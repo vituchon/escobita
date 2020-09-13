@@ -235,7 +235,9 @@ namespace Players {
     getPlayerById(playersId: number): ng.IPromise<Player> {
       return this.$http.get<Player>(`/api/v1/players/${playersId}`).then((response) => {
         return response.data;
-      })/*.catch((err) => {
+      })
+      // TODO: below is not used code, server will return a 500 is a client seek for a non existing client, guess a 404 is more correct...
+      /*.catch((err) => {
         if (err.status === 404) { // not found: there is no player with the given id
           return null
         } else {
@@ -301,7 +303,9 @@ namespace Messages {
     getMessageById(messagesId: number): ng.IPromise<Message> {
       return this.$http.get<Message>(`/api/v1/messages/${messagesId}`).then((response) => {
         return response.data;
-      })/*.catch((err) => {
+      })
+      // TODO: below is not used code, server will return a 500 is a client seek for a non existing message, guess a 404 is more correct...
+      /*.catch((err) => {
         if (err.status === 404) { // not found: there is no message with the given id
           return null
         } else {
