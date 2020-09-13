@@ -120,10 +120,10 @@ module Game {
               .then(() => {
                 console.log("Updated players and messages OK!")
                 if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
-                  const now = 	Math.floor(new Date().getTime()/1000.0)
-                  console.log("demora aproximada ", now - this.lastUpdateUnixTimestamp)
+                  const nowUnixTimestamp = moment().unix()
+                  console.log("demora aproximada ", nowUnixTimestamp - this.lastUpdateUnixTimestamp)
                 }
-                this.lastUpdateUnixTimestamp = 	Math.floor(new Date().getTime()/1000.0) // USE MOMENTjs
+                this.lastUpdateUnixTimestamp = 	moment().unix()
               })
           },2000)
         } else if (!_.isUndefined(this.updateChatInterval)) {
@@ -174,7 +174,7 @@ module Game {
         }
       })
 
-      /*
+    /*
       this.$scope.$watch(() => {
         return this.refreshGameInterval
       }, (refreshGameInterval) => {
