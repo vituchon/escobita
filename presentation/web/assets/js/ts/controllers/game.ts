@@ -65,7 +65,6 @@ module Game {
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
     public isPlayerGameOwner: boolean;
-    private refreshGameInterval: ng.IPromise<any>; // "handler" to the update interval using for refresh game status while is not the client player's turn
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[]; // all from the server related to this game
     public isBoardCardSelectedById: _.Dictionary<boolean>;
@@ -74,14 +73,13 @@ module Game {
     public message: Messages.Message; // buffer for user input
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
     public isChatEnabled: boolean = false;
-    private updateChatInterval: ng.IPromise<any>; // "handler" to the update interval using to update the chat
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
 
     public isMatchInProgress: boolean = false;
     public currentMatchStats: Api.ScoreSummaryByPlayerName;
 
-    public players: Players.Player[];
+    public players: Players.Player[]; // not sure if it will be use somewhere!
     public playersById: Util.EntityById<Players.Player>;
 
     private lastUpdateUnixTimestamp: number = undefined;
@@ -91,6 +89,8 @@ module Game {
 
     public loading: boolean = false;
 
+    private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
+
     constructor(private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
       private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
       private $q: ng.IQService) {
@@ -99,85 +99,41 @@ module Game {
       this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
 
       this.$scope.$watch(() => {
-        if (_.isUndefined(this.game.currentMatch)) {
-          return undefined
-        }
-        return this.game.currentMatch.currentRound.currentTurnPlayer
-      }, (currentTurnPlayer,previousTurnPlayer) => {
-        if (!_.isUndefined(currentTurnPlayer)) {
-          this.currentTurnPlayer = currentTurnPlayer;
-          this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)// dev pnote: was using this.currentTurnPlayer instead of this.player >( !!! afff
-        }
-      })
-
-      this.$scope.$watch(() => {
-        return this.isChatEnabled
-      }, (isEnabled) => {
-        if (isEnabled) {
-          this.updateChatInterval = this.$interval(() => {
-            this.updatePlayers()
-              .then(() => this.updateGameMessages ())
-              .then(() => {
-                console.log("Updated players and messages OK!")
-                if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
-                  const nowUnixTimestamp = moment().unix()
-                  console.log("demora aproximada ", nowUnixTimestamp - this.lastUpdateUnixTimestamp)
-                }
-                this.lastUpdateUnixTimestamp = 	moment().unix()
-              })
-          },2000)
-        } else if (!_.isUndefined(this.updateChatInterval)) {
-          this.$interval.cancel(this.updateChatInterval)
-          this.updateChatInterval = undefined;
-        }
-      })
-
-      this.$scope.$watch(() => {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
-        // auto updating until match starts
-        const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
-        if (!isMatchInProgress) {
-          if (!isIntervalSet) {
-            this.refreshGameInterval = this.$interval(() => {
-              return this.refreshGame()
-            },2000)
-          }
-        } else {
-          if (isIntervalSet) {
-            this.$interval.cancel(this.refreshGameInterval)
-            this.refreshGameInterval = undefined;
-          }
-          if (!wasMatchInProgress) {
-            Toastr.info("La partida ha comenzado!")
-          }
-        }
-      })
-
-      this.$scope.$watch(() => {
-        return this.isPlayerTurn
-      }, (isPlayerTurn) => {
-        if (!this.isMatchInProgress) {
-          return
-        }
-        const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
-        // auto updating until is player's turn
-        if (!isPlayerTurn) {
-          if (!isIntervalSet) {
-            this.refreshGameInterval = this.$interval(() => {
-              return this.refreshGame()
-            },2000)
-          }
-        } else if (isIntervalSet) {
-          this.$interval.cancel(this.refreshGameInterval)
-          this.refreshGameInterval = undefined;
+        if (isMatchInProgress && !wasMatchInProgress) {
+          Toastr.info("La partida ha comenzado!")
         }
       })
 
       this.$scope.$on('$destroy', function() {
-        this.$interval.cancel(this.refreshGameInterval)
-        this.$interval.cancel(this.updateChatInterval)
+        this.$interval.cancel(this.updaterInterval)
       });
+
+      this.updaterInterval = this.$interval(() => {
+        const mustRefreshGame = (!this.isMatchInProgress) || (this.isMatchInProgress && !this.isPlayerTurn) // ~p v (p y q~) == ~p v ~q
+        var refreshGamePromise = this.$q.when(this.game)
+        if (mustRefreshGame) {
+          refreshGamePromise = this.refreshGame()
+        }
+        var updateChatPromise = this.$q.when(this.messages)
+        if (this.isChatEnabled) {
+          updateChatPromise = this.updateChat();
+        }
+
+        return this.$q.all([refreshGamePromise,updateChatPromise]).then((response) => {
+          if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
+            const nowUnixTimestamp = moment().unix()
+            const seconds = nowUnixTimestamp - this.lastUpdateUnixTimestamp
+            //console.log("demora aproximada ",seconds)
+            if (seconds > 5) {
+              Toastr.warn("Puede que haya algunos problemas de conexión!")
+            }
+          }
+          this.lastUpdateUnixTimestamp = 	moment().unix()
+          return response
+        })
+      }, 2000)
 
     /*
       this.$scope.$watch(() => {
@@ -194,18 +150,16 @@ module Game {
       })*/
     }
 
-    public updateGameMessages() {
-      return this.messagesService.getMessagesByGame(this.game.id).then((messages) => {
-        this.messages = messages;
-        return messages;
-      })
-    }
-
-    private updatePlayers() {
+    public updateChat() {
       return this.playersService.getPlayers().then((players) => {
-        this.playersById = Util.toMapById(players)
-        this.players = players;
-        return players
+        this.players = players
+        this.playersById = Util.toMapById(this.players);
+        return this.players
+      }).then((players) => {
+        return this.messagesService.getMessagesByGame(this.game.id).then((messages) => {
+          this.messages = messages;
+          return messages;
+        })
       })
     }
 
@@ -252,10 +206,10 @@ module Game {
       const takeAction = Matchs.createTakeAction(this.player,selectedBoardCards,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
-        this.game = data.game
         if (data.action.isEscobita) {
           Toastr.success("Has hecho escoba!")
         }
+        return this.setGame(data.game)
       }).finally(() => {
         this.isBoardCardSelectedById = {}
         this.loading = false;
@@ -286,11 +240,23 @@ module Game {
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
-        this.game = data.game
+        return this.setGame(data.game)
       }).finally(() => {
         this.selectedHandCard = undefined
         this.loading = false;
       })
+    }
+
+    private setGame(game: Games.Game) {
+      this.game = game;
+      this.isMatchInProgress = Games.hasMatchInProgress(game)
+      if (this.isMatchInProgress) {
+        this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
+        this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
+        return this.updateGameStats()
+      } else {
+        return this.$q.when(this.currentMatchStats)
+      }
     }
 
     public refreshGame() {
@@ -299,6 +265,7 @@ module Game {
         this.isMatchInProgress = Games.hasMatchInProgress(game)
         if (this.isMatchInProgress) {
           this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
+          this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
           this.updateGameStats()
         }
         return game
