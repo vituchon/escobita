@@ -1,8 +1,6 @@
 /// <reference path='../app.ts' />
 /// <reference path='../api-model.ts' />
 
-
-
 namespace Games {
 
   export interface Game extends Api.Game {
