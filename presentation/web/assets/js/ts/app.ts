@@ -63,3 +63,27 @@ escobita.directive('loading', [() => {
      </div>`
   }
 }]);
+
+// Wraps toastr calls using site "custom look and feel" parameters
+namespace Toastr {
+
+  export function success(message: string) {
+    toastr.success(message, '', { positionClass: 'toast-bottom-center'});
+  }
+
+  export function info(message: string) {
+    toastr.info(message, '', { positionClass: 'toast-bottom-center'});
+  }
+
+  export function warn(message: string) {
+    toastr.warning(message, '', { positionClass: 'toast-bottom-center' });
+  }
+
+  export function error(message: string) {
+    toastr.error(message, '', { positionClass: 'toast-bottom-center' });
+  }
+
+  export function clear() {
+    toastr.clear();
+  }
+}

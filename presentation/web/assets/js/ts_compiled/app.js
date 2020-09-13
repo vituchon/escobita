@@ -48,3 +48,27 @@ escobita.directive('loading', [function () {
             template: "<div class=\"verticalLayout center\" style=\"opacity:0.7\">\n        <div class=\"loader\">\n          <div class=\"bounce1\"></div>\n          <div class=\"bounce2\"></div>\n          <div class=\"bounce3\"></div>\n        </div>\n        <span style=\"font-size:18px;font-weight:200\" ng-show=\"message\">{{message}}</span>\n     </div>"
         };
     }]);
+// Wraps toastr calls using site "custom look and feel" parameters
+var Toastr;
+(function (Toastr) {
+    function success(message) {
+        toastr.success(message, '', { positionClass: 'toast-bottom-center' });
+    }
+    Toastr.success = success;
+    function info(message) {
+        toastr.info(message, '', { positionClass: 'toast-bottom-center' });
+    }
+    Toastr.info = info;
+    function warn(message) {
+        toastr.warning(message, '', { positionClass: 'toast-bottom-center' });
+    }
+    Toastr.warn = warn;
+    function error(message) {
+        toastr.error(message, '', { positionClass: 'toast-bottom-center' });
+    }
+    Toastr.error = error;
+    function clear() {
+        toastr.clear();
+    }
+    Toastr.clear = clear;
+})(Toastr || (Toastr = {}));
