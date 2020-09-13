@@ -190,8 +190,8 @@ namespace Cards {
     // dev notes: the values must match some at /local/escobita/model/card.go#Line:25
     export const sword = 0
     export const club = 1
-    export const gold = 2
-    export const cup = 3
+    export const cup = 2
+    export const gold = 3
     export const all = [sword, club, cup, gold]
 
     export const labels: _.Dictionary<string> = {
