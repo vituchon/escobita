@@ -157,7 +157,7 @@ namespace Matchs {
           score: summary.score,
         }
       })
-      const sorted = _.sortBy(asArray,"score")
+      const sorted = _.sortBy(asArray,(elem) => -elem.score) // sort desc so the higher score goes in "first"
       const asMap = _.reduce(sorted,(acc, playerScore, index) => {
         acc[playerScore.name] = index
         return acc
