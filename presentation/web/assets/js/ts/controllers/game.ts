@@ -158,9 +158,14 @@ module Game {
               return this.refreshGame()
             },2000)
           }
-        } else if (isIntervalSet) {
-          this.$interval.cancel(this.refreshGameInterval)
-          this.refreshGameInterval = undefined;
+        } else {
+          if (isIntervalSet) {
+            this.$interval.cancel(this.refreshGameInterval)
+            this.refreshGameInterval = undefined;
+          }
+          if (!wasMatchInProgress) {
+            Toastr.info("La partida ha comenzado!")
+          }
         }
       })
     }
@@ -225,7 +230,7 @@ module Game {
       this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
         this.game = data.game
         if (data.action.isEscobita) {
-          alert("Escobita jopu!!")
+          Toastr.success("Has hecho escoba!")
         }
       }).finally(() => {
         this.isBoardCardSelectedById = {}
