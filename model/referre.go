@@ -87,7 +87,7 @@ func (match *Match) Drop(action PlayerDropAction) PlayerAction {
 }
 
 // Deal cards to each player for starting a new round
-func (match *Match) NextRound() Round {
+func (match *Match) NextRound() *Round {
 	for _, player := range match.Players {
 		matchPlayerCards := match.Cards.ByPlayer[player]
 		matchPlayerCards.Hand = copyDeck(match.Cards.Left[:3])
@@ -105,7 +105,7 @@ func (match *Match) NextRound() Round {
 		CurrentTurnPlayer:  &match.Players[match.FirstPlayerIndex],
 	}
 	match.CurrentRound = &round
-	return round
+	return &round
 }
 
 func (match Match) HasMoreRounds() bool {
