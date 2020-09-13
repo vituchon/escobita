@@ -192,13 +192,13 @@ namespace Cards {
     export const club = 1
     export const gold = 2
     export const cup = 3
-    export const all = [sword, gold, club, cup]
+    export const all = [sword, club, cup, gold]
 
     export const labels: _.Dictionary<string> = {
       [sword]: "espada",
-      [gold]: "oro",
       [club]: "palo",
       [cup]: "copa",
+      [gold]: "oro",
     }
 
     export function translate(suit: number) {
