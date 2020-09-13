@@ -174,6 +174,11 @@ module Game {
         }
       })
 
+      this.$scope.$on('$destroy', function() {
+        this.$interval.cancel(this.refreshGameInterval)
+        this.$interval.cancel(this.updateChatInterval)
+      });
+
     /*
       this.$scope.$watch(() => {
         return this.refreshGameInterval
