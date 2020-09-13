@@ -4,3 +4,4 @@
 /// <reference path='./angular-ui-router.d.ts' />
 /// <reference path='./underscore.d.ts' />
 /// <reference path='./lib.es6.d.ts' />
+/// <reference path='./toastr.d.ts' />
