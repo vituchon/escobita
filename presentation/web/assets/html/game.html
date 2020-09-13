@@ -30,7 +30,7 @@
   </div>
 
   <div class="section game-section game-match-section">
-    <div class="materialButton colorButton" ng-hide="ctr.isMatchInProgress" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.startGame(ctr.game)">COMENZAR</div>
+    <div class="materialButton colorButton" style="background-color: firebrick"  ng-hide="ctr.isMatchInProgress || !ctr.isPlayerGameOwner" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.startGame(ctr.game)">COMENZAR</div>
     <loading message="Cargando..." ng-if="ctr.loading"></loading>
     <div ng-if="ctr.isMatchInProgress && !ctr.loading">
 
