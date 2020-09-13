@@ -177,6 +177,13 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	playerId := getWebPlayerId(request)
+	if game.PlayerId != playerId {
+		fmt.Printf("error while starting Game: request doesn't cames from the owner, in cames from %d\n", playerId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	updated, err := services.StartGame(game)
 	if err != nil {
 		fmt.Printf("error while starting Game: '%v'", err)
