@@ -102,6 +102,7 @@ func (match *Match) NextRound() Round {
 		currentPlayerIndex: match.FirstPlayerIndex,
 		ConsumedTurns:      0,
 		Number:             match.RoundNumber,
+		CurrentTurnPlayer:  &match.Players[match.FirstPlayerIndex],
 	}
 	match.CurrentRound = &round
 	return round
