@@ -63,7 +63,7 @@ module Game {
 
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
-    public isPlayerTurn: boolean = false;
+    public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
     public isPlayerGameOwner: boolean;
     private refreshGameInterval: ng.IPromise<any>; // "handler" to the update interval using for refresh game status while is not the client player's turn
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
@@ -133,24 +133,9 @@ module Game {
       })
 
       this.$scope.$watch(() => {
-        return this.isPlayerTurn
-      }, (isPlayerTurn) => {
-        const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
-        if (!this.isPlayerTurn && this.isMatchInProgress) {
-          if (!isIntervalSet) {
-            this.refreshGameInterval = this.$interval(() => {
-              return this.refreshGame()
-            },2000)
-          }
-        } else if (isIntervalSet) {
-          this.$interval.cancel(this.refreshGameInterval)
-          this.refreshGameInterval = undefined;
-        }
-      })
-
-      this.$scope.$watch(() => {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
+        // auto updating until match starts
         const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
         if (!isMatchInProgress) {
           if (!isIntervalSet) {
@@ -168,6 +153,40 @@ module Game {
           }
         }
       })
+
+      this.$scope.$watch(() => {
+        return this.isPlayerTurn
+      }, (isPlayerTurn) => {
+        if (!this.isMatchInProgress) {
+          return
+        }
+        const isIntervalSet = !_.isUndefined(this.refreshGameInterval)
+        // auto updating until is player's turn
+        if (!isPlayerTurn) {
+          if (!isIntervalSet) {
+            this.refreshGameInterval = this.$interval(() => {
+              return this.refreshGame()
+            },2000)
+          }
+        } else if (isIntervalSet) {
+          this.$interval.cancel(this.refreshGameInterval)
+          this.refreshGameInterval = undefined;
+        }
+      })
+
+      /*
+      this.$scope.$watch(() => {
+        return this.refreshGameInterval
+      }, (refreshGameInterval) => {
+        const mustHaveARefresh = (!this.isMatchInProgress) || (this.isMatchInProgress && !this.isPlayerTurn) // ~p v (p y q~) == ~p v ~q
+        if (mustHaveARefresh && _.isUndefined(refreshGameInterval)) {
+          // console.warn("must have automatic refresh!")
+          // in some cases when another player start the games, the watch this.isPlayerTurn executes before the watch over this.isMatchInProgress; thus disabling the match
+          this.refreshGameInterval = this.$interval(() => {
+            return this.refreshGame()
+          },2000)
+        }
+      })*/
     }
 
     public updateGameMessages() {
@@ -274,6 +293,7 @@ module Game {
         this.game = game;
         this.isMatchInProgress = Games.hasMatchInProgress(game)
         if (this.isMatchInProgress) {
+          this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
           this.updateGameStats()
         }
         return game
