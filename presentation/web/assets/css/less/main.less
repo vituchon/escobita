@@ -4,16 +4,7 @@
 @lightGray: #FAFAFA;
 @midGray: #A4A4A4;
 @darkGray: #404041;
-
 @red: #D32F2F;
-
-@appointment: #009688;
-@studies: #607D8B;
-@drugs: #795548;
-@problems: #D32F2F;
-@contacts: #477ACD;
-
-
 @defaultTransition: all 0.2s linear;
 
 @font-face {
@@ -89,15 +80,8 @@
   margin-bottom: 10px;
 }
 
-.disabled-button {
-  opacity: 0.5;
-  background-color: transparent;
-  cursor:           default !important;
-}
-
-
-
 // LOADER
+
 .loader {
   margin: 25px auto 15px;
   width: 70px;
@@ -138,7 +122,7 @@
 // FINISH LOADER
 
 
-// ROOT STYLES
+// ROOT SCREEN ("SCREEN CONTAINER")
 
 .nav-container {
   display: flex;
@@ -159,7 +143,7 @@
   flex-flow: column;
 }
 
-// LOBBY STYLES
+// LOBBY SCREEN
 
 .lobby-container {
   width: 500px;
@@ -194,7 +178,7 @@
   margin:20px;
 }
 
-// GAME STYLES
+// GAME SCREEN
 
 .game-container {
   width: 700px;
@@ -268,6 +252,9 @@
     }
   }
 }
+
+// Card container directive
+
 .card-container {
   display: flex;
   flex-direction: row;
@@ -280,13 +267,14 @@ body{
   background-color: white;
   font-family:      'Roboto', sans-serif;
 }
+
 ui-view {
   height:              100%;
   background-size:     cover;
   background-position: center;
 }
 
-/*General*/
+
 .materialIcon {
   font-family:            'Material Icons';
   font-weight:            normal;
@@ -428,9 +416,6 @@ ui-view {
     &:hover.close{
       color: @red;
     }
-    &.contacts{
-      color: @contacts;
-    }
     &.hidden{
       opacity: 0;
     }
@@ -489,372 +474,13 @@ select, input{
     }
   }
 }
-/*End general*/
 
-/*Layout*/
-.layout{
-  display: flex;
-  &.vertical{
-    flex-direction: column;
-  }
-  &.horizontal{
-    flex-direction: row;
-  }
-  &.wrap{
-    flex-wrap: wrap;
-  }
-  &.center{
-    align-items: center;
-  }
-  &.baseline{
-    align-items: baseline;
-  }
-}
-.flex{
-  display: flex;
-  flex: 1;
-}
-.flex-2{
-  display: flex;
-  flex: 2;
-}
-.flex-3{
-  display: flex;
-  flex: 3;
-}
-/*End layout*/
-.mainLogo{
-  background:          url('../../images/logo.png');
-  height:              70px;
-  width:               210px;
-  background-size:     contain;
-  background-repeat:   no-repeat;
-  background-position: center;
-  margin:              30px 0 0;
+.disabled-button {
+  opacity: 0.5;
+  background-color: transparent;
+  cursor:           default !important;
 }
 
-.loginContainer{
-  position:           absolute;
-  top:                0;
-  bottom:             0;
-  margin:             auto 75px;
-  background-color: white;
-  width:              300px;
-  height:             320px;
-  & .loginInput{
-    font-size: 16px;
-    margin:    18px 10px;
-  }
-}
-.hSeparator{
-  height:           1px;
-  opacity:          0.5;
-  background-color: @darkGray;
-}
-#mainContainer{
-  // background-color: @lightGray;
-  & .dark{
-    background-color: @darkGray;
-    color: white;
-  }
-  & .appointmentsColor{
-    background-color: @appointment;
-    color:            white;
-  }
-  & .studiesColor{
-    background-color: @studies;
-    color:            white;
-  }
-  & .drugsColor{
-    background-color: @drugs;
-    color:            white;
-  }
-  & .problemsColor{
-    background-color: @problems;
-    color:            white;
-  }
-  & .contactsColor{
-    background-color: @contacts;
-    color:            white;
-  }
-  & #mainHeader{
-    align-items:      center;
-    min-height:       60px;
-    padding:          0 16px;
-    transition:       @defaultTransition;
-    color:          white;
-    z-index: 10;
-    & .logo{
-      width:200px;
-      cursor: pointer;
-    }
-    & #mainUserMenu{
-      top: 45px;
-      & .mainUserMenuContent{
-        background-color: white;
-        color:            @darkGray;
-        min-width:        300px;
-        border-radius:    2px;
-        & .userName{
-          display:        flex;
-          flex-direction: row;
-          font-size:      14px;
-        }
-      }
-    }
-    & .picture{
-      background-color: white;
-      color:            #404041;
-      width:              36px;
-      height:             36px;
-      border-radius:      18px;
-      font-size:          17px;
-      font-weight:        200;
-      line-height:        2.2;
-      justify-content:    center;
-      text-align:         center;
-      &.full{
-        font-size:        36px;
-        line-height:      2.3;
-        background-color: @darkGray;
-        color:          white;
-        width:            80px;
-        height:           80px;
-        border-radius:    40px;
-      }
-    }
-    & .mainEndpoint{
-      width: 200px;
-    }
-    & #navMenu{
-      align-content: center;
-      align-self:    flex-end;
-      & .navMenuItem{
-        text-transform: uppercase;
-        font-size:      16px;
-        font-weight:    200;
-        padding:        5px 8px 2px;
-        margin:         0 10px;
-        cursor:         pointer;
-        border-bottom:  2px solid transparent;
-        transition:     @defaultTransition;
-        &:hover{
-          font-weight:   700;
-          padding:       5px 7px 2px;
-          border-bottom: 2px solid rgba(255,255,255,0.7);
-        }
-        &.selected{
-          font-weight:   900;
-          padding:       5px 7px 2px;
-          border-bottom: 2px solid white;
-        }
-      }
-    }
-  }
-}
-.content{
-  padding: 10px;
-}
-
-/*Dropdown*/
-.dropdown{
-  position: relative;
-  & .dropdownToggle{
-    cursor: pointer;
-    &:hover{
-      opacity: 0.8;
-    }
-  }
-  & .dropdownContent{
-    display:    none;
-    background: transparent;
-    position:   absolute;
-    top:        0;
-    right:      0;
-    opacity:    0;
-    border:     0;
-    transition: @defaultTransition;
-    & .dropdownTriangle{
-      color:   white;
-      position:  absolute;
-      top:       -25px;
-      right:     -4px;
-      font-size: 44px !important;
-    }
-    &.show{
-      display: flex;
-      opacity: 1;
-    }
-  }
-}
-/*End Dropdown*/
-.mainContent{
-  align-items: center;
-  overflow:  hidden;
-  & .subtitle{
-    font-weight: 200;
-  }
-  /*Appointments*/
-  & .transparentButton{
-      color: @appointment;
-    &:hover{
-      color: darken(@appointment, 10%);
-      background-color: fade(@appointment, 20%);
-    }
-    &:active{
-      background-color: fade(@appointment, 40%);
-    }
-    &.selected{
-      background-color: @appointment;
-      color: white;
-    }
-  }
-  & .appointmentContainer{
-    position:           relative;
-    color:              @darkGray;
-    width:              550px;
-    min-height:         135px;
-    padding:            0;
-    transition:         @defaultTransition;
-    &:hover{
-      color: @appointment;
-    }
-    & .dayTime{
-      font-size:   14px;
-      font-weight: 200;
-    }
-    & .appointmentContent{
-      transition:       @defaultTransition;
-      min-height:       100px;
-      z-index:          1;
-      background-color: white;
-    }
-    & .buttons{
-      padding:    0 8px;
-      transition: @defaultTransition;
-    }
-    &.past{
-      opacity:    0.5;
-      &:hover{
-        opacity: 1;
-      }
-    }
-    &.future{
-      opacity: 0.75;
-      &:hover{
-        opacity: 1;
-      }
-    }
-    & .drPicture{
-      width:            90px;
-      height:           100px;
-      background-color: @darkGray;
-    }
-    & .drLastname{
-      font-size:   18px;
-      font-weight: 700;
-    }
-    & .drName{
-      font-size:   18px;
-      font-weight: 200;
-    }
-    & .drSpecialty{
-      font-size:   16px;
-      font-weight: 200;
-    }
-    & .drAddress{
-      font-size:   14px;
-      font-weight: 200;
-    }
-  }
-  & .letterContainer{
-    padding: 10px 10px 10px 30px;
-    width:   975px;
-    .title{
-      font-weight: 400;
-      color:       @darkGray;
-      font-size:   20px;
-      margin:      7px 10px 0;
-    }
-  }
-  .sidebar{
-    width:       350px;
-    align-self:  flex-start;
-    align-items: center;
-    margin:      27px 0 0 20px;
-    font-weight: 200;
-    & .calendar{
-      background-color: white;
-      z-index:            5;
-      top:                22px;
-      width:              350px;
-      border-radius:      2px;
-      & .calendarHeader{
-        background-color: @darkGray;
-        color:          white;
-        padding:          0 0 4px;
-        font-size:        12px;
-      }
-      & .calendarTitle{
-        background-color: @darkGray;
-        color:          white;
-        padding:          0 8px;
-        font-size:        12px;
-        & .monthTitle{
-          font-size: 16px
-        }
-      }
-      & .day{
-        width:         30px;
-        text-align:    center;
-        margin:        3px 10px;
-        padding:       5px 0;
-        border-radius: 30px;
-        font-size:     12px;
-        &:hover{
-          color: @mainColor;
-        }
-        &.today{
-          font-weight:      600;
-          background-color: @midGray;
-          color:            white;
-        }
-        &.matchDay{
-          font-weight:      600;
-          background-color: @appointment;
-          color:            white;
-        }
-        & .appointmentPoint{
-          background-color: white;
-          margin:           1px;
-          width:            4px;
-          height:           4px;
-          border-radius:    2px;
-        }
-      }
-    }
-  }
-  /*End appointments*/
-  & .searchContainer{
-    // align-self:       stretch;
-    align-self:       center;
-    width:            900px;
-    padding:          8px 16px;
-    margin:           20px 0 10px;
-    min-height:       40px;
-    color:          white;
-  }
-  & .filterSidebar{
-    width: 335px;
-    margin-top: 30px;
-    background-color: white;
-    & .filterContainer{
-      & .filterTitle{
-        font-size: 14px;
-      }
-    }
-  }
-}
 .fab{
   position: fixed;
   bottom: 30px;
@@ -864,15 +490,8 @@ select, input{
   border-radius: 30px;
   text-align: center;
   cursor: pointer;
-  &.appointments{
-    background-color: @appointment;
-    color: white;
-    &:hover{
-      background-color: darken(@appointment, 5%);
-    }
-  }
 }
-/*Dialog*/
+
 dialog {
   background: #FFF;
   padding: 0;
@@ -898,88 +517,4 @@ dialog {
   & .dialogContent{
     padding: 20px;
   }
-  //Appointments
-  &#newAppointmentDialog{
-    width:  750px;
-    height: 600px;
-    & .filterSidebar{
-      width: 120px;
-      & .filterContainer{
-        margin-bottom: 20px;
-        & .filterTitle{
-          font-size: 14px;
-        }
-        & .tagButton{
-          &.selected{
-            background-color: @appointment;
-          }
-        }
-      }
-    }
-  }
-}
-/*End Dialog*/
-& .professionalHeader{
-  background-color: @darkGray;
-  color: white;
-  width: 885px;
-  min-height: 18px;
-  margin-top: 10px;
-  font-size: 14px;
-  position: absolute;
-}
-& .professional{
-  padding: 2px 10px;
-  cursor: pointer;
-  border-radius: 2px;
-  &:hover .iconButton{
-    opacity: 1;
-  }
-  &:hover.appointments{
-    color: @appointment;
-  }
-  &:hover.contacts{
-    // color: @contacts;
-    background-color: #F5F5F5;
-  }
-  & .drPicture{
-    width:            50px;
-    height:           60px;
-    background-color: @darkGray;
-    margin-right:     5px;
-  }
-  & .drLastname{
-    font-size: 14px;
-    font-weight: 700;
-  }
-  & .drName{
-    font-size: 14px;
-    font-weight: 200;
-  }
-  & .drSpecialty{
-    font-size: 12px;
-    font-weight: 200;
-  }
-  & .drAddress{
-    font-size:   12px;
-    font-weight: 200;
-  }
-  & .drDay{
-    font-size:       12px;
-    font-weight:     200;
-    opacity:         0.4;
-    justify-content: center;
-    &.trueDay{
-      color:       @appointment;
-      opacity:     1;
-      font-weight: 700;
-    }
-  }
-}
-
-.searchResults{
-  width:            915px;
-  height:           450px;
-  background-color: white;
-  margin:           10px 0;
 }
