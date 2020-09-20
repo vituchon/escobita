@@ -44,7 +44,7 @@
   font-size: 24px;
   padding: 10px;
   font-weight: bold;
-  color: #477ACD;
+  color: #333333;
 }
 .flex-space-filler {
   flex-grow: 2;
@@ -320,11 +320,11 @@ ui-view {
   background-color: #ebebeb;
 }
 .materialButton.colorButton {
-  background-color: #477ACD;
+  background-color: #333333;
   color: white;
 }
 .materialButton.colorButton:hover {
-  background-color: #3061b1;
+  background-color: #1a1a1a;
 }
 .materialButton.white {
   background-color: white;
@@ -376,7 +376,7 @@ ui-view {
   height: 20px;
 }
 .materialButton.tagButton.selected {
-  background-color: #477ACD;
+  background-color: #333333;
   color: white;
   font-weight: 600;
 }
@@ -385,7 +385,7 @@ ui-view {
   color: #404041;
 }
 .textButton:hover {
-  color: #477ACD;
+  color: #333333;
 }
 .raised {
   box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
