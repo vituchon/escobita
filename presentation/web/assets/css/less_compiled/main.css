@@ -135,11 +135,25 @@
   display: flex;
   flex-direction: column;
 }
-.lobby-container .client-player-section .name {
+.lobby-container .client-player-section .name-control {
   display: flex;
   flex-direction: row;
   min-height: 50px;
   align-items: center;
+}
+.lobby-container .client-player-section .name-control .title {
+  font-size: 16px;
+  background-color: #EFEFEFEF;
+  padding: 10px;
+  border-radius: 15px;
+  border-color: black;
+  border: 2px solid black;
+}
+.lobby-container .client-player-section .name-control .input {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 10px;
 }
 .lobby-container .game-list-section {
   display: flex;
@@ -389,7 +403,6 @@ input {
   color: #404041;
   background-color: transparent;
   padding: 2px 2px 1px;
-  margin: 0 5px;
   border-bottom: 1px solid #A4A4A4;
   transition: all 0.2s linear;
 }
