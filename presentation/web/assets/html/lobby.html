@@ -4,12 +4,12 @@
 
   <loading message="Cargando..." ng-if="ctr.loading"></loading>
 
-  <div class="section player-data-section">
+  <div class="section client-player-section">
     <div class="title">Datos de jugador</div>
-    <div class="player-name">
+    <div class="name">
       <span>Nombre:</span>
-      <input class="loginInput" placeholder="Escribe tu nombre" ng-model="ctr.playerName"></input>
-      <span class="flex-space-filler"></span>
+      <input placeholder="Escribe tu nombre" ng-model="ctr.playerName" style="flex-grow: 100;"></input>
+      <span style="flex-grow: 2;"></span>
       <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.updatePlayerName(ctr.playerName)">Guardar</div>
     </div>
     <span style="font-size: 75%;">
@@ -35,7 +35,6 @@
         <div ng-repeat="game in ctr.games">
           <div style="display:flex; flex-direction: row;  align-items: center; margin-top: 10px;">
             <span>{{game.name}}</span>
-            <div style="width: 20px;"></div>
             <span class="flex-space-filler"></span>
             <div class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-class="{'disabled-button': ctr.loading}"  ng-click="!ctr.loading && ctr.joinGame(game, ctr.player)">Unirse</div>
           </div>
@@ -47,8 +46,8 @@
       <div class="section">
         <div class="title">Crear un nuevo juego</div>
         <div style="display:flex; flex-direction: row;  align-items: center;">
-          <input class="loginInput"  placeholder="Nombre del juego" ng-model="game.name">
-          <span class="flex-space-filler"></span>
+          <input placeholder="Nombre del juego" ng-model="game.name"  style="flex-grow: 100;">
+          <span  style="flex-grow: 2;"></span>
           <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.createGame(game)">Crear nuevo juego</div>
         </div>
       </div>

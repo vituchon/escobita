@@ -29,17 +29,17 @@
     <div class="materialButton colorButton" ng-click="ctr.refreshGame()">Actualizar Partida</div>
   </div>
 
-  <div class="section game-section game-match-section">
+  <div class="section game-match-section">
     <div class="materialButton colorButton" style="background-color: firebrick"  ng-hide="ctr.isMatchInProgress || !ctr.isPlayerGameOwner" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.startGame(ctr.game)">COMENZAR</div>
     <loading message="Cargando..." ng-if="ctr.loading"></loading>
     <div ng-if="ctr.isMatchInProgress && !ctr.loading">
 
       <!-- CARDS -->
-      <div class="cards">
+      <div class="cards-section">
         <!-- DECK -->
-        <div class="deck-cards-section">
-          <div>En mesa</div>
-          <div class="deck-card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+        <div class="deck-section">
+          <div class="title">En mesa</div>
+          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
             <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
             <card ng-model="card"></card>
           </div>
@@ -48,9 +48,9 @@
         <span class="flex-space-filler"></span>
 
         <!-- HAND -->
-        <div class="hand-cards-section">
-          <div>En mano</div>
-          <div class="deck-card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+        <div class="hand-section">
+          <div class="title">En mano</div>
+          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
             <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
             <card ng-model="card"></card>
           </div>

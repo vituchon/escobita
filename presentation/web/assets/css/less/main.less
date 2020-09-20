@@ -1,12 +1,5 @@
 
 
-@mainColor: #333333;
-@lightGray: #FAFAFA;
-@midGray: #A4A4A4;
-@darkGray: #404041;
-@red: #D32F2F;
-@defaultTransition: all 0.2s linear;
-
 @font-face {
   font-family: 'Material Icons';
   font-style: normal;
@@ -52,33 +45,6 @@
   font-style: normal;
 }
 
-// COMMON STYLES
-
-.panel {
-  .title {
-    font-size: 24px;
-    padding: 10px;
-    font-weight: bold;
-    color: @mainColor;
-  }
-}
-
-.flex-space-filler {
-  flex-grow: 2;
-}
-
-.section {
-  .title {
-    font-size: 16px;
-  }
-}
-
-.section-separator {
-  height: 20px;
-  background-color: lightgray;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
 
 // LOADER
 
@@ -119,8 +85,26 @@
   }
 }
 
-// FINISH LOADER
+// COMMON STYLES
 
+@mainColor: #333333;
+@lightGray: #FAFAFA;
+@midGray: #A4A4A4;
+@darkGray: #404041;
+@red: #D32F2F;
+@defaultTransition: all 0.2s linear;
+
+@panel-width: 800px;
+
+.panel {
+  width: @panel-width;
+  .title {
+    font-size: 24px;
+    padding: 10px;
+    font-weight: bold;
+    color: @mainColor;
+  }
+}
 
 // ROOT SCREEN ("SCREEN CONTAINER")
 
@@ -143,18 +127,48 @@
   flex-flow: column;
 }
 
+.ui-view-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  justify-content: center;
+}
+
+.flex-space-filler {
+  flex-grow: 2;
+}
+
+.section {
+  .title {
+    font-size: 16px;
+  }
+}
+
+.section-separator {
+  height: 20px;
+  background-color: lightgray;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 // LOBBY SCREEN
 
 .lobby-container {
-  width: 500px;
 
-  .player-data-section {
+  .lobby-title {
+    font-size: 16px;
+  }
+
+  .client-player-section {
     display: flex;
     flex-direction: column;
 
-    .player-name {
+    .name {
       display: flex;
       flex-direction: row;
+      min-height: 50px;
+      align-items: center;
     }
   }
 
@@ -170,13 +184,10 @@
   }
 }
 
-.lobby-title {
-  font-size: 16px;
-}
 
-.game-player-list-section {
-  margin:20px;
-}
+
+
+player-data-section
 
 // GAME SCREEN
 
@@ -201,27 +212,45 @@
   background-color: yellow;
 }
 
-.cards {
+.cards-section {
   display:flex;
   flex-direction: row;
-  .deck-card {
+
+  .title {
+    font-size: 18px;
+    font-weight: bold;
     display: flex;
-    flex-direction: row;
-    text-align: start;
-    align-items: baseline;
+    justify-content: center;
+  }
+
+  .deck-section {
+    display: flex;
+    flex-direction: column;
+    background-color: #EAEAEA;
+    border-radius: 20px;
+    padding: 20;
+  }
+
+  .hand-section {
+    display: flex;
+    flex-direction: column;
+    background-color: #EAEAEA;
+    border-radius: 20px;
+    padding: 20;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .taken-section {
+    display:flex;
+    flex-direction: column;
+    overflow: auto;
+    width: 200px;
+    height: 200px;
   }
 }
 
-.deck-cards-section{
-  display:flex;
-  flex-direction: column;
-}
 
-.hand-cards-section
-{
-  display:flex;
-  flex-direction: column;
-}
 
 .game-player-list-section {
   display:flex;
@@ -255,10 +284,23 @@
 
 // Card container directive
 
-.card-container {
+.card {
   display: flex;
   flex-direction: row;
   align-items: center;
+  height: 40px;
+  font-size: 16px;
+}
+
+.ng-card-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .value {
+    color: blue;
+    font-weight: bold;
+  }
 }
 
 body{
@@ -302,49 +344,7 @@ ui-view {
     font-size: 28px;
   }
 }
-.materialCard{
-  border-radius: 2px;
-  padding:       8px;
-  margin:        8px;
-  transition:    @defaultTransition;
-  .title{
-    font-weight: 400;
-    color: @darkGray;
-    font-size: 20px;
-    margin: 10px 5px;
-    &.white{
-      color: white;
-    }
-  }
-  & .optionText{
-    font-size: 14px;
-    font-weight: 400;
-  }
-}
-.buttons{
-  display:         flex;
-  flex-direction:  row;
-  justify-content: flex-end;
-  padding:         8px;
-  align-items:     flex-end;
-  &.dark{
-    background-color: #F5F5F5;
-  }
-  &.white{
-    background-color: white;
-  }
-}
-.verticalButtons{
-  display:         flex;
-  flex-direction:  column;
-  justify-content: flex-start;
-  padding:         8px;
-  align-items:     flex-start;
-  height:          100%;
-  &.dark{
-    background-color: #F5F5F5;
-  }
-}
+
 .materialButton{
   align-items:    center;
   justify-content: center;

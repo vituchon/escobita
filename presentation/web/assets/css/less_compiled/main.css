@@ -40,24 +40,6 @@
   font-weight: 900;
   font-style: normal;
 }
-.panel .title {
-  font-size: 24px;
-  padding: 10px;
-  font-weight: bold;
-  color: #333333;
-}
-.flex-space-filler {
-  flex-grow: 2;
-}
-.section .title {
-  font-size: 16px;
-}
-.section-separator {
-  height: 20px;
-  background-color: lightgray;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
 .loader {
   margin: 25px auto 15px;
   width: 70px;
@@ -102,6 +84,15 @@
     transform: scale(1);
   }
 }
+.panel {
+  width: 800px;
+}
+.panel .title {
+  font-size: 24px;
+  padding: 10px;
+  font-weight: bold;
+  color: #333333;
+}
 .nav-container {
   display: flex;
   justify-content: center;
@@ -118,16 +109,37 @@
   display: flex;
   flex-flow: column;
 }
-.lobby-container {
-  width: 500px;
+.ui-view-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  justify-content: center;
 }
-.lobby-container .player-data-section {
+.flex-space-filler {
+  flex-grow: 2;
+}
+.section .title {
+  font-size: 16px;
+}
+.section-separator {
+  height: 20px;
+  background-color: lightgray;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.lobby-container .lobby-title {
+  font-size: 16px;
+}
+.lobby-container .client-player-section {
   display: flex;
   flex-direction: column;
 }
-.lobby-container .player-data-section .player-name {
+.lobby-container .client-player-section .name {
   display: flex;
   flex-direction: row;
+  min-height: 50px;
+  align-items: center;
 }
 .lobby-container .game-list-section {
   display: flex;
@@ -138,13 +150,7 @@
   flex-direction: row;
   align-items: center;
 }
-.lobby-title {
-  font-size: 16px;
-}
-.game-player-list-section {
-  margin: 20px;
-}
-.game-container {
+player-data-section .game-container {
   width: 700px;
 }
 .game-match-section {
@@ -161,23 +167,38 @@
   border: 2px black solid;
   background-color: yellow;
 }
-.cards {
+.cards-section {
   display: flex;
   flex-direction: row;
 }
-.cards .deck-card {
+.cards-section .title {
+  font-size: 18px;
+  font-weight: bold;
   display: flex;
-  flex-direction: row;
-  text-align: start;
-  align-items: baseline;
+  justify-content: center;
 }
-.deck-cards-section {
+.cards-section .deck-section {
   display: flex;
   flex-direction: column;
+  background-color: #EAEAEA;
+  border-radius: 20px;
+  padding: 20;
 }
-.hand-cards-section {
+.cards-section .hand-section {
   display: flex;
   flex-direction: column;
+  background-color: #EAEAEA;
+  border-radius: 20px;
+  padding: 20;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.cards-section .taken-section {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: 200px;
+  height: 200px;
 }
 .game-player-list-section {
   display: flex;
@@ -203,10 +224,21 @@
   font-weight: bold;
   color: darkgreen;
 }
-.card-container {
+.card {
   display: flex;
   flex-direction: row;
   align-items: center;
+  height: 40px;
+  font-size: 16px;
+}
+.ng-card-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.ng-card-container .value {
+  color: blue;
+  font-weight: bold;
 }
 body {
   height: 100vh;
@@ -248,49 +280,6 @@ ui-view {
 }
 .materialIcon.mi28 {
   font-size: 28px;
-}
-.materialCard {
-  border-radius: 2px;
-  padding: 8px;
-  margin: 8px;
-  transition: all 0.2s linear;
-}
-.materialCard .title {
-  font-weight: 400;
-  color: #404041;
-  font-size: 20px;
-  margin: 10px 5px;
-}
-.materialCard .title.white {
-  color: white;
-}
-.materialCard .optionText {
-  font-size: 14px;
-  font-weight: 400;
-}
-.buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  padding: 8px;
-  align-items: flex-end;
-}
-.buttons.dark {
-  background-color: #F5F5F5;
-}
-.buttons.white {
-  background-color: white;
-}
-.verticalButtons {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 8px;
-  align-items: flex-start;
-  height: 100%;
-}
-.verticalButtons.dark {
-  background-color: #F5F5F5;
 }
 .materialButton {
   align-items: center;
