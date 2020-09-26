@@ -215,7 +215,7 @@ player-data-section
 .game-match-section {
   margin: 20px;
   display:flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 .game-message {
@@ -229,7 +229,7 @@ player-data-section
   background-color: yellow;
 }
 
-.cards-section {
+.playing-cards-section {
   display:flex;
   flex-direction: row;
 
@@ -258,12 +258,35 @@ player-data-section
     margin-right: 10px;
   }
 
-  .taken-section {
-    display:flex;
+  .controls-section {
+    display: flex;
     flex-direction: column;
-    overflow: auto;
-    width: 200px;
-    height: 200px;
+    justify-content: space-evenly;
+    height: 100px;
+
+    .colorButton {
+      background-color: blue;
+      color: yellow;
+      font-weight: bold;
+    }
+  }
+}
+
+.played-cards-section {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: lightgrey;
+    border-radius: 10px;
+    padding: 0 5px;
+    margin: 5px;
+    font-size: 14px;
   }
 }
 

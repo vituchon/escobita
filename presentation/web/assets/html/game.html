@@ -30,94 +30,101 @@
   </div>
 
   <div class="section game-match-section">
+
     <div class="materialButton colorButton" style="background-color: firebrick"  ng-hide="ctr.isMatchInProgress || !ctr.isPlayerGameOwner" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.startGame(ctr.game)">COMENZAR</div>
+
     <loading message="Cargando..." ng-if="ctr.loading"></loading>
-    <div ng-if="ctr.isMatchInProgress && !ctr.loading">
 
-      <!-- CARDS -->
-      <div class="cards-section">
+    <!-- PLAYING CARDS -->
+    <div class="playing-cards-section" ng-if="ctr.isMatchInProgress && !ctr.loading">
 
-        <!-- DECK -->
-        <div class="deck-section">
-          <div class="title">En mesa</div>
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
-            <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
-            <card ng-model="card"></card>
-          </div>
+      <!-- DECK -->
+      <div class="deck-section">
+        <div class="title">En mesa</div>
+        <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+          <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
+          <card ng-model="card"></card>
         </div>
+      </div>
 
-        <!-- HAND -->
-        <div class="hand-section">
-          <div class="title">En mano</div>
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
-            <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
-            <card ng-model="card"></card>
-          </div>
+      <!-- HAND -->
+      <div class="hand-section">
+        <div class="title">En mano</div>
+        <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+          <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
+          <card ng-model="card"></card>
         </div>
       </div>
 
       <!-- ACTION CONTROLS -->
-      <div ng-if="ctr.isPlayerTurn" style="width: 200px; display:flex; flex-direction: row; margin-top: 10px;">
+      <div class="controls-section" ng-if="ctr.isPlayerTurn">
         <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-show="ctr.hasValidTakeAction()" ng-click="!ctr.loading && ctr.performTakeAction()">Levantar</div>
-        <div></div>
         <div class="materialButton raised colorButton" ng-class="{'disabled-button': ctr.loading}" ng-show="ctr.hasValidDropAction()" ng-click="!ctr.loading && ctr.performDropAction()">Descartar</div>
       </div>
 
-      <!-- MATCH STATS -->
-      <div class="stats-section" >
-        <div>Estadísticas del partido</div>
-        <div ng-repeat="(playerName,stats) in ctr.currentMatchStats" class="player-stats">
-            <div>
-              <span class="player-name">{{playerName}}</span>&nbsp;
-              <span style="font-size:80%;">
-                &lpar;<span class="stats-name">puntaje:</span>&nbsp;<span class="stats-value">{{stats.score}}</span>&rpar;
-              </span>
-            </div>
-            <div>
-              <span class="stats-name">Cartas levantadas:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.cardsTakenCount}}</span>
-              &nbsp;&comma;
-              <span class="stats-name">Oros:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.goldCardsCount}}</span>
-            </div>
-            <div>
-              <span class="stats-name">Escobitas:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
-            </div>
-            <div>
-              <span class="stats-name">Siete de oro:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.hasGoldSeven ? "Sí" : "No"}}</span>
-            </div>
-            <div>
-              <span class="stats-name">Puntaje de setentas:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.seventiesScore}}</span>
-            </div>
-        </div>
-      </div>
-
     </div>
-    <div class="section-separator"></div>
 
-    <!-- CHAT -->
-    <div class="section game-chat-section">
-      <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Ocultar' : 'Mostrar'}} chat</div>
-      <div class="flex"></div>
-      <div ng-if="ctr.isChatEnabled">
-        <div class="flex">
-          <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
-          <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
-          <div class="flex"></div>
-        </div>
-        <div class="game-messages-section">
-          <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'" ng-style="{'font-size': ctr.getFontSize(ctr.playersById[message.playerId])}">
-            <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
-            <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
-            <span>{{message.text}}</span>
+
+    <!-- TAKEN CARDS -->
+    <div ng-if="ctr.isMatchInProgress" class="materialButton colorButton" ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div>
+    <div class="played-cards-section" ng-if="showTakenCards">
+      <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].taken">
+        <card ng-model="card"></card>
+      </div>
+    </div>
+
+    <!-- MATCH STATS -->
+    <div class="stats-section" >
+      <div>Estadísticas del partido</div>
+      <div ng-repeat="(playerName,stats) in ctr.currentMatchStats" class="player-stats">
+          <div>
+            <span class="player-name">{{playerName}}</span>&nbsp;
+            <span style="font-size:80%;">
+              &lpar;<span class="stats-name">puntaje:</span>&nbsp;<span class="stats-value">{{stats.score}}</span>&rpar;
+            </span>
           </div>
-        </div>
+          <div>
+            <span class="stats-name">Cartas levantadas:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.cardsTakenCount}}</span>
+            &nbsp;&comma;
+            <span class="stats-name">Oros:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.goldCardsCount}}</span>
+          </div>
+          <div>
+            <span class="stats-name">Escobitas:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
+          </div>
+          <div>
+            <span class="stats-name">Siete de oro:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.hasGoldSeven ? "Sí" : "No"}}</span>
+          </div>
+          <div>
+            <span class="stats-name">Puntaje de setentas:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.seventiesScore}}</span>
+          </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- CHAT -->
+  <div class="section game-chat-section">
+    <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Ocultar' : 'Mostrar'}} chat</div>
+    <div class="flex"></div>
+    <div ng-if="ctr.isChatEnabled">
+      <div class="flex">
+        <input class="loginInput" placeholder="Escribe un mensaje" ng-model="ctr.message" >
+        <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
+        <div class="flex"></div>
+      </div>
+      <div class="game-messages-section">
+        <div class="game-message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'" ng-style="{'font-size': ctr.getFontSize(ctr.playersById[message.playerId])}">
+          <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
+          <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
+          <span>{{message.text}}</span>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>

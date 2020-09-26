@@ -170,7 +170,7 @@ player-data-section .game-container {
 .game-match-section {
   margin: 20px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 .game-message {
   color: blue;
@@ -181,24 +181,24 @@ player-data-section .game-container {
   border: 2px black solid;
   background-color: yellow;
 }
-.cards-section {
+.playing-cards-section {
   display: flex;
   flex-direction: row;
 }
-.cards-section .title {
+.playing-cards-section .title {
   font-size: 18px;
   font-weight: bold;
   display: flex;
   justify-content: center;
 }
-.cards-section .deck-section {
+.playing-cards-section .deck-section {
   display: flex;
   flex-direction: column;
   background-color: #EAEAEA;
   border-radius: 20px;
   padding: 20;
 }
-.cards-section .hand-section {
+.playing-cards-section .hand-section {
   display: flex;
   flex-direction: column;
   background-color: #EAEAEA;
@@ -207,12 +207,32 @@ player-data-section .game-container {
   margin-left: 10px;
   margin-right: 10px;
 }
-.cards-section .taken-section {
+.playing-cards-section .controls-section {
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  width: 200px;
-  height: 200px;
+  justify-content: space-evenly;
+  height: 100px;
+}
+.playing-cards-section .controls-section .colorButton {
+  background-color: blue;
+  color: yellow;
+  font-weight: bold;
+}
+.played-cards-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.played-cards-section .card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: lightgrey;
+  border-radius: 10px;
+  padding: 0 5px;
+  margin: 5px;
+  font-size: 14px;
 }
 .game-player-list-section {
   display: flex;
