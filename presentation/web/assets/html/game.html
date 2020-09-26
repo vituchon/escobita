@@ -36,6 +36,7 @@
 
       <!-- CARDS -->
       <div class="cards-section">
+
         <!-- DECK -->
         <div class="deck-section">
           <div class="title">En mesa</div>
@@ -44,8 +45,6 @@
             <card ng-model="card"></card>
           </div>
         </div>
-
-        <span class="flex-space-filler"></span>
 
         <!-- HAND -->
         <div class="hand-section">
@@ -87,7 +86,7 @@
             </div>
             <div>
               <span class="stats-name">Siete de oro:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
+              <span class="stats-value">{{stats.statictics.hasGoldSeven ? "Sí" : "No"}}</span>
             </div>
             <div>
               <span class="stats-name">Puntaje de setentas:</span>&nbsp;
