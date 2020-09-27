@@ -166,10 +166,27 @@ module Game {
         return this.players
       }).then((players) => {
         return this.messagesService.getMessagesByGame(this.game.id).then((messages) => {
+          const incomingMessages = this.determineIncomingMessages(this.messages,messages)
+          _.forEach(incomingMessages,(incomingMessage) => {
+            const player = this.playersById[incomingMessage.playerId]
+            Toastr.chat(player.name,incomingMessage.text)
+          })
           this.messages = messages;
           return messages;
         })
       })
+    }
+
+    private determineIncomingMessages(received: Api.Message[], all: Api.Message[]) {
+      if (_.isEmpty(received)) {
+        return all
+      } else {
+        return _.filter(all,(message) => {
+          const machtingMessage = _.find(received,(recievedMessage) => recievedMessage.id === message.id)
+          const notReceived = _.isUndefined(machtingMessage)
+          return notReceived
+        })
+      }
     }
 
     public sendMessage(text: string) {
