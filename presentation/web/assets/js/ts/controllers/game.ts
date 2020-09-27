@@ -79,6 +79,11 @@ module Game {
     public isMatchInProgress: boolean = false;
     public currentMatchStats: Api.ScoreSummaryByPlayerName;
 
+    /* TODO : Implement displaying of previous matchs score, leaving code below as an first approach
+    // the two below vars are a simple solution for displaying the last match scores! nothing more.. it may be polished a lot
+    public currentMatchStatsCopy: Api.ScoreSummaryByPlayerName;
+    public displayCurrentMatchStatsCopy: boolean = false;*/
+
     public players: Players.Player[]; // not sure if it will be use somewhere!
     public playersById: Util.EntityById<Players.Player>;
 
@@ -102,7 +107,11 @@ module Game {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
         if (isMatchInProgress && !wasMatchInProgress) {
-          Toastr.info("La partida ha comenzado!")
+          Toastr.info("¡La partida ha comenzado!")
+        }
+        if (!isMatchInProgress && wasMatchInProgress) {
+          Toastr.success("¡La partida ha terminado!")
+          //this.displayCurrentMatchStatsCopy = true
         }
       })
 
@@ -179,11 +188,7 @@ module Game {
       this.loading = true;
       return this.gamesService.getGameById(this.game.id).then((game) => { // update the game (in case another player join on other client AND this client is outdated)
         return this.gamesService.startGame(game).then((game) => {
-          this.game = game;
-          this.isMatchInProgress = true;
-          return this.updateGameStats().then(() => {
-            return game
-          })
+          return this.setGame(game)
         })
       }).finally(() => {
         this.loading = false
@@ -253,26 +258,22 @@ module Game {
       if (this.isMatchInProgress) {
         this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
         this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
-        return this.updateGameStats()
+        return this.updateGameStats().then(() => {
+          return this.game
+        })
       } else {
-        return this.$q.when(this.currentMatchStats)
+        return this.$q.when(this.game)
       }
     }
 
     public refreshGame() {
       return this.gamesService.getGameById(this.game.id).then((game) => {
-        this.game = game;
-        this.isMatchInProgress = Games.hasMatchInProgress(game)
-        if (this.isMatchInProgress) {
-          this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
-          this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
-          this.updateGameStats()
-        }
-        return game
+        return this.setGame(game)
       })
     }
 
     private updateGameStats() {
+      //this.currentMatchStatsCopy = angular.copy(this.currentMatchStats)
       return this.gamesService.calculateStatsByGameId(this.game.id).then((stats) => {
         this.currentMatchStats = stats;
         this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
