@@ -169,7 +169,7 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusOK)
 }
 
-func StartGame(response http.ResponseWriter, request *http.Request) {
+func ResumeGame(response http.ResponseWriter, request *http.Request) {
 	var game services.WebGame
 	err := ParseJsonFromReader(request.Body, &game)
 	if err != nil {
@@ -184,7 +184,7 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	updated, err := services.StartGame(game)
+	updated, err := services.ResumeGame(game)
 	if err != nil {
 		fmt.Printf("error while starting Game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)

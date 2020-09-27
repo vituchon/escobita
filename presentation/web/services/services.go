@@ -73,7 +73,7 @@ func DeleteGame(id int) error {
 
 // Escobita Oriented Functions
 
-func StartGame(game WebGame) (*WebGame, error) {
+func ResumeGame(game WebGame) (*WebGame, error) {
 	if game.HasMatchInProgress() {
 		return nil, model.MatchInProgressErr
 	}

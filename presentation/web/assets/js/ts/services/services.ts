@@ -92,7 +92,7 @@ namespace Games {
     }
 
     startGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/start`,game).then((response) => {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/resume`,game).then((response) => {
         return response.data
       })
     }
