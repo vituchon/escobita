@@ -112,13 +112,14 @@ func advanceGame(game WebGame) (*WebGame, error) {
 			} else {
 				// game ends
 				game.CurrentMatch.Ends()
+				game.CurrentMatch = nil // setting to nil provides a means to detect the current match ending on the client side
 			}
 		}
 		_, err := UpdateGame(game)
 		return &game, err
-	} else { // puede que al terminar el partido NO haya porque empezar otro partido... esto me ahorra un ida y vuelta tal vez.. no estoy seguro..
-		// match ended, so...
-		game.BeginsNewMatch() // ...begin another match is a no error operation thus there is no need to verify an error
+	} else {
+		// match ended, advancing means to begin another match
+		game.BeginsNewMatch() // no need to check the returned error
 		_, err := UpdateGame(game)
 		return &game, err
 
