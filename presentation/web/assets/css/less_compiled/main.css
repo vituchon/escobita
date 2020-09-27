@@ -267,6 +267,7 @@ player-data-section .game-container {
 .stats-section .player-stats-container {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   margin-top: 10px;
 }
 .stats-section .player-stats-container .player-stats-item .player-name {

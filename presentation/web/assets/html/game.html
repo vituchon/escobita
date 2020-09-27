@@ -106,34 +106,34 @@
 
     <!-- MATCH STATS -->
     <div class="stats-section">
-      <div class="title">Estadísticas del partido</div>
+      <div class="title">Estadísticas del partido actual</div>
       <div class="player-stats-container">
         <div ng-repeat="(playerName,stats) in ctr.currentMatchStats" class="player-stats-item">
-            <div>
-              <span class="player-name">{{playerName}}</span>&nbsp;
-              <span style="font-size:80%;">
-                &lpar;<span class="stats-name">puntaje:</span>&nbsp;<span class="stats-value">{{stats.score}}</span>&rpar;
-              </span>
-            </div>
-            <div>
-              <span class="stats-name">Cartas levantadas:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.cardsTakenCount}}</span>
-              &nbsp;&comma;
-              <span class="stats-name">, de las cuales son oros:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.goldCardsCount}}</span>
-            </div>
-            <div>
-              <span class="stats-name">Escobitas:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
-            </div>
-            <div>
-              <span class="stats-name">Siete de oro:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.hasGoldSeven ? "Sí" : "No"}}</span>
-            </div>
-            <div>
-              <span class="stats-name">Puntaje de setentas:</span>&nbsp;
-              <span class="stats-value">{{stats.statictics.seventiesScore}}</span>
-            </div>
+          <div>
+            <span class="player-name">{{playerName}}</span>&nbsp;
+            <span style="font-size:80%;">
+              &lpar;<span class="stats-name">puntaje:</span>&nbsp;<span class="stats-value">{{stats.score}}</span>&rpar;
+            </span>
+          </div>
+          <div>
+            <span class="stats-name">Cartas levantadas:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.cardsTakenCount}}</span>
+            &nbsp;&comma;
+            <span class="stats-name">oros:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.goldCardsCount}}</span>
+          </div>
+          <div>
+            <span class="stats-name">Escobitas:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.escobitasCount}}</span>
+          </div>
+          <div>
+            <span class="stats-name">Siete de oro:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.hasGoldSeven ? "Sí" : "No"}}</span>
+          </div>
+          <div>
+            <span class="stats-name">Puntaje de setentas:</span>&nbsp;
+            <span class="stats-value">{{stats.statictics.seventiesScore}}</span>
+          </div>
         </div>
       </div>
     </div>
