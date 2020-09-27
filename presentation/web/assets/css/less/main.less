@@ -229,46 +229,57 @@ player-data-section
   background-color: yellow;
 }
 
-.playing-cards-section {
+
+.interactive-section {
   display:flex;
-  flex-direction: row;
+  flex-direction: column;
 
-  .title {
-    font-size: 18px;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-  }
+  .play-section {
+    display:flex;
+    flex-direction: row;
 
-  .deck-section {
-    display: flex;
-    flex-direction: column;
-    background-color: #EAEAEA;
-    border-radius: 20px;
-    padding: 20;
-  }
-
-  .hand-section {
-    display: flex;
-    flex-direction: column;
-    background-color: #EAEAEA;
-    border-radius: 20px;
-    padding: 20;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  .controls-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    height: 100px;
-
-    .colorButton {
-      background-color: blue;
-      color: yellow;
+    .title {
+      font-size: 18px;
       font-weight: bold;
+      display: flex;
+      justify-content: center;
     }
+
+    .deck-section {
+      display: flex;
+      flex-direction: column;
+      background-color: #EAEAEA;
+      border-radius: 20px;
+      padding: 20;
+    }
+
+    .hand-section {
+      display: flex;
+      flex-direction: column;
+      background-color: #EAEAEA;
+      border-radius: 20px;
+      padding: 20;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    .game-chat-controls {
+
+      .controls-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        height: 100px;
+
+        .colorButton {
+          background-color: blue;
+          color: yellow;
+          font-weight: bold;
+        }
+      }
+
+    }
+
   }
 }
 
@@ -295,31 +306,61 @@ player-data-section
 .game-player-list-section {
   display:flex;
   flex-direction: column;
+
+  .title {
+    font-size: 14px;
+    font-weight: bold;
+  }
 }
 
-.stats-section{
+.taken-cards-container {
+  display:flex;
+  flex-direction: column;
+  margin-top: 10px;
+
+  div {
+    align-self: flex-start;
+  }
+
+}
+
+.stats-section {
   display:flex;
   flex-direction: column;
   font-size: 12px;
   margin-top: 10px;
 
-  .player-stats{
+  .title {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .player-stats-container {
+    display:flex;
+    flex-direction: row;
     margin-top: 10px;
 
-    .player-name {
-      color:darkgrey;
-      font-weight: bold;;
-    }
+    .player-stats-item{
 
-    .stats-name {
-      font-weight: normal;
-    }
+      .player-name {
+        color:darkgrey;
+        font-weight: bold;;
+      }
 
-    .stats-value {
-      font-weight: bold;
-      color: darkgreen;
+      .stats-name {
+        font-weight: normal;
+      }
+
+      .stats-value {
+        font-weight: bold;
+        color: darkgreen;
+      }
     }
   }
+}
+
+.chat-container {
+
 }
 
 // Card container directive
@@ -397,7 +438,7 @@ ui-view {
   transition:     @defaultTransition;
   cursor:         pointer;
   font-weight:    700;
-  font-size:      13px;
+  font-size:      14px;
   &.raised{
     box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
     &:hover{

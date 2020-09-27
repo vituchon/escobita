@@ -181,24 +181,28 @@ player-data-section .game-container {
   border: 2px black solid;
   background-color: yellow;
 }
-.playing-cards-section {
+.interactive-section {
+  display: flex;
+  flex-direction: column;
+}
+.interactive-section .play-section {
   display: flex;
   flex-direction: row;
 }
-.playing-cards-section .title {
+.interactive-section .play-section .title {
   font-size: 18px;
   font-weight: bold;
   display: flex;
   justify-content: center;
 }
-.playing-cards-section .deck-section {
+.interactive-section .play-section .deck-section {
   display: flex;
   flex-direction: column;
   background-color: #EAEAEA;
   border-radius: 20px;
   padding: 20;
 }
-.playing-cards-section .hand-section {
+.interactive-section .play-section .hand-section {
   display: flex;
   flex-direction: column;
   background-color: #EAEAEA;
@@ -207,13 +211,13 @@ player-data-section .game-container {
   margin-left: 10px;
   margin-right: 10px;
 }
-.playing-cards-section .controls-section {
+.interactive-section .play-section .game-chat-controls .controls-section {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   height: 100px;
 }
-.playing-cards-section .controls-section .colorButton {
+.interactive-section .play-section .game-chat-controls .controls-section .colorButton {
   background-color: blue;
   color: yellow;
   font-weight: bold;
@@ -238,23 +242,41 @@ player-data-section .game-container {
   display: flex;
   flex-direction: column;
 }
+.game-player-list-section .title {
+  font-size: 14px;
+  font-weight: bold;
+}
+.taken-cards-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+.taken-cards-container div {
+  align-self: flex-start;
+}
 .stats-section {
   display: flex;
   flex-direction: column;
   font-size: 12px;
   margin-top: 10px;
 }
-.stats-section .player-stats {
+.stats-section .title {
+  font-size: 14px;
+  font-weight: bold;
+}
+.stats-section .player-stats-container {
+  display: flex;
+  flex-direction: row;
   margin-top: 10px;
 }
-.stats-section .player-stats .player-name {
+.stats-section .player-stats-container .player-stats-item .player-name {
   color: darkgrey;
   font-weight: bold;
 }
-.stats-section .player-stats .stats-name {
+.stats-section .player-stats-container .player-stats-item .stats-name {
   font-weight: normal;
 }
-.stats-section .player-stats .stats-value {
+.stats-section .player-stats-container .player-stats-item .stats-value {
   font-weight: bold;
   color: darkgreen;
 }
@@ -327,7 +349,7 @@ ui-view {
   transition: all 0.2s linear;
   cursor: pointer;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14px;
 }
 .materialButton.raised {
   box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
