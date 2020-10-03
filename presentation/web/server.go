@@ -106,7 +106,7 @@ func buildRouter() *mux.Router {
 	apiPost("/games/{id:[0-9]+}/resume", controllers.ResumeGame)
 	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
 	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
-	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)
+	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats) // TODO : add optional parameter "match index", default beign current
 
 	apiGet("/players", controllers.GetPlayers)
 	apiGet("/player", controllers.GetClientPlayer)
@@ -114,7 +114,7 @@ func buildRouter() *mux.Router {
 	apiPost("/players", controllers.CreatePlayer)
 	apiPut("/players/{id:[0-9]+}", controllers.UpdatePlayer)
 
-	apiGet("/messages", controllers.GetMessages)
+	apiGet("/messages", controllers.GetMessages) // TODO : add optional parameter "since", default beign server start up time
 	apiGet("/messages/{id:[0-9]+}", controllers.GetMessageById)
 	apiGet("/messages/get-by-game/{id:[0-9]+}", controllers.GetMessagesByGame)
 	apiPost("/messages", controllers.CreateMessage)
