@@ -42,6 +42,18 @@ func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	since, err := UrlQueryIntParam(request, "since")
+	if err != nil {
+		if err == UrlParamNotFoundErr {
+			var zero = 0
+			since = &zero
+		} else {
+			fmt.Printf("error parsing url param 'since': '%v'", err)
+			response.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Printf("Tenemos este since %d", *since)
 	messages, err := services.GetMessagesByGame(id)
 	if err != nil {
 		fmt.Printf("error while retrieving messages for game(id=%d): '%v'", id, err)
