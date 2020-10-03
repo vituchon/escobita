@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -48,4 +50,18 @@ func ParseJsonFromReader(reader io.Reader, val interface{}) error {
 // Gets a Route parameter, that is a value within the url's PATH, not in the url's QUERY STRING.
 func RouteParam(request *http.Request, name string) string {
 	return mux.Vars(request)[name]
+}
+
+var (
+	UrlParamNotFoundErr = errors.New("No url param present with the given name")
+)
+
+// Gets an integer url's query param with the given name
+func UrlQueryIntParam(request *http.Request, name string) (*int, error) {
+	param := request.URL.Query().Get(name)
+	if len(param) == 0 {
+		return nil, UrlParamNotFoundErr
+	}
+	value, err := strconv.Atoi(param)
+	return &value, err
 }
