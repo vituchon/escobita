@@ -139,7 +139,9 @@ module Game {
           const incomingMessages = this.determineIncomingMessages(this.messages,messages)
           _.forEach(incomingMessages,(incomingMessage) => {
             const player = this.playersById[incomingMessage.playerId]
-            Toastr.chat(player.name,incomingMessage.text)
+            const $elem = Toastr.chat(player.name,incomingMessage.text)
+            const fontSize = this.getFontSize(player)
+            $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px");
           })
           this.messages = messages;
           return messages;
