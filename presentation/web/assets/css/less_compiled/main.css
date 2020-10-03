@@ -172,15 +172,6 @@ player-data-section .game-container {
   display: flex;
   flex-direction: column;
 }
-.game-message {
-  color: blue;
-}
-.game-messages-section {
-  overflow: auto;
-  height: 400px;
-  border: 2px black solid;
-  background-color: yellow;
-}
 .interactive-section {
   display: flex;
   flex-direction: column;
@@ -230,9 +221,19 @@ player-data-section .game-container {
 .interactive-section .play-section .game-chat-controls .chat-container .send-message-control {
   display: flex;
   flex-direction: row;
+  align-items: baseline;
 }
 .interactive-section .play-section .game-chat-controls .chat-container .send-message-control .text {
   flex-grow: 2;
+}
+.interactive-section .play-section .game-chat-controls .chat-container .messages-section {
+  overflow: auto;
+  height: 300px;
+  border: 2px black solid;
+  background-color: yellow;
+}
+.interactive-section .play-section .game-chat-controls .chat-container .messages-section .message {
+  color: blue;
 }
 .toastr-chat-class {
   background-color: #51a351 !important;
