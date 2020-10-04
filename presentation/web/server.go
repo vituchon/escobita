@@ -1,6 +1,7 @@
 package web
 
-// trying to use one file for all kinds controllers and content delivery related code
+// The presentation layer contains all resources concerned with creating an application interface
+// Contains code designed to be used for http rest based api interface
 
 import (
 	"context"

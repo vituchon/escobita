@@ -1,6 +1,6 @@
 // The presentation layer contains all resources concerned with creating an application interface
-// Contains code designed to be used for command line interface
-package presentation
+// Contains code designed to be used for command line interface in a interactive way (no offline mode provided!)
+package cli
 
 import (
 	"bufio"
@@ -13,7 +13,7 @@ import (
 	"os"
 )
 
-func RunCLIApp() {
+func StartApp() {
 
 	var players []model.Player = []model.Player{
 		model.Player{Name: "Beto"},
@@ -66,7 +66,7 @@ func RunCLIApp() {
 		}
 		//fmt.Println(match)
 	}
-}
+} api
 
 func readTakeActionFromStdin(player model.Player, match model.Match) model.PlayerTakeAction {
 	fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")
