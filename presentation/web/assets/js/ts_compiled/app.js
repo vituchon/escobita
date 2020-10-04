@@ -38,6 +38,9 @@ var App;
     ;
     escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);
 })(App || (App = {}));
+escobita.run(['$state', function ($state) {
+        $state.go("lobby");
+    }]);
 escobita.directive('loading', [function () {
         return {
             restrict: 'E',

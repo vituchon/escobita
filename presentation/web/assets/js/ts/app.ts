@@ -45,6 +45,11 @@ module App {
   escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);
 }
 
+escobita.run(['$state', ($state: ng.ui.IStateService) => {
+  $state.go("lobby")
+}])
+
+
 escobita.directive('loading', [() => {
   return {
     restrict: 'E',
