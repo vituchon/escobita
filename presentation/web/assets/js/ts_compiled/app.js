@@ -52,19 +52,31 @@ escobita.directive('loading', [function () {
 var Toastr;
 (function (Toastr) {
     function success(message) {
-        return toastr.success(message, '', { positionClass: 'toast-bottom-center' });
+        return toastr.success(message, '', {
+            positionClass: 'toast-bottom-left',
+            toastClass: "toast-container"
+        });
     }
     Toastr.success = success;
     function info(message) {
-        return toastr.info(message, '', { positionClass: 'toast-bottom-center' });
+        return toastr.info(message, '', {
+            positionClass: 'toast-bottom-left',
+            toastClass: "toast-container"
+        });
     }
     Toastr.info = info;
     function warn(message) {
-        return toastr.warning(message, '', { positionClass: 'toast-bottom-center' });
+        return toastr.warning(message, '', {
+            positionClass: 'toast-bottom-left',
+            toastClass: "toast-container"
+        });
     }
     Toastr.warn = warn;
     function error(message) {
-        return toastr.error(message, '', { positionClass: 'toast-bottom-center' });
+        return toastr.error(message, '', {
+            positionClass: 'toast-bottom-left',
+            toastClass: "toast-container"
+        });
     }
     Toastr.error = error;
     function clear() {
@@ -73,7 +85,7 @@ var Toastr;
     Toastr.clear = clear;
     function chat(playerName, message) {
         return toastr.info(message, "De " + playerName, {
-            positionClass: 'toast-bottom-full-width',
+            positionClass: 'toast-bottom-left',
             toastClass: "toastr-chat-class",
             titleClass: "toasrt-chat-tittle",
             messageClass: "toasrt-chat-message",

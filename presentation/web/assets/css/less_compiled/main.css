@@ -235,9 +235,13 @@ player-data-section .game-container {
 .interactive-section .play-section .game-chat-controls .chat-container .messages-section .message {
   color: blue;
 }
+.toast-container > div {
+  width: 400px !important;
+}
 .toastr-chat-class {
   background-color: #51a351 !important;
   color: #ffffff !important;
+  width: 600px !important;
 }
 .toasrt-chat-tittle {
   font-size: 24px;
