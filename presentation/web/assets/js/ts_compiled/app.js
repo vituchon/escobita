@@ -40,6 +40,7 @@ var App;
 })(App || (App = {}));
 escobita.run(['$state', function ($state) {
         $state.go("lobby");
+        $("#vitu-logo").animate({ height: 140 }, 2000);
     }]);
 escobita.directive('loading', [function () {
         return {

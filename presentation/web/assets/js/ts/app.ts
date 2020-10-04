@@ -47,6 +47,7 @@ module App {
 
 escobita.run(['$state', ($state: ng.ui.IStateService) => {
   $state.go("lobby")
+  $("#vitu-logo").animate({height:140},2000);
 }])
 
 
