@@ -40,7 +40,7 @@ module Game {
     public isBoardCardSelectedById: _.Dictionary<boolean>;
     public selectedHandCard: Api.Card;
 
-    public message: Messages.Message; // buffer for user input
+    public messageText: string; // buffer for user input
     public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
     public isChatEnabled: boolean = false;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name

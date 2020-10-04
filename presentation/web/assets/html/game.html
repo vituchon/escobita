@@ -76,8 +76,8 @@
             <div class="flex"></div>
             <div ng-if="ctr.isChatEnabled">
               <div class="send-message-control">
-                <input class="text" placeholder="Escribe un mensaje" ng-model="ctr.message" >
-                <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.message)">Enviar</div>
+                <input class="text" placeholder="Escribe un mensaje" ng-model="ctr.messageText" >
+                <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.disableSendMessageBtn}" ng-click="ctr.sendMessage(ctr.messageText); ctr.messageText = ''">Enviar</div>
               </div>
               <div class="messages-section">
                 <div class="message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'" ng-style="{'font-size': ctr.getFontSize(ctr.playersById[message.playerId])}">
