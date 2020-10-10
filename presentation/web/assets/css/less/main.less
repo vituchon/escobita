@@ -318,23 +318,6 @@ player-data-section
   font-size: 16px;
 }
 
-.played-cards-section {
-  display:flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
-
-  .card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: lightgrey;
-    border-radius: 10px;
-    padding: 0 5px;
-    margin: 5px;
-    font-size: 14px;
-  }
-}
 
 
 
@@ -357,6 +340,44 @@ player-data-section
     align-self: flex-start;
   }
 
+  .taken-cards-section {
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .card {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background-color: lightgrey;
+      border-radius: 10px;
+      padding: 0 5px;
+      margin: 5px;
+      font-size: 14px;
+    }
+  }
+}
+
+
+.player-actions-container {
+  display:flex;
+  flex-direction: column;
+  margin-top: 10px;
+
+  .player-actions-section {
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+    .player-action {
+      background-color: lightblue;
+      border-radius: 10px;
+      padding: 5px;
+      margin: 5px;
+    }
+  }
 }
 
 .stats-section {
@@ -414,6 +435,35 @@ player-data-section
   .value {
     color: blue;
     font-weight: bold;
+  }
+}
+
+// player action directive container
+
+.ng-player-action-container {
+  display: flex;
+  flex-direction: column;
+
+  div.title {
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+  }
+
+  div.hand-card {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+  }
+
+  div.boards-card {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+  }
+
+  .ng-card-container {
+    margin-left: 10px;
   }
 }
 

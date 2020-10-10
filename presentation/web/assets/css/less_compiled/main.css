@@ -250,22 +250,6 @@ player-data-section .game-container {
 .toasrt-chat-message {
   font-size: 16px;
 }
-.played-cards-section {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.played-cards-section .card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background-color: lightgrey;
-  border-radius: 10px;
-  padding: 0 5px;
-  margin: 5px;
-  font-size: 14px;
-}
 .game-player-list-section {
   display: flex;
   flex-direction: column;
@@ -281,6 +265,39 @@ player-data-section .game-container {
 }
 .taken-cards-container div {
   align-self: flex-start;
+}
+.taken-cards-container .taken-cards-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.taken-cards-container .taken-cards-section .card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: lightgrey;
+  border-radius: 10px;
+  padding: 0 5px;
+  margin: 5px;
+  font-size: 14px;
+}
+.player-actions-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+.player-actions-container .player-actions-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.player-actions-container .player-actions-section .player-action {
+  background-color: lightblue;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
 }
 .stats-section {
   display: flex;
@@ -324,6 +341,28 @@ player-data-section .game-container {
 .ng-card-container .value {
   color: blue;
   font-weight: bold;
+}
+.ng-player-action-container {
+  display: flex;
+  flex-direction: column;
+}
+.ng-player-action-container div.title {
+  display: flex;
+  flex-direction: row;
+  padding: 0px;
+}
+.ng-player-action-container div.hand-card {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+}
+.ng-player-action-container div.boards-card {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+}
+.ng-player-action-container .ng-card-container {
+  margin-left: 10px;
 }
 body {
   height: 100vh;
