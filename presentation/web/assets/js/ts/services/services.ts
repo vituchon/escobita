@@ -167,6 +167,10 @@ namespace Matchs {
 
   }
 
+  export function isTakeAction(action: Api.PlayerTakeAction | Api.PlayerDropAction): action is Api.PlayerTakeAction {
+    return !_.isUndefined((action as Api.PlayerTakeAction ).boardCards)
+  }
+
   export function createTakeAction(player: Api.Player,boardCards: Api.Card[], handCard: Api.Card): Api.PlayerTakeAction {
     return {
       player: player,
