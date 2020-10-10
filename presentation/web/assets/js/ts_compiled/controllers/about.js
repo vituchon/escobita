@@ -1,4 +1,5 @@
 /// <reference path='../app.ts' />
+/// <reference path='../services/_services.d.ts' />
 var About;
 (function (About) {
     var Controller = (function () {

@@ -1,5 +1,5 @@
 /// <reference path='../app.ts' />
-/// <reference path='../services/services.ts' />
+/// <reference path='../services/_services.d.ts' />
 
 module Game {
 

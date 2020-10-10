@@ -1,5 +1,5 @@
 /// <reference path='../app.ts' />
-/// <reference path='../api-model.ts' />
+/// <reference path='../services/_services.d.ts' />
 
 namespace Cards {
 
