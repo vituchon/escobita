@@ -1,6 +1,13 @@
 <div class="panel game-container">
 
-  <div class="title">Juego <i>{{ctr.game.name}}</i></div>
+  <div class="header">
+    <div class="title">Juego <i>{{ctr.game.name}}</i></div>
+    <div class="config">
+      <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
+      <span>&nbsp;&nbsp;</span>
+      <div class="materialButton colorButton" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Cambiar visualización cartas a modo {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}} chat</div>
+    </div>
+  </div>
 
   <div class="section-separator"></div>
 
@@ -71,7 +78,6 @@
           </div>
 
           <!-- CHAT -->
-          <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
           <div class="section chat-container">
             <div class="flex"></div>
             <div ng-if="ctr.isChatEnabled">

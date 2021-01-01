@@ -1,5 +1,6 @@
 /// <reference path='../app.ts' />
 /// <reference path='../services/_services.d.ts' />
+/// <reference path='../directives/_directives.d.ts' />
 
 module Game {
 
@@ -63,10 +64,11 @@ module Game {
     public translateSuit = Cards.Suits.translate
 
     public loading: boolean = false;
+    public displayCardsAsSprites: boolean = true;
 
     private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
 
-    constructor(private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
+    constructor(private $rootScope: ng.IRootElementService, private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
       private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
       private $q: ng.IQService) {
       this.game = $state.params["game"]
@@ -127,6 +129,16 @@ module Game {
           },2000)
         }
       })*/
+
+      this.$scope.$watch(() => {
+        return this.displayCardsAsSprites;
+      }, (displayCardsAsSprites) => {
+        if (_.isUndefined(displayCardsAsSprites)) {
+          return
+        }
+        const displayMode = displayCardsAsSprites ? 'sprite' : 'text'
+        this.$rootScope.$broadcast(Cards.changeDisplayModeEventName, displayMode);
+      })
     }
 
     public updateChat() {
@@ -282,5 +294,5 @@ module Game {
 
   }
 
-  escobita.controller('GameController', ['$scope','$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
+  escobita.controller('GameController', ['$rootScope','$scope','$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
 }

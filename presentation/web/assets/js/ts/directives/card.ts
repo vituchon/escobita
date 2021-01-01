@@ -1,7 +1,9 @@
 /// <reference path='../app.ts' />
 /// <reference path='../services/_services.d.ts' />
 
-namespace Cards {
+namespace Cards { // Yup... inside the same Cards namespace as they don't collide and basically could live in the same "file" perhaps..
+
+  export const changeDisplayModeEventName = 'change-display-mode';
 
   function generateImageTag (suit: number, rank: number) {
     return Cards.Sprites.generateImageTag(suit,rank)
@@ -36,6 +38,10 @@ namespace Cards {
         $scope.displayMode = $scope.displayMode || 'sprite';
         $scope.generateImageTag = generateImageTag
         $scope.$sce = $sce;
+
+        $scope.$on(changeDisplayModeEventName, (event: ng.IAngularEvent, displayMode: string) => {
+          $scope.displayMode = displayMode
+        });
       }
     }
 
