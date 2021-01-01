@@ -45,7 +45,7 @@ module App {
   escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);
 }
 
-escobita.run(['$state', ($state: ng.ui.IStateService) => {
+escobita.run(['$state', ($state: ng.ui.IStateService) => { // so on landing it goes straight to the lobby
   $state.go("lobby")
   $("#vitu-logo").animate({height:140},2000);
 }])
