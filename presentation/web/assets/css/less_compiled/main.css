@@ -580,3 +580,8 @@ dialog .dialogHeader {
 dialog .dialogContent {
   padding: 20px;
 }
+.sprite {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
