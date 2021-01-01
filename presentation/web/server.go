@@ -76,6 +76,7 @@ func StartServer() {
 func buildRouter() *mux.Router {
 	root := mux.NewRouter()
 	fileServer := http.FileServer(http.Dir("./"))
+	// TODO : word "presentation" in the path may be redudant, perpahs using just "assets" would be enought!
 	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
 	//root.Use(SslRedirect, AccessLogMiddleware, OrgAwareMiddleware)
