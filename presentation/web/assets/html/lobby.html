@@ -6,14 +6,6 @@
 
   <div>
 
-  <div style="flex-direction: row;  display: flex;">
-    <div ng-repeat="suit in [0,1,2,3]">
-      <div ng-repeat="rank in [1,2,3,4,5,6,7,8,9,10,11,12]" ng-init="model = {suit: suit, rank: rank}">
-        <card ng-model="model"></card>
-      </div>
-    </div>
-  </div>
-
   <div class="section client-player-section">
     <div class="title">Datos de jugador</div>
     <div class="name-control">
@@ -30,7 +22,7 @@
     </span>
   </div>
 
-
+  <div class="section-separator"></div>
 
   <div class="section" ng-if="ctr.player.name">
 
@@ -66,5 +58,15 @@
 
   </div>
 
+  <div class="lobby-cards" ng-style="{'opacity': (ctr.showCards ? '1' : '0')}" >
+    <span class="title">The <b>cards</b> of the <b>house</b></span>
+    <div class="items">
+      <div ng-repeat="suit in [0,1,2,3]">
+        <div ng-repeat="rank in [1,2,3,4,5,6,7,8,9,10,11,12]" ng-init="model = {suit: suit, rank: rank}">
+          <card ng-model="model"></card>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>

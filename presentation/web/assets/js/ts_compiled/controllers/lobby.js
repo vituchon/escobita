@@ -3,14 +3,16 @@
 var Lobby;
 (function (Lobby) {
     var Controller = (function () {
-        function Controller($state, $q, gamesService, playersService) {
+        function Controller($rootElement, $scope, $timeout, $state, $q, gamesService, playersService) {
             var _this = this;
+            this.$rootElement = $rootElement;
             this.$state = $state;
             this.$q = $q;
             this.gamesService = gamesService;
             this.playersService = playersService;
             this.playerName = ""; // for entering a player name
             this.loading = false;
+            this.showCards = false;
             this.games = [];
             this.loading = true;
             var getClientPlayerPromise = this.playersService.getClientPlayer().then(function (player) {
@@ -22,6 +24,17 @@ var Lobby;
             });
             this.$q.all([getClientPlayerPromise, getGamesPromise])["finally"](function () {
                 _this.loading = false;
+            });
+            $rootElement.bind("keydown keypress", function (event) {
+                if (event.which === 13) {
+                    $timeout(function () {
+                        _this.showCards = !_this.showCards;
+                    });
+                    event.preventDefault();
+                }
+            });
+            $scope.$on('$destroy', function () {
+                $rootElement.unbind("keydown keypress");
             });
         }
         Controller.prototype.createGame = function (game) {
@@ -78,5 +91,5 @@ var Lobby;
         };
         return Controller;
     }());
-    escobita.controller('LobbyController', ['$state', '$q', 'GamesService', 'PlayersService', Controller]);
+    escobita.controller('LobbyController', ['$rootElement', '$scope', '$timeout', '$state', '$q', 'GamesService', 'PlayersService', Controller]);
 })(Lobby || (Lobby = {}));

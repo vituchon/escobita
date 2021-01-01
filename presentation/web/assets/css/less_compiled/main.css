@@ -84,15 +84,6 @@
     transform: scale(1);
   }
 }
-.panel {
-  width: 75%;
-}
-.panel .title {
-  font-size: 24px;
-  padding: 10px;
-  font-weight: bold;
-  color: #333333;
-}
 .nav-container {
   display: flex;
   justify-content: center;
@@ -120,7 +111,7 @@
   flex-grow: 2;
 }
 .section .title {
-  font-size: 16px;
+  font-size: 16px !important;
 }
 .section-separator {
   height: 20px;
@@ -130,6 +121,23 @@
 }
 .lobby-container .lobby-title {
   font-size: 16px;
+}
+.lobby-container .lobby-cards {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.5s linear;
+}
+.lobby-container .lobby-cards .title {
+  font-size: 14px;
+  text-align: center;
+  font-weight: normal !important;
+}
+.lobby-container .lobby-cards .items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
 .lobby-container .client-player-section {
   display: flex;
@@ -579,4 +587,13 @@ dialog .dialogHeader {
 }
 dialog .dialogContent {
   padding: 20px;
+}
+.panel {
+  width: 75%;
+}
+.panel .title {
+  font-size: 24px;
+  padding: 10px;
+  font-weight: bold;
+  color: #333333;
 }

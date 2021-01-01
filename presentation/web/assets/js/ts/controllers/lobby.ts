@@ -11,8 +11,10 @@ module Lobby {
     public playerName: string = ""; // for entering a player name
 
     public loading: boolean = false;
+    public showCards: boolean = false;
 
-    constructor(private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
+    constructor(private $rootElement: ng.IRootElementService, $scope: ng.IScope, $timeout: ng.ITimeoutService,
+        private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
         private playersService: Players.Service) {
       this.games = [];
       this.loading = true
@@ -26,6 +28,19 @@ module Lobby {
       this.$q.all([getClientPlayerPromise,getGamesPromise]).finally(() => {
         this.loading = false;
       })
+
+      $rootElement.bind("keydown keypress", (event) => {
+        if(event.which === 13) {
+            $timeout(() => {
+              this.showCards = !this.showCards;
+            });
+            event.preventDefault();
+        }
+      });
+      $scope.$on('$destroy', function() {
+        $rootElement.unbind("keydown keypress")
+      });
+
     }
 
     public createGame(game: Api.Game) {
@@ -82,5 +97,5 @@ module Lobby {
     }
   }
 
-  escobita.controller('LobbyController', ['$state', '$q', 'GamesService', 'PlayersService', Controller]);
+  escobita.controller('LobbyController', ['$rootElement', '$scope', '$timeout','$state', '$q', 'GamesService', 'PlayersService', Controller]);
 }

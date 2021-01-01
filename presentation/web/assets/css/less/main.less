@@ -85,26 +85,6 @@
   }
 }
 
-// COMMON STYLES
-
-@mainColor: #333333;
-@lightGray: #FAFAFA;
-@midGray: #A4A4A4;
-@darkGray: #404041;
-@red: #D32F2F;
-@defaultTransition: all 0.2s linear;
-
-@panel-width: 75%;
-.panel {
-  width: @panel-width;
-  .title {
-    font-size: 24px;
-    padding: 10px;
-    font-weight: bold;
-    color: @mainColor;
-  }
-}
-
 // ROOT SCREEN ("SCREEN CONTAINER")
 
 .nav-container {
@@ -140,7 +120,7 @@
 
 .section {
   .title {
-    font-size: 16px;
+    font-size: 16px !important;
   }
 }
 
@@ -157,6 +137,28 @@
 
   .lobby-title {
     font-size: 16px;
+  }
+
+  .lobby-cards {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+
+    // animation
+    opacity: 0;
+    transition: opacity 0.5s linear;
+
+    .title {
+      font-size: 14px;
+      text-align: center;
+      font-weight: normal !important;
+    }
+
+    .items {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
   }
 
   .client-player-section {
@@ -678,5 +680,26 @@ dialog {
   }
   & .dialogContent{
     padding: 20px;
+  }
+}
+
+
+// COMMON STYLES
+
+@mainColor: #333333;
+@lightGray: #FAFAFA;
+@midGray: #A4A4A4;
+@darkGray: #404041;
+@red: #D32F2F;
+@defaultTransition: all 0.2s linear;
+
+@panel-width: 75%;
+.panel {
+  width: @panel-width;
+  .title {
+    font-size: 24px;
+    padding: 10px;
+    font-weight: bold;
+    color: @mainColor;
   }
 }
