@@ -13,7 +13,7 @@ namespace Cards {
 
     export const labels: _.Dictionary<string> = {
       [sword]: "espada",
-      [club]: "palo",
+      [club]: "basto",
       [cup]: "copa",
       [gold]: "oro",
     }
