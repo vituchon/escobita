@@ -39,10 +39,6 @@ namespace Cards {
       const offsetX = width * rank;
       const offsetY = offsetYBySuit[suit];
 
-      /* // following recipe at https://css-tricks.com/css-sprites-with-inline-images/
-      const style = `clip:rect(0 ${offsetX}px ${offsetY}px 0); left: -${offsetX - width}px`
-      return `<img src="${sourceImgPath}" alt="${rank}_${Suits.translate(suit)}" class="sprite" style="${style}" />`*/
-
       // following tips at https://www.htmlgoodies.com/beyond/css/working-with-css-image-sprites.html
       const style = `background-size : 40% 40%; zoom: 0.4; width: ${width}px; height: ${height}px; background: url(${sourceImgPath}) -${offsetX - width}px ${offsetY}px no-repeat;`
       return `<div title="${rank}_${Suits.translate(suit)}" style="${style}" />`
