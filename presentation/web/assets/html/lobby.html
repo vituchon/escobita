@@ -58,12 +58,12 @@
 
   </div>
 
-  <div class="lobby-cards" ng-style="{'opacity': (ctr.showCards ? '1' : '0')}" >
+  <div class="lobby-cards" ng-style="{'opacity': (ctr.showCards ? '1' : '1')}" >
     <span class="title">The <b>cards</b> of the <b>house</b></span>
     <div class="items">
       <div ng-repeat="suit in [0,1,2,3]">
         <div ng-repeat="rank in [1,2,3,4,5,6,7,8,9,10,11,12]" ng-init="model = {suit: suit, rank: rank}">
-          <card ng-model="model"></card>
+          <card class="card" ng-model="model"></card>
         </div>
       </div>
     </div>
