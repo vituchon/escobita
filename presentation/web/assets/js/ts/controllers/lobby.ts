@@ -13,7 +13,7 @@ module Lobby {
     public loading: boolean = false;
     public showCards: boolean = false;
 
-    constructor(private $rootElement: ng.IRootElementService, $scope: ng.IScope, $timeout: ng.ITimeoutService,
+    constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
         private playersService: Players.Service) {
       this.games = [];
@@ -32,7 +32,12 @@ module Lobby {
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
             $timeout(() => {
-              this.showCards = !this.showCards;
+              if (!this.showCards) {
+                this.showCards = true;
+              }
+              if (!_.isUndefined(this.playerName)) {
+                this.updatePlayerName(this.playerName)
+              }
             });
             event.preventDefault();
         }

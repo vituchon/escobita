@@ -6,6 +6,7 @@ var Lobby;
         function Controller($rootElement, $scope, $timeout, $state, $q, gamesService, playersService) {
             var _this = this;
             this.$rootElement = $rootElement;
+            this.$scope = $scope;
             this.$state = $state;
             this.$q = $q;
             this.gamesService = gamesService;
@@ -28,7 +29,12 @@ var Lobby;
             $rootElement.bind("keydown keypress", function (event) {
                 if (event.which === 13) {
                     $timeout(function () {
-                        _this.showCards = !_this.showCards;
+                        if (!_this.showCards) {
+                            _this.showCards = true;
+                        }
+                        if (!_.isUndefined(_this.playerName)) {
+                            _this.updatePlayerName(_this.playerName);
+                        }
                     });
                     event.preventDefault();
                 }
