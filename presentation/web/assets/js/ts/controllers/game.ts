@@ -68,7 +68,7 @@ module Game {
 
     private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
 
-    constructor(private $rootScope: ng.IRootElementService, private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
+    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
       private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
       private $q: ng.IQService) {
       this.game = $state.params["game"]
@@ -139,6 +139,21 @@ module Game {
         const displayMode = displayCardsAsSprites ? 'sprite' : 'text'
         this.$rootScope.$broadcast(Cards.changeDisplayModeEventName, displayMode);
       })
+
+      $rootElement.bind("keydown keypress", (event) => {
+        if(event.which === 13) {
+            $timeout(() => {
+              if (this.isChatEnabled) {
+                this.sendMessage(this.messageText);
+                this.messageText = "";
+              }
+            });
+            event.preventDefault();
+        }
+      });
+      $scope.$on('$destroy', function() {
+        $rootElement.unbind("keydown keypress")
+      });
     }
 
     public updateChat() {
@@ -174,7 +189,9 @@ module Game {
     }
 
     public sendMessage(text: string) {
-      if (this.disableSendMessageBtn) {
+      // TODO : // TODO : the above condition technically is not part of a send message operation it could be placed into a new abstraction
+      const messageIsBlank =  _.isUndefined(text);
+      if (this.disableSendMessageBtn || messageIsBlank) {
         return
       }
       const message = Messages.newMessage(this.game.id, this.player.id, text)
@@ -294,5 +311,5 @@ module Game {
 
   }
 
-  escobita.controller('GameController', ['$rootScope','$scope','$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
+  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
 }
