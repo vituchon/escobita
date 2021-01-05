@@ -87,7 +87,7 @@ module Game {
         }
       })
 
-      this.$scope.$on('$destroy', function() {
+      this.$scope.$on('$destroy', () => {
         this.$interval.cancel(this.updaterInterval)
       });
 
