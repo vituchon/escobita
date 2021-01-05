@@ -191,6 +191,25 @@
   flex-direction: row;
   align-items: center;
 }
+.about .facts {
+  display: flex;
+  flex-direction: column;
+}
+.about .facts .title {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+.about .facts .items {
+  display: flex;
+  flex-direction: column;
+}
+.about .facts .items .fact {
+  display: flex;
+  flex-direction: row;
+}
+.about .facts .items .title {
+  font-size: 12px;
+}
 .game-container {
   width: 700px;
 }

@@ -1,7 +1,34 @@
 <div class="about">
   <h1>Acerca de Escobita 15</h1>
   <h2>
-    <p>Desarrollada por aliens@40tena!, así <img src="https://static1.gamespot.com/uploads/original/63/638068/2819490-4320175291-Part-.jpg" width="200px" style="vertical-align:middle"><img></p>
+    <p>Desarrollada por aliens@40tena, así => <img src="https://static1.gamespot.com/uploads/original/63/638068/2819490-4320175291-Part-.jpg" width="300px" style="vertical-align:middle"><img></p>
   </h2>
-  <a href="https://github.com/Vitucho/escobita"><h3>Code@github</h3></a>
+  <a href="https://github.com/Vitucho/escobita"><h3>code@github</h3></a>
+
+  <div class="facts">
+    <div class="title">Fact <b>facts</b></div>
+    <div class="items">
+      <div class="fact" ng-if="true">
+        <div ng-init="arr = [].constructor(18)">Tortitas negras sacrificadas (<b>{{arr.length}}</b>):&nbsp;</div>
+        <div ng-repeat="x in arr track by $index">
+          <img width="30" src="presentation/web/assets/images/tortita.png">
+          <span ng-if="!$last">&nbsp;</span>
+        </div>
+      </div>
+      <div class="fact" ng-if="true">
+        <div ng-init="arr = [].constructor(5)">Moscatos liberados(<b>{{arr.length}}</b>):&nbsp;</div>
+          <div ng-repeat="x in arr track by $index">
+            <img width="20" src="presentation/web/assets/images/moscato.png">
+            <span ng-if="!$last">&nbsp;</span>
+          </div>
+      </div>
+      <div class="fact" ng-if="true">
+        <div ng-init="arr = [].constructor(24)">Nuevas Leyes promulgadas (<b>{{arr.length}}</b>):&nbsp;</div>
+        <div ng-repeat="x in arr track by $index">
+          <img width="30" src="presentation/web/assets/images/law.png">
+          <span ng-if="!$last">&nbsp;</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
