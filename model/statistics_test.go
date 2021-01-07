@@ -210,7 +210,7 @@ func TestGoldSeven(t *testing.T) {
 	// take: 7 hand + (3+2+3) board = 15 (GOLD 7)
 	boardCards, err := match.Cards.Board.GetMultiple(1, 2, 3)
 	takeCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0], boardCards, false)
-	//t.Logf("%+v", match.Cards.PerPlayer[beto])
+	//t.Logf("%+v", match.Cards.ByPlayer[beto])
 
 	pepe := round.NextTurn()
 	// take: 10 hand + (5) board = 15, escobita
@@ -263,6 +263,103 @@ func TestGoldSeven(t *testing.T) {
 	}
 	if scoreSummaryByPlayer[pepe].Score != 2 {
 		t.Errorf("pepe shall have score 2 and pepe computed is %d", scoreSummaryByPlayer[pepe].Score)
+	}
+}
+
+func TestLastTaker(t *testing.T) {
+	var players []Player = []Player{
+		Player{Name: "Beto"},
+		Player{Name: "Pepe"},
+	}
+
+	var oneRoundTwoPlayersDeck Deck = Deck{
+		Card{1, GOLD, 3},  // 1 t (beto)
+		Card{2, CUP, 2},   // 1 t (beto)
+		Card{3, CLUB, 3},  // 1 t (beto)
+		Card{4, SWORD, 5}, // 2 t (pepe)
+		// las de beto
+		Card{5, GOLD, 7}, // 3 d (beto)
+		Card{6, CUP, 3},  // 5 d (beto)
+		Card{7, CLUB, 7}, // 1 t (beto)
+		// las de pepe
+		Card{8, SWORD, 12}, // 4 d (pepe)
+		Card{9, GOLD, 4},   // 6 d (pepe)
+		Card{10, CUP, 12},  // 2 t (pepe)
+	}
+
+	match := newMatch(players, oneRoundTwoPlayersDeck)
+
+	// TODO : try to use match.Serve()
+	// begin: hardcoding a serve
+	match.FirstPlayerIndex = 0                               // beto
+	match.Cards.Board = copyDeck(oneRoundTwoPlayersDeck[:4]) // 12 de puntaje en la mesa
+	match.Cards.Left = copyDeck(oneRoundTwoPlayersDeck[4:])
+	// end: hardcoding a serve
+
+	round := match.NextRound() // round 1
+
+	beto := round.NextTurn()
+	// take: 7 hand + (3+2+3) board = 15
+	boardCards, _ := match.Cards.Board.GetMultiple(1, 2, 3)
+	takeCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[2], boardCards, false)
+	t.Logf("%+v", match.Cards.ByPlayer[beto])
+
+	pepe := round.NextTurn()
+	// take: 10 hand + (5) board = 15, escobita
+	boardCards, _ = match.Cards.Board.GetMultiple(4)
+	takeCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[2], boardCards, true)
+	t.Logf("%+v", match.Cards.ByPlayer[pepe])
+
+	beto = round.NextTurn()
+	// drop: 1
+	dropCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0])
+
+	pepe = round.NextTurn()
+	// drop: 10
+	dropCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0])
+
+	beto = round.NextTurn()
+	// drop: 3
+	dropCard(t, beto, &match, match.Cards.ByPlayer[beto].Hand[0])
+
+	pepe = round.NextTurn()
+	dropCard(t, pepe, &match, match.Cards.ByPlayer[pepe].Hand[0])
+
+	if match.HasMoreRounds() {
+		t.Errorf("Match is one round only")
+	}
+	pepeCardsCountBeforeEnds := len(match.Cards.ByPlayer[pepe].Taken)
+	match.Ends()
+	// pepe takes 4 cards from the table including the seven gold!
+	pepeCardsCountAfterEnds := len(match.Cards.ByPlayer[pepe].Taken)
+	pepeCardsTakenAtEnds := pepeCardsCountAfterEnds - pepeCardsCountBeforeEnds
+	if pepeCardsTakenAtEnds != 4 {
+		t.Errorf("Pepe shall get the remaining 4 cards in the table and he gets %d cards ", pepeCardsTakenAtEnds)
+	}
+	t.Logf("%+v", match.ActionsByPlayer[pepe])
+
+	staticticsByPlayer := match.CalculateStaticticsByPlayer()
+	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
+	//t.Logf("scoreSummaryByPlayer %+v\n", scoreSummaryByPlayer)
+
+	/*if !staticticsByPlayer[beto].HasGoldSeven {
+		t.Errorf("beto shall have gold seven!")
+	}
+	if staticticsByPlayer[beto].EscobitasCount != 0 {
+		t.Errorf("beto shall have no escobita")
+	}
+	if staticticsByPlayer[pepe].EscobitasCount != 1 {
+		t.Errorf("pepe shall have 1 escobita")
+	}
+	if *staticticsByPlayer.calculateMostGoldCardsPlayer() != beto {
+		t.Errorf("beto shall be the player with most gold cards")
+	}*/
+
+	if scoreSummaryByPlayer[beto].Score != 0 {
+		t.Errorf("beto shall have score 0 and pepe computed is %d", scoreSummaryByPlayer[beto].Score)
+	}
+	if scoreSummaryByPlayer[pepe].Score != 5 {
+		t.Errorf("pepe shall have score 5 and pepe computed is %d", scoreSummaryByPlayer[pepe].Score)
 	}
 }
 
