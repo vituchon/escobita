@@ -5,10 +5,11 @@ import (
 )
 
 type WebGame struct {
-	model.Game        // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
-	Id         *int   `json:"id,omitempty"`
-	Name       string `json:"name"`
-	PlayerId   int    `json:"playerId"` // owner
+	model.Game               // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
+	Id         *int          `json:"id,omitempty"`
+	Name       string        `json:"name"`
+	PlayerId   int           `json:"playerId"`  // owner
+	Matchs     []model.Match `json:"id,matchs"` // played matchs
 }
 
 // meet the actual storate...
@@ -99,6 +100,7 @@ func advanceGame(game WebGame) (*WebGame, error) {
 			} else {
 				// game ends
 				game.CurrentMatch.Ends()
+				game.Matchs = append(game.Matchs, game.CurrentMatch)
 				game.CurrentMatch = nil // setting to nil provides a means to detect the current match ending on the client side
 			}
 		}
