@@ -191,23 +191,28 @@
   flex-direction: row;
   align-items: center;
 }
-.about .facts {
+.about .facts-container {
   display: flex;
   flex-direction: column;
+  background-color: #FAFAFA;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px;
 }
-.about .facts .title {
+.about .facts-container .title {
   font-size: 18px;
   margin-bottom: 15px;
 }
-.about .facts .items {
+.about .facts-container .facts {
   display: flex;
   flex-direction: column;
 }
-.about .facts .items .fact {
+.about .facts-container .facts .fact {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
-.about .facts .items .title {
+.about .facts-container .facts .title {
   font-size: 12px;
 }
 .game-container {
