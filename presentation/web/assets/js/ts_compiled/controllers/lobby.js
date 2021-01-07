@@ -63,6 +63,9 @@ var Lobby;
         };
         Controller.prototype.updatePlayerName = function (name) {
             var _this = this;
+            if (_.isEmpty(name)) {
+                return;
+            }
             this.loading = true;
             this.player.name = name;
             this.playersService.updatePlayer(this.player).then(function (player) {

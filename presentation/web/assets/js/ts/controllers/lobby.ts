@@ -67,6 +67,9 @@ module Lobby {
     }
 
     public updatePlayerName(name: string) {
+      if (_.isEmpty(name)) {
+        return
+      }
       this.loading = true
       this.player.name = name;
       this.playersService.updatePlayer(this.player).then((player) => {
