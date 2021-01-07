@@ -3,9 +3,15 @@
   <div class="header">
     <div class="title">Juego <i>{{ctr.game.name}}</i></div>
     <div class="config">
-      <div class="materialButton colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
+      <div class="materialButton raised colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
       <span>&nbsp;&nbsp;</span>
-      <div class="materialButton colorButton" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Cambiar visualización cartas a modo {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}} chat</div>
+      <div class="materialButton raised colorButton" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Cambiar visualización cartas a modo {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}} chat</div>
+      <div ng-show="ctr.isMatchInProgress" style="display: flex;flex-direction: row;">
+        <span>&nbsp;&nbsp;</span>
+        <div class="materialButton raised colorButton" ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div>
+        <span>&nbsp;&nbsp;</span>
+        <div class="materialButton raised colorButton" ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div>
+      </div>
     </div>
   </div>
 
@@ -98,9 +104,9 @@
       </div>
 
       <!-- TAKEN CARDS -->
-      <div class="taken-cards-container" ng-show="ctr.isMatchInProgress">
-        <div ng-show="ctr.isMatchInProgress" class="materialButton colorButton" ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div>
-        <div class="taken-cards-section" ng-if="showTakenCards">
+      <div class="taken-cards-container" ng-show="ctr.isMatchInProgress" ng-if="showTakenCards">
+        <div class="title">Cartas tomadas</div>
+        <div class="taken-cards-section">
           <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].taken">
             <card ng-model="card"></card>
           </div>
@@ -108,9 +114,9 @@
       </div>
 
       <!-- ACTIONS PERFORMED -->
-      <div class="player-actions-container" ng-show="ctr.isMatchInProgress">
-        <div ng-show="ctr.isMatchInProgress" class="materialButton colorButton" ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div>
-        <div class="player-actions-section" ng-if="showPlayerActions">
+      <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
+        <div class="title">Acciones</div>
+        <div class="player-actions-section">
           <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerName[ctr.player.name]">
             <player-action order="$index" ng-model="playerAction"></player-action>
           </div>

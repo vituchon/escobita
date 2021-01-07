@@ -247,6 +247,9 @@
   }
 }
 
+@button-background-color: #3333BB;
+@button-text-color: yellow;
+
 // GAME SCREEN
 
 .game-container {
@@ -265,10 +268,13 @@
       display: flex;
       flex-direction: row;
 
-      .materialButton {
-        background-color: #3333BB;
-        color: yellow;
+      .colorButton {
+        background-color: @button-background-color;
+        color: @button-text-color;
         font-weight: bold;
+        &:hover{
+          background-color: darken(@button-background-color, 10%);
+        }
       }
     }
   }
@@ -322,10 +328,14 @@
         height: 100px;
 
         .colorButton {
-          background-color: blue;
-          color: gold;
+          background-color: @button-background-color;
+          color: @button-text-color;
           font-weight: bold;
+          &:hover{
+            background-color: darken(@button-background-color, 10%);
+          }
         }
+
       }
 
       .chat-container {
@@ -402,11 +412,17 @@
     align-self: flex-start;
   }
 
+  .title {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
   .taken-cards-section {
     display:flex;
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
+
 
     .card {
       display: flex;
@@ -427,11 +443,17 @@
   flex-direction: column;
   margin-top: 10px;
 
+  .title {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
   .player-actions-section {
     display:flex;
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;
+
 
     .player-action {
       background-color: lightblue;
