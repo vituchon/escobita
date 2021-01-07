@@ -195,7 +195,7 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	stats := services.CalculateGameStats(*game)
+	stats := services.CalculateCurrentMatchStats(*game)
 	if err != nil {
 		fmt.Printf("error while calculating game stats action: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)

@@ -81,8 +81,14 @@ func PerformDropAction(game WebGame, action model.PlayerDropAction) (*WebGame, m
 	return updatedGame, updatedAction, err
 }
 
-func CalculateGameStats(game WebGame) model.ScoreSummaryByPlayer {
+func CalculateCurrentMatchStats(game WebGame) model.ScoreSummaryByPlayer {
 	staticticsByPlayer := game.CurrentMatch.CalculateStaticticsByPlayer()
+	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
+	return scoreSummaryByPlayer
+}
+
+func CalculateLastMatchStats(game WebGame) model.ScoreSummaryByPlayer {
+	staticticsByPlayer := game.Matchs[len(game.Matchs)-1].CalculateStaticticsByPlayer()
 	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
 	return scoreSummaryByPlayer
 }
@@ -100,7 +106,7 @@ func advanceGame(game WebGame) (*WebGame, error) {
 			} else {
 				// game ends
 				game.CurrentMatch.Ends()
-				game.Matchs = append(game.Matchs, game.CurrentMatch)
+				game.Matchs = append(game.Matchs, *game.CurrentMatch)
 				game.CurrentMatch = nil // setting to nil provides a means to detect the current match ending on the client side
 			}
 		}
