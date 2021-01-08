@@ -4,7 +4,7 @@ namespace Games {
   export interface Game extends Api.Game {
   }
 
-  export function hasMatchInProgress(game :Game) : boolean{
+  export function hasMatchInProgress(game :Game) : boolean {
     return !_.isUndefined(game.currentMatch)
   }
 
@@ -107,8 +107,13 @@ namespace Games {
       })
     }
 
-    calculateStatsByGameId(id: number) {
-      return this.$http.get<Api.ScoreSummaryByPlayerName>(`/api/v1/games/${id}/calculate-stats`,).then((response) => {
+    calculateStatsByGameId(id: number, matchIndex: number) {
+      const config: ng.IRequestShortcutConfig = {
+        params: {
+          matchIndex: matchIndex
+        }
+      };
+      return this.$http.get<Api.ScoreSummaryByPlayerName>(`/api/v1/games/${id}/calculate-stats`,config).then((response) => {
         return response.data
       })
     }

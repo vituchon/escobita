@@ -188,6 +188,19 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	paramMatchIndex, exists := request.URL.Query()["matchIndex"] // 0 is the first, 1 the second and so on...
+	if !exists {
+		fmt.Println("There was no matchIndex parameter in the query string")
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	matchIndex, err := strconv.Atoi(paramMatchIndex[0])
+	if err != nil {
+		fmt.Printf("Can not parse match index from '%s'", paramMatchIndex)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	game, err := services.GetGameById(id)
 	if err != nil {
 		fmt.Printf("error getting game by id: '%v'", err)
@@ -195,7 +208,13 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	stats := services.CalculateCurrentMatchStats(*game)
+	var stats model.ScoreSummaryByPlayer
+	if matchIndex == len(game.Matchs) {
+		stats = services.CalculateCurrentMatchStats(*game)
+	} else {
+		stats = services.CalculatePlayedMatchStats(*game, matchIndex)
+	}
+
 	if err != nil {
 		fmt.Printf("error while calculating game stats action: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)

@@ -8,8 +8,8 @@ type WebGame struct {
 	model.Game               // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
 	Id         *int          `json:"id,omitempty"`
 	Name       string        `json:"name"`
-	PlayerId   int           `json:"playerId"`  // owner
-	Matchs     []model.Match `json:"id,matchs"` // played matchs
+	PlayerId   int           `json:"playerId"`          // owner
+	Matchs     []model.Match `json:"matchs, omitempty"` // played matchs
 }
 
 // meet the actual storate...
@@ -87,8 +87,8 @@ func CalculateCurrentMatchStats(game WebGame) model.ScoreSummaryByPlayer {
 	return scoreSummaryByPlayer
 }
 
-func CalculateLastMatchStats(game WebGame) model.ScoreSummaryByPlayer {
-	staticticsByPlayer := game.Matchs[len(game.Matchs)-1].CalculateStaticticsByPlayer()
+func CalculatePlayedMatchStats(game WebGame, index int) model.ScoreSummaryByPlayer {
+	staticticsByPlayer := game.Matchs[index].CalculateStaticticsByPlayer()
 	scoreSummaryByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
 	return scoreSummaryByPlayer
 }
