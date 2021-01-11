@@ -1,7 +1,7 @@
 package model
 
 import (
-	"fmt"
+	"log"
 	"math/rand"
 )
 
@@ -38,15 +38,15 @@ func (match *Match) Ends() {
 			matchPlayerCards.Taken = append(matchPlayerCards.Taken, match.Cards.Board...)
 			match.Cards.ByPlayer[*player] = matchPlayerCards
 			match.Cards.Board = match.Cards.Board[:0] // practical way to empty an slice
-			fmt.Printf("The last card taker is %v\n", *player)
+			log.Printf("The last card taker is %v\n", *player)
 		} else {
-			fmt.Println("Nobody takes cards")
+			log.Println("Nobody takes cards")
 		}
 	}
 }
 
 func (match Match) getLastCardTaker() *Player {
-	for i := len(match.ActionsLog) - 1; i > 0; i-- {
+	for i := len(match.ActionsLog) - 1; i >= 0; i-- {
 		action := match.ActionsLog[i]
 		_, isTakeAction := action.(PlayerTakeAction)
 		if isTakeAction {
