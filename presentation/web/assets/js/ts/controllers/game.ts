@@ -273,16 +273,17 @@ module Game {
     private setGame(game: Games.Game) {
       this.game = game;
       this.isMatchInProgress = Games.hasMatchInProgress(game)
+      const currentMatchIndex = _.size(this.game.matchs)
       if (this.isMatchInProgress) {
         this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
         this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
-        return this.updateGameStats().then(() => {
+        return this.updateGameStats(currentMatchIndex).then(() => {
           return this.game
         })
       } else {
-        const hasPreviousMatchs =  (_.size(this.game.matchs) > 0)
+        const hasPreviousMatchs =  (currentMatchIndex > 0)
         if (hasPreviousMatchs) {
-          return this.updateGameStats().then(() => {
+          return this.updateGameStats(currentMatchIndex-1).then(() => {
             return this.game
           })
         } else {
@@ -297,12 +298,7 @@ module Game {
       })
     }
 
-    private updateGameStats() {
-      //this.currentMatchStatsCopy = angular.copy(this.currentMatchStats)
-      var matchIndex = _.size(this.game.matchs)
-      if (_.isUndefined(this.game.currentMatch)) {
-        matchIndex--; // take the last played match
-      }
+    private updateGameStats(matchIndex: number) {
       return this.gamesService.calculateStatsByGameId(this.game.id,matchIndex).then((stats) => {
         this.currentMatchStats = stats;
         this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
