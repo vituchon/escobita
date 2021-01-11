@@ -280,7 +280,14 @@ module Game {
           return this.game
         })
       } else {
-        return this.$q.when(this.game)
+        const hasPreviousMatchs =  (_.size(this.game.matchs) > 0)
+        if (hasPreviousMatchs) {
+          return this.updateGameStats().then(() => {
+            return this.game
+          })
+        } else {
+          return this.$q.when(this.game)
+        }
       }
     }
 
@@ -292,7 +299,11 @@ module Game {
 
     private updateGameStats() {
       //this.currentMatchStatsCopy = angular.copy(this.currentMatchStats)
-      return this.gamesService.calculateStatsByGameId(this.game.id).then((stats) => {
+      var matchIndex = _.size(this.game.matchs)
+      if (_.isUndefined(this.game.currentMatch)) {
+        matchIndex--; // take the last played match
+      }
+      return this.gamesService.calculateStatsByGameId(this.game.id,matchIndex).then((stats) => {
         this.currentMatchStats = stats;
         this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
         this.currentFontSizeByPlayerName = UIMessages.calculateFontSizeByPlayerName(this.currentPositionByPlayerName)
@@ -307,7 +318,6 @@ module Game {
         return this.currentFontSizeByPlayerName[player.name]
       }
     }
-
 
   }
 
