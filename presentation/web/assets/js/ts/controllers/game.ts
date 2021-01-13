@@ -154,6 +154,52 @@ module Game {
       $scope.$on('$destroy', function() {
         $rootElement.unbind("keydown keypress")
       });
+
+      this.$scope.$watch(() => {
+        if (!this.isMatchInProgress) {
+          return undefined
+        }
+        return this.game.currentMatch.currentRound.currentTurnPlayer.name;
+      }, (currentTurnPlayerName, previousTurnPlayerName) => {
+        if (_.isUndefined(previousTurnPlayerName)) {
+          return
+        }
+        if (previousTurnPlayerName !== this.player.name) {
+          this.displayLastAction();
+        }
+      })
+    }
+
+    private displayLastAction() {
+      const options: ToastrOptions = {
+        timeOut: 5000,
+        toastClass: "toastr-info-action-class",
+        closeButton: true,
+      }
+      Toastr.info(`${this.generateLastActionDescription()}`, options)
+    }
+
+    private generateLastActionDescription() {
+      const lastActionIndex = _.size(this.game.currentMatch.playerActions) - 1
+      const lastAction = this.game.currentMatch.playerActions[lastActionIndex];
+      return this.generateActionDescription(lastAction);
+    }
+
+    private generateActionDescription(action: Api.PlayerAction) {
+      if (Matchs.isTakeAction(action)) {
+        const cardsText = _.map(action.boardCards,(card) => this.cardToText(card))
+        var description = `levantó ${cardsText.join(",")} usando ${this.cardToText(action.handCard)}`
+        if (action.isEscobita) {
+          description += "<b>e hizó escobita!</b>"
+        }
+        return `<b>${action.player.name}</b>: ${description}`
+      } else {
+        return `<b>${action.player.name}</b>: descartó ${this.cardToText(action.handCard)}`
+      }
+    }
+
+    private cardToText(card: Api.Card) {
+      return `${card.rank} de ${Cards.Suits.translate(card.suit)}`
     }
 
     public updateChat() {

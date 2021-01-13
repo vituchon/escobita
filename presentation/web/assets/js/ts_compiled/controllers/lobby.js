@@ -29,9 +29,6 @@ var Lobby;
             $rootElement.bind("keydown keypress", function (event) {
                 if (event.which === 13) {
                     $timeout(function () {
-                        if (!_this.showCards) {
-                            _this.showCards = true;
-                        }
                         if (!_.isUndefined(_this.playerName)) {
                             _this.updatePlayerName(_this.playerName);
                         }
@@ -63,13 +60,12 @@ var Lobby;
         };
         Controller.prototype.updatePlayerName = function (name) {
             var _this = this;
-            if (_.isEmpty(name)) {
-                return;
-            }
             this.loading = true;
             this.player.name = name;
             this.playersService.updatePlayer(this.player).then(function (player) {
                 _this.player = player;
+            }).then(function () {
+                _this.showCards = true;
             })["finally"](function () {
                 _this.loading = false;
             });

@@ -62,11 +62,12 @@ var Toastr;
         });
     }
     Toastr.success = success;
-    function info(message) {
-        return toastr.info(message, '', {
+    function info(message, customOptions) {
+        var options = _.extend({
             positionClass: 'toast-bottom-left',
             toastClass: "toast-container"
-        });
+        }, customOptions);
+        return toastr.info(message, '', options);
     }
     Toastr.info = info;
     function warn(message) {
