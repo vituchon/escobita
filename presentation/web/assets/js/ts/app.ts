@@ -80,11 +80,12 @@ namespace Toastr {
     });
   }
 
-  export function info(message: string) {
-    return toastr.info(message, '', {
+  export function info(message: string, customOptions?: ToastrOptions) {
+    const options = _.extend( {
       positionClass: 'toast-bottom-left',
       toastClass: "toast-container",
-    });
+    },customOptions)
+    return toastr.info(message, '',options);
   }
 
   export function warn(message: string) {
