@@ -1,6 +1,7 @@
 package services
 
 import (
+	"sync"
 	"time"
 )
 
@@ -44,17 +45,20 @@ func GetMessageById(id int) (*WebMessage, error) {
 }
 
 var idMessageSequence int = 0
+var mutex = &sync.Mutex{}
 
 func CreateMessage(message WebMessage) (created *WebMessage, err error) {
 	if message.Id != nil {
 		return nil, InvalidEntityStateErr
 	}
-	// not treat safe
+
+	mutex.Lock()
 	nextId := idMessageSequence + 1
 	message.Id = &nextId
 	messagesById[nextId] = message
 	idMessageSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
-	// end not treat safe
+	mutex.Unlock()
+
 	message.Created = time.Now().Unix()
 	messagesById[*message.Id] = message
 	return &message, nil

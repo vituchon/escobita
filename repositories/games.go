@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"local/escobita/model"
+	"sync"
 )
 
 type PersistentGame struct {
@@ -23,6 +24,7 @@ type Games interface {
 type GamesMemoryStorage struct {
 	gamesById  map[int]PersistentGame
 	idSequence int
+	mutex      sync.Mutex
 }
 
 func NewGamesMemoryStorage() *GamesMemoryStorage {
@@ -49,12 +51,12 @@ func (repo *GamesMemoryStorage) CreateGame(game PersistentGame) (created *Persis
 	if game.Id != nil {
 		return nil, DuplicatedEntityErr
 	}
-	// not treat safe
+	repo.mutex.Lock()
 	nextId := repo.idSequence + 1
 	game.Id = &nextId
 	repo.gamesById[nextId] = game
 	repo.idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
-	// end not treat safe
+	repo.mutex.Unlock()
 	return &game, nil
 }
 
