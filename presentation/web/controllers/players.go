@@ -3,12 +3,14 @@ package controllers
 import (
 	"fmt"
 	"local/escobita/model"
-	"local/escobita/presentation/web/services"
+	"local/escobita/repositories"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/sessions"
 )
+
+var playersRepository repositories.Players = repositories.NewPlayersMemoryStorage()
 
 // PLAYERS
 
@@ -18,7 +20,7 @@ func getWebPlayerId(request *http.Request) int {
 	return wrappedInt.(int)
 }
 
-func ensurePlayerHasId(request *http.Request, player *services.WebPlayer) {
+func ensurePlayerHasId(request *http.Request, player *repositories.PersistentPlayer) {
 	if player.Id == nil {
 		id := getWebPlayerId(request)
 		player.Id = &id
@@ -26,7 +28,7 @@ func ensurePlayerHasId(request *http.Request, player *services.WebPlayer) {
 }
 
 func GetPlayers(response http.ResponseWriter, request *http.Request) {
-	players, err := services.GetPlayers()
+	players, err := playersRepository.GetPlayers()
 	if err != nil {
 		fmt.Printf("error while retrieving players : '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -38,16 +40,16 @@ func GetPlayers(response http.ResponseWriter, request *http.Request) {
 // Gets the web client's correspondant player
 func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
 	id := getWebPlayerId(request)
-	player, err := services.GetPlayerById(id)
+	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
-		if err == services.EntityNotExistsErr {
-			player = &services.WebPlayer{
+		if err == repositories.EntityNotExistsErr {
+			player = &repositories.PersistentPlayer{
 				Player: model.Player{
 					Name: "",
 				},
 				Id: &id,
 			}
-			player, err = services.CreatePlayer(*player)
+			player, err = playersRepository.CreatePlayer(*player)
 			fmt.Printf("Creating new player %+v \n", player)
 		}
 		if err != nil {
@@ -69,7 +71,7 @@ func GetPlayerById(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	player, err := services.GetPlayerById(id)
+	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
 		fmt.Printf("error while retrieving player(id=%d): '%v'\n", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -79,7 +81,7 @@ func GetPlayerById(response http.ResponseWriter, request *http.Request) {
 }
 
 func CreatePlayer(response http.ResponseWriter, request *http.Request) {
-	var player services.WebPlayer
+	var player repositories.PersistentPlayer
 	err := ParseJsonFromReader(request.Body, &player)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
@@ -90,7 +92,7 @@ func CreatePlayer(response http.ResponseWriter, request *http.Request) {
 	ensurePlayerHasId(request, &player)
 	fmt.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
 
-	created, err := services.CreatePlayer(player)
+	created, err := playersRepository.CreatePlayer(player)
 	if err != nil {
 		fmt.Printf("error while creating Player: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -100,7 +102,7 @@ func CreatePlayer(response http.ResponseWriter, request *http.Request) {
 }
 
 func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
-	var player services.WebPlayer
+	var player repositories.PersistentPlayer
 	err := ParseJsonFromReader(request.Body, &player)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
@@ -110,7 +112,7 @@ func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 	fmt.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
 	ensurePlayerHasId(request, &player)
 	fmt.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
-	updated, err := services.UpdatePlayer(player)
+	updated, err := playersRepository.UpdatePlayer(player)
 	if err != nil {
 		fmt.Printf("error while updating Player: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -127,7 +129,7 @@ func DeletePlayer(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = services.DeletePlayer(id)
+	err = playersRepository.DeletePlayer(id)
 	if err != nil {
 		fmt.Printf("error while deleting player(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)

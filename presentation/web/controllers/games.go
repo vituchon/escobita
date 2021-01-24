@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"local/escobita/model"
 	"local/escobita/presentation/web/services"
+	"local/escobita/repositories"
 	"net/http"
 	"strconv"
 )
 
+var gamesRepository repositories.Games = repositories.NewGamesMemoryStorage()
+
 func GetGames(response http.ResponseWriter, request *http.Request) {
-	games, err := services.GetGames()
+	games, err := gamesRepository.GetGames()
 	if err != nil {
 		fmt.Printf("error while retrieving games : '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -26,7 +29,7 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	game, err := services.GetGameById(id)
+	game, err := gamesRepository.GetGameById(id)
 	if err != nil {
 		fmt.Printf("error while retrieving game(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -36,7 +39,7 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 }
 
 func CreateGame(response http.ResponseWriter, request *http.Request) {
-	var game services.WebGame
+	var game repositories.PersistentGame
 	err := ParseJsonFromReader(request.Body, &game)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
@@ -44,7 +47,7 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	game.PlayerId = getWebPlayerId(request) // asign owner
-	created, err := services.CreateGame(game)
+	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
 		fmt.Printf("error while creating Game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -55,14 +58,14 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 }
 
 func UpdateGame(response http.ResponseWriter, request *http.Request) {
-	var game services.WebGame
+	var game repositories.PersistentGame
 	err := ParseJsonFromReader(request.Body, &game)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	updated, err := services.UpdateGame(game)
+	updated, err := gamesRepository.UpdateGame(game)
 	if err != nil {
 		fmt.Printf("error while updating Game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -79,7 +82,7 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = services.DeleteGame(id)
+	err = gamesRepository.DeleteGame(id)
 	if err != nil {
 		fmt.Printf("error while deleting game(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -88,8 +91,10 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusOK)
 }
 
+// Escobita oriented events
+
 func ResumeGame(response http.ResponseWriter, request *http.Request) {
-	var game services.WebGame
+	var game repositories.PersistentGame
 	err := ParseJsonFromReader(request.Body, &game)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
@@ -104,6 +109,7 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 	}
 
 	updated, err := services.ResumeGame(game)
+	updated, err = gamesRepository.UpdateGame(*updated)
 	if err != nil {
 		fmt.Printf("error while starting Game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -113,8 +119,8 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 }
 
 type gameActionResponseData struct {
-	Game   *services.WebGame  `json:"game"`
-	Action model.PlayerAction `json:"action"`
+	Game   *repositories.PersistentGame `json:"game"`
+	Action model.PlayerAction           `json:"action"`
 }
 
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
@@ -125,7 +131,7 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	game, err := services.GetGameById(id)
+	game, err := gamesRepository.GetGameById(id)
 	if err != nil {
 		fmt.Printf("error getting game by id: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest) // dev note: it may be 404 NotFound is the case the game with the given id doesn't exists
@@ -140,7 +146,8 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	game, action, err := services.PerformTakeAction(*game, takeAction)
+	updated, action := services.PerformTakeAction(*game, takeAction)
+	updated, err = gamesRepository.UpdateGame(*updated)
 	if err != nil {
 		fmt.Printf("error while doing take action: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -157,7 +164,7 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	game, err := services.GetGameById(id)
+	game, err := gamesRepository.GetGameById(id)
 	if err != nil {
 		fmt.Printf("error getting game by id: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest) // dev note: it may be 404 NotFound is the case the game with the given id doesn't exists
@@ -171,7 +178,8 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	game, action, err := services.PerformDropAction(*game, dropAction)
+	game, action := services.PerformDropAction(*game, dropAction)
+	game, err = gamesRepository.UpdateGame(*game)
 	if err != nil {
 		fmt.Printf("error while doing drop action: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -201,7 +209,7 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	game, err := services.GetGameById(id)
+	game, err := gamesRepository.GetGameById(id)
 	if err != nil {
 		fmt.Printf("error getting game by id: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest) // dev note: it may be 404 NotFound is the case the game with the given id doesn't exists
