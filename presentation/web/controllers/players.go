@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var playersRepository repositories.PlayersRepository = repositories.NewPlayerInMemoryRepository()
+var playersRepository repositories.Players = repositories.NewPlayersMemoryStorage()
 
 // PLAYERS
 

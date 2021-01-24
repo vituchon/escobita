@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-var gamesRepository repositories.GamesRepository = repositories.NewGamesInMemoryRepository()
+var gamesRepository repositories.Games = repositories.NewGamesMemoryStorage()
 
 func GetGames(response http.ResponseWriter, request *http.Request) {
 	games, err := gamesRepository.GetGames()

@@ -37,7 +37,7 @@ func (pp *PersistentPlayer) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type PlayersRepository interface {
+type Players interface {
 	GetPlayers() ([]PersistentPlayer, error)
 	GetPlayerById(id int) (*PersistentPlayer, error)
 	CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error)
@@ -45,15 +45,15 @@ type PlayersRepository interface {
 	DeletePlayer(id int) error
 }
 
-type PlayersInMemoryRepository struct {
+type PlayersMemoryStorage struct {
 	playersById map[int]PersistentPlayer
 }
 
-func NewPlayerInMemoryRepository() *PlayersInMemoryRepository {
-	return &PlayersInMemoryRepository{playersById: make(map[int]PersistentPlayer)}
+func NewPlayersMemoryStorage() *PlayersMemoryStorage {
+	return &PlayersMemoryStorage{playersById: make(map[int]PersistentPlayer)}
 }
 
-func (repo PlayersInMemoryRepository) GetPlayers() ([]PersistentPlayer, error) {
+func (repo PlayersMemoryStorage) GetPlayers() ([]PersistentPlayer, error) {
 	players := make([]PersistentPlayer, 0, len(repo.playersById))
 	for _, player := range repo.playersById {
 		players = append(players, player)
@@ -61,7 +61,7 @@ func (repo PlayersInMemoryRepository) GetPlayers() ([]PersistentPlayer, error) {
 	return players, nil
 }
 
-func (repo PlayersInMemoryRepository) GetPlayerById(id int) (*PersistentPlayer, error) {
+func (repo PlayersMemoryStorage) GetPlayerById(id int) (*PersistentPlayer, error) {
 	player, exists := repo.playersById[id]
 	if !exists {
 		return nil, EntityNotExistsErr
@@ -69,7 +69,7 @@ func (repo PlayersInMemoryRepository) GetPlayerById(id int) (*PersistentPlayer, 
 	return &player, nil
 }
 
-func (repo *PlayersInMemoryRepository) CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error) {
+func (repo *PlayersMemoryStorage) CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error) {
 	if player.Id == nil {
 		return nil, InvalidEntityStateErr
 	}
@@ -77,7 +77,7 @@ func (repo *PlayersInMemoryRepository) CreatePlayer(player PersistentPlayer) (cr
 	return &player, nil
 }
 
-func (repo *PlayersInMemoryRepository) UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error) {
+func (repo *PlayersMemoryStorage) UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error) {
 	if player.Id == nil {
 		return nil, InvalidEntityStateErr
 	}
@@ -85,7 +85,7 @@ func (repo *PlayersInMemoryRepository) UpdatePlayer(player PersistentPlayer) (up
 	return &player, nil
 }
 
-func (repo *PlayersInMemoryRepository) DeletePlayer(id int) error {
+func (repo *PlayersMemoryStorage) DeletePlayer(id int) error {
 	delete(repo.playersById, id)
 	return nil
 }

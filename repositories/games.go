@@ -12,7 +12,7 @@ type PersistentGame struct {
 	Matchs     []model.Match `json:"matchs, omitempty"` // played matchs
 }
 
-type GamesRepository interface {
+type Games interface {
 	GetGames() ([]PersistentGame, error)
 	GetGameById(id int) (*PersistentGame, error)
 	CreateGame(game PersistentGame) (created *PersistentGame, err error)
@@ -20,16 +20,16 @@ type GamesRepository interface {
 	DeleteGame(id int) error
 }
 
-type GamesInMemoryRepository struct {
+type GamesMemoryStorage struct {
 	gamesById  map[int]PersistentGame
 	idSequence int
 }
 
-func NewGamesInMemoryRepository() *GamesInMemoryRepository {
-	return &GamesInMemoryRepository{gamesById: make(map[int]PersistentGame), idSequence: 0}
+func NewGamesMemoryStorage() *GamesMemoryStorage {
+	return &GamesMemoryStorage{gamesById: make(map[int]PersistentGame), idSequence: 0}
 }
 
-func (repo GamesInMemoryRepository) GetGames() ([]PersistentGame, error) {
+func (repo GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
 	games := make([]PersistentGame, 0, len(repo.gamesById))
 	for _, game := range repo.gamesById {
 		games = append(games, game)
@@ -37,7 +37,7 @@ func (repo GamesInMemoryRepository) GetGames() ([]PersistentGame, error) {
 	return games, nil
 }
 
-func (repo GamesInMemoryRepository) GetGameById(id int) (*PersistentGame, error) {
+func (repo GamesMemoryStorage) GetGameById(id int) (*PersistentGame, error) {
 	game, exists := repo.gamesById[id]
 	if !exists {
 		return nil, EntityNotExistsErr
@@ -45,7 +45,7 @@ func (repo GamesInMemoryRepository) GetGameById(id int) (*PersistentGame, error)
 	return &game, nil
 }
 
-func (repo *GamesInMemoryRepository) CreateGame(game PersistentGame) (created *PersistentGame, err error) {
+func (repo *GamesMemoryStorage) CreateGame(game PersistentGame) (created *PersistentGame, err error) {
 	if game.Id != nil {
 		return nil, DuplicatedEntityErr
 	}
@@ -58,7 +58,7 @@ func (repo *GamesInMemoryRepository) CreateGame(game PersistentGame) (created *P
 	return &game, nil
 }
 
-func (repo *GamesInMemoryRepository) UpdateGame(game PersistentGame) (updated *PersistentGame, err error) {
+func (repo *GamesMemoryStorage) UpdateGame(game PersistentGame) (updated *PersistentGame, err error) {
 	if game.Id == nil {
 		return nil, EntityNotExistsErr
 	}
@@ -66,7 +66,7 @@ func (repo *GamesInMemoryRepository) UpdateGame(game PersistentGame) (updated *P
 	return &game, nil
 }
 
-func (repo *GamesInMemoryRepository) DeleteGame(id int) error {
+func (repo *GamesMemoryStorage) DeleteGame(id int) error {
 	delete(repo.gamesById, id)
 	return nil
 }
