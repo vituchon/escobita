@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/sessions"
 )
@@ -14,6 +15,7 @@ func NewSessionStore(key []byte) {
 }
 
 var clientSequenceId int = 0
+var mutex sync.Mutex
 
 func GetOrCreateClientSession(request *http.Request) *sessions.Session {
 	clientSession, err := clientSessions.Get(request, "client_session")
@@ -22,11 +24,11 @@ func GetOrCreateClientSession(request *http.Request) *sessions.Session {
 	}
 	if clientSession.IsNew {
 		fmt.Printf("creating new session\n")
-		// begin not thread safe
+		mutex.Lock()
 		nextId := clientSequenceId + 1
 		clientSession.Values["clientId"] = nextId
 		clientSequenceId++
-		// end not thread safe
+		mutex.Unlock()
 	} else {
 		fmt.Printf("using existing session, clientId = %v\n", clientSession.Values["clientId"])
 	}
