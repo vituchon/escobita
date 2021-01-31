@@ -50,11 +50,6 @@ module Game {
     public isMatchInProgress: boolean = false;
     public currentMatchStats: Api.ScoreSummaryByPlayerName;
 
-    /* TODO : Implement displaying of previous matchs score, leaving code below as an first approach
-    // the two below vars are a simple solution for displaying the last match scores! nothing more.. it may be polished a lot
-    public currentMatchStatsCopy: Api.ScoreSummaryByPlayerName;
-    public displayCurrentMatchStatsCopy: boolean = false;*/
-
     public players: Players.Player[]; // not sure if it will be use somewhere!
     public playersById: Util.EntityById<Players.Player>;
 
@@ -68,8 +63,8 @@ module Game {
 
     private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
 
-    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service, private playersService: Players.Service,
-      private messagesService: Messages.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
+    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service,
+      private playersService: Players.Service,  private messagesService: Messages.Service, private webSocketsService: WebSockets.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
       private $q: ng.IQService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
@@ -87,48 +82,14 @@ module Game {
         }
       })
 
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(this.updaterInterval)
-      });
-
-      this.updaterInterval = this.$interval(() => {
-        const mustRefreshGame = (!this.isMatchInProgress) || (this.isMatchInProgress && !this.isPlayerTurn) // ~p v (p y q~) == ~p v ~q
-        var refreshGamePromise = this.$q.when(this.game)
-        if (mustRefreshGame) {
-          refreshGamePromise = this.refreshGame()
-        }
-        var updateChatPromise = this.$q.when(this.messages)
-        if (this.isChatEnabled) {
-          updateChatPromise = this.updateChat();
-        }
-
-        return this.$q.all([refreshGamePromise,updateChatPromise]).then((response) => {
-          if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
-            const nowUnixTimestamp = moment().unix()
-            const seconds = nowUnixTimestamp - this.lastUpdateUnixTimestamp
-            //console.log("demora aproximada ",seconds)
-            if (seconds > 5) {
-              Toastr.warn("Puede que haya algunos problemas de conexión!")
-            }
-          }
-          this.lastUpdateUnixTimestamp = 	moment().unix()
-          return response
+      this.setupPullRefresh(2000) // experimenting see // (*)
+      this.webSocketsService.retrieve().then((ws: WebSocket) => {
+        this.gamesService.bindWebSocket(this.game.id, ws).then(() => {
+          this.setupPushRefresh(ws)
         })
-      }, 2000)
-
-    /*
-      this.$scope.$watch(() => {
-        return this.refreshGameInterval
-      }, (refreshGameInterval) => {
-        const mustHaveARefresh = (!this.isMatchInProgress) || (this.isMatchInProgress && !this.isPlayerTurn) // ~p v (p y q~) == ~p v ~q
-        if (mustHaveARefresh && _.isUndefined(refreshGameInterval)) {
-          // console.warn("must have automatic refresh!")
-          // in some cases when another player start the games, the watch this.isPlayerTurn executes before the watch over this.isMatchInProgress; thus disabling the match
-          this.refreshGameInterval = this.$interval(() => {
-            return this.refreshGame()
-          },2000)
-        }
-      })*/
+      }).catch((err) => {
+        console.warn("could not adquire web socket: ", err);
+      })
 
       this.$scope.$watch(() => {
         return this.displayCardsAsSprites;
@@ -168,6 +129,61 @@ module Game {
           this.displayLastAction();
         }
       })
+    }
+
+    private setupPushRefresh(webSocket: WebSocket) {
+      webSocket.onmessage = (event) => {
+        const notification : {
+          kind: string,
+          data: {
+            game: Api.Game,
+            action?: Api.PlayerAction
+          };
+        } = JSON.parse(event.data)
+        console.log("llega una notificación", notification);
+
+        switch (notification.kind) {
+          case "drop":
+          case "take":
+          case "updated":
+          case "resume":
+            this.setGame(notification.data.game)
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
+    private setupPullRefresh(delay: number = 2000) {
+      this.$scope.$on('$destroy', () => {
+        this.$interval.cancel(this.updaterInterval)
+      });
+
+      this.updaterInterval = this.$interval(() => {
+        const mustRefreshGame = (!this.isMatchInProgress) || (this.isMatchInProgress && !this.isPlayerTurn) // ~p v (p y q~) == ~p v ~q
+        var refreshGamePromise = this.$q.when(this.game)
+        /*if (mustRefreshGame) { // (*) intenttionally commented so push notifications update the game but pull notification the chat
+          refreshGamePromise = this.refreshGame()
+        }*/
+        var updateChatPromise = this.$q.when(this.messages)
+        if (this.isChatEnabled) {
+          updateChatPromise = this.updateChat();
+        }
+
+        return this.$q.all([refreshGamePromise,updateChatPromise]).then((response) => {
+          if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
+            const nowUnixTimestamp = moment().unix()
+            const seconds = nowUnixTimestamp - this.lastUpdateUnixTimestamp
+            //console.log("demora aproximada ",seconds)
+            if (seconds > 5) {
+              Toastr.warn("Puede que haya algunos problemas de conexión!")
+            }
+          }
+          this.lastUpdateUnixTimestamp = 	moment().unix()
+          return response
+        })
+      }, delay)
     }
 
     private displayLastAction() {
@@ -363,5 +379,6 @@ module Game {
 
   }
 
-  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'PlayersService', 'MessagesService', '$interval', '$timeout', '$q', Controller]);
+  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'PlayersService',
+    'MessagesService', 'WebSocketsService', '$interval', '$timeout', '$q', Controller]);
 }
