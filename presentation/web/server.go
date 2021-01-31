@@ -88,8 +88,8 @@ func buildRouter() *mux.Router {
 	Get("/healthcheck", controllers.Healthcheck)
 	Get("/version", controllers.Version)
 
-	Get("adquire-ws/", controllers.AdquireWebSocket)
-	Get("release-ws/", controllers.ReleaseWebSocket)
+	Get("/adquire-ws", controllers.AdquireWebSocket)
+	Get("/release-ws", controllers.ReleaseWebSocket)
 
 	/*Post("/api/v1/login", controllers.Login)
 	ServeHomeAuth := AuthMiddlewareForHome(http.HandlerFunc(controllers.ServeHome)).(http.HandlerFunc)
@@ -112,6 +112,9 @@ func buildRouter() *mux.Router {
 	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
 	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
 	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)
+
+	apiGet("/games/{id:[0-9]+}/bind-ws", controllers.BindClientWebSocketToGame)
+	apiGet("/games/{id:[0-9]+}/unbind-ws", controllers.UnbindClientWebSocketToGame)
 
 	apiGet("/players", controllers.GetPlayers)
 	apiGet("/player", controllers.GetClientPlayer)

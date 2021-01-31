@@ -1,12 +1,16 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"local/escobita/model"
 	"local/escobita/presentation/web/services"
 	"local/escobita/repositories"
+	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/websocket"
 )
 
 var gamesRepository repositories.Games = repositories.NewGamesMemoryStorage()
@@ -71,6 +75,8 @@ func UpdateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	msgPayload := WebSockectOutgoingMsgPayload{updated, nil}
+	notifyBindedWebSockets(*game.Id, "updated", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
@@ -115,12 +121,15 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	msgPayload := WebSockectOutgoingMsgPayload{updated, nil}
+	notifyBindedWebSockets(*game.Id, "resume", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
-type gameActionResponseData struct {
+type WebSockectOutgoingMsgPayload struct {
 	Game   *repositories.PersistentGame `json:"game"`
-	Action model.PlayerAction           `json:"action"`
+	Action *model.PlayerAction          `json:"action,omitempty"`
 }
 
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
@@ -153,7 +162,10 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	WriteJsonResponse(response, http.StatusOK, gameActionResponseData{game, action})
+
+	msgPayload := WebSockectOutgoingMsgPayload{game, &action}
+	notifyBindedWebSockets(*game.Id, "take", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
 
 func PerformDropAction(response http.ResponseWriter, request *http.Request) {
@@ -185,7 +197,10 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	WriteJsonResponse(response, http.StatusOK, gameActionResponseData{game, action})
+
+	msgPayload := WebSockectOutgoingMsgPayload{game, &action}
+	notifyBindedWebSockets(*game.Id, "drop", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
 
 func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
@@ -229,4 +244,71 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	WriteJsonResponse(response, http.StatusOK, stats)
+}
+
+var wsByGameId map[int][]*websocket.Conn = make(map[int][]*websocket.Conn)
+
+func notifyBindedWebSockets(gameId int, kind string, data interface{}) {
+	type Notification struct {
+		Kind      string      `json:"kind"`
+		BagOfCats interface{} `json:"data"`
+	}
+
+	log.Printf("Notify clients about event(type=%s) ", kind)
+	conns := wsByGameId[gameId]
+	for _, conn := range conns {
+		notification := Notification{Kind: kind, BagOfCats: data}
+		notificationAsJson, err := json.Marshal(notification)
+		if err != nil {
+			log.Println(err, " NO SEND ")
+			continue
+		}
+		err = conn.WriteMessage(websocket.TextMessage, notificationAsJson)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+}
+
+func BindClientWebSocketToGame(response http.ResponseWriter, request *http.Request) {
+	gameId, err := ParseRouteParamAsInt(request, "id")
+	if err != nil {
+		log.Println(err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	conn, err := webSocketsHandler.Adquire(response, request)
+	if err != nil {
+		log.Println(err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	wsByGameId[gameId] = append(wsByGameId[gameId], conn)
+	log.Printf("Bind ws from client(id=%d) into game(id=%d) using conn=%v", getWebPlayerId(request), gameId, conn)
+}
+
+func UnbindClientWebSocketToGame(response http.ResponseWriter, request *http.Request) {
+	gameId, err := ParseRouteParamAsInt(request, "id")
+	if err != nil {
+		log.Println(err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	existingConn, err := webSocketsHandler.Adquire(response, request)
+	if err != nil {
+		log.Println(err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	conns := wsByGameId[gameId]
+	connsPtr := &conns
+	chopped := (*connsPtr)[:0]
+	for _, conn := range conns {
+		if existingConn != conn {
+			chopped = append(chopped, conn)
+		}
+	}
+	*connsPtr = chopped
+	wsByGameId[gameId] = *connsPtr
 }
