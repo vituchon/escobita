@@ -1,3 +1,4 @@
+/// <reference path='./cards.ts' />
 
 namespace Games {
 
