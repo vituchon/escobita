@@ -119,6 +119,13 @@ namespace Games {
       })
     }
 
+    bindWebSocket(id: number, webSocket: WebSocket) { // TODO : not sure why the second parameter..
+      return this.$http.get<Game>(`/api/v1/games/${id}/bind-ws`).then((response) => {
+        return response.data;
+      });
+    }
+
+
   }
 
   escobita.service('GamesService', ['$http', '$q', Service]);
