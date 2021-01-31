@@ -1,4 +1,5 @@
 
+// TODO : IMPLEMENT on tab close to close the ws if opened
 namespace WebSockets {
 
   export class Service {
