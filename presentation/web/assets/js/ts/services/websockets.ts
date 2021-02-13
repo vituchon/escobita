@@ -11,23 +11,31 @@ namespace WebSockets {
 
 
     public retrieve() {
-      return this.adquire().then((ws) => {
-        return ws
-      }).catch(() => {
-        return this.release().then(() => { // if fails then try to release and re create a new one!
-          return this.adquire()
-        })
-      })
+      if (_.isUndefined(this.webSocket)) {
+        return this.adquire();
+      } else {
+        if (this.webSocket.readyState === WebSocket.OPEN) {
+          return this.$q.when(this.webSocket) // in the case is called more than once, return the ws already established
+        } else {
+          return this.$q.reject("already binded to another tab")
+        }
+      }
     }
 
     private adquire() {
-      if (!_.isUndefined(this.webSocket)) {
-        return this.$q.when(this.webSocket)
-      }
       const deffered = this.$q.defer();
       try {
-        this.webSocket = new WebSocket("ws://localhost:9090/adquire-ws");
-        deffered.resolve(this.webSocket)
+        this.webSocket = new WebSocket("ws://localhost:9090/adquire-ws"); // TODO : set domain dynamically (NICE: set protocol ws or wss accordingly)
+
+        this.webSocket.onopen = (event : Event) => {
+          console.log("Web socket opened, event is: ", event)
+          deffered.resolve(this.webSocket)
+        }
+        this.webSocket.onerror = (event : Event) => {
+          console.warn("Web socket error, event is: ", event)
+          deffered.reject(event)
+        }
+
       } catch(error) {
         deffered.reject(error)
       }
@@ -35,14 +43,10 @@ namespace WebSockets {
     }
 
     private release() {
-      if (!_.isUndefined(this.webSocket)) {
-        return this.$http.get("/release-ws").then(( ) => {
-          this.webSocket.close()
-          this.webSocket = undefined
-        })
-      } else {
-        return this.$q.when(undefined)
-      }
+      return this.$http.get("/release-ws").then(( ) => {
+        this.webSocket.close()
+        this.webSocket = undefined
+      })
     }
 
   }

@@ -89,6 +89,7 @@ module Game {
         })
       }).catch((err) => {
         console.warn("could not adquire web socket: ", err);
+        Toastr.error("No se pudo establecer conexión con el servidor. No hay que tener más de una pestaña abierta.")
       })
 
       this.$scope.$watch(() => {
@@ -294,7 +295,7 @@ module Game {
         if (data.action.isEscobita) {
           Toastr.success("Has hecho escoba!")
         }
-        return this.setGame(data.game)
+        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
       }).finally(() => {
         this.isBoardCardSelectedById = {}
         this.loading = false;
@@ -325,7 +326,7 @@ module Game {
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
-        return this.setGame(data.game)
+        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.loading = false;
