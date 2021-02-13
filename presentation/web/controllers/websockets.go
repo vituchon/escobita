@@ -35,21 +35,22 @@ func NewWebSocketsHandler(clientIdResolverFunc ClientIdResolverFunc) WebSocketsH
 	}
 }
 
-func (h *WebSocketsHandler) Adquire(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
+func (h *WebSocketsHandler) AdquireOrRetrieve(w http.ResponseWriter, r *http.Request) (*websocket.Conn, bool, error) {
 	clientId := h.clientIdResolverFunc(r)
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
 	conn, exists := h.connsByClientId[clientId]
-	if !exists {
+	if !exists { // server rules: at most one connection per http client (thus it is no multi tab compliant!)
 		conn, err := h.upgrader.Upgrade(w, r, http.Header(map[string][]string{
 			"created": []string{strconv.Itoa(int(time.Now().Unix()))},
 		}))
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 		h.connsByClientId[clientId] = conn
+		return conn, true, nil // adquired (is new)
 	}
-	return conn, nil
+	return conn, false, nil // retrieved (is not new)
 }
 
 func (h *WebSocketsHandler) Release(w http.ResponseWriter, r *http.Request) error {
@@ -70,10 +71,14 @@ var (
 )
 
 func AdquireWebSocket(w http.ResponseWriter, r *http.Request) {
-	_, err := webSocketsHandler.Adquire(w, r)
+	_, isNew, err := webSocketsHandler.AdquireOrRetrieve(w, r)
 	if err != nil {
 		log.Printf("Error getting web socket: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
+	}
+	if !isNew {
+		log.Printf("Web socket already adquired for client(id='%d')\n", getWebPlayerId(r))
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 

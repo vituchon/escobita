@@ -246,7 +246,7 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, stats)
 }
 
-var wsByGameId map[int][]*websocket.Conn = make(map[int][]*websocket.Conn)
+var wsByGameId map[int][]*websocket.Conn = make(map[int][]*websocket.Conn) // TODO : Access may be has to be monitored by sync locks!
 
 func notifyBindedWebSockets(gameId int, kind string, data interface{}) {
 	type Notification struct {
@@ -278,7 +278,7 @@ func BindClientWebSocketToGame(response http.ResponseWriter, request *http.Reque
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	conn, err := webSocketsHandler.Adquire(response, request)
+	conn, _, err := webSocketsHandler.AdquireOrRetrieve(response, request)
 	if err != nil {
 		log.Println(err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -295,17 +295,20 @@ func UnbindClientWebSocketToGame(response http.ResponseWriter, request *http.Req
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	existingConn, err := webSocketsHandler.Adquire(response, request)
+	clientConn, isNew, err := webSocketsHandler.AdquireOrRetrieve(response, request)
 	if err != nil {
 		log.Println(err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	if isNew {
+		log.Println("Suspicious call to UnbindClientWebSocketToGame! web socket connection wasn't established before!")
+	}
 	conns := wsByGameId[gameId]
 	connsPtr := &conns
 	chopped := (*connsPtr)[:0]
 	for _, conn := range conns {
-		if existingConn != conn {
+		if clientConn != conn {
 			chopped = append(chopped, conn)
 		}
 	}
