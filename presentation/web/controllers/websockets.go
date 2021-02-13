@@ -62,9 +62,23 @@ func (h *WebSocketsHandler) Release(w http.ResponseWriter, r *http.Request) erro
 		return ConnectionDoesntExistErr
 	}
 	delete(h.connsByClientId, clientId)
+	unbindSocketSocketFromJoinedGame(conn, r)
 	_1000 := []byte{3, 232} // 1000, honouring https://tools.ietf.org/html/rfc6455#page-36
 	conn.WriteMessage(websocket.CloseMessage, _1000)
 	return conn.Close()
+}
+
+// for the sake of doing some sweep of possible binded websocket to a given game whose connection is about to be closed
+func unbindSocketSocketFromJoinedGame(conn *websocket.Conn, request *http.Request) {
+	for gameId, wss := range wsByGameId {
+		for _, ws := range wss {
+			if ws == conn {
+				log.Println("ws is binded to a game, procedding to unbind...")
+				UnbindConn(conn, gameId, request)
+				return
+			}
+		}
+	}
 }
 
 var (
