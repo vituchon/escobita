@@ -62,6 +62,8 @@ func (h *WebSocketsHandler) Release(w http.ResponseWriter, r *http.Request) erro
 		return ConnectionDoesntExistErr
 	}
 	delete(h.connsByClientId, clientId)
+	_1000 := []byte{3, 232} // 1000, honouring https://tools.ietf.org/html/rfc6455#page-36
+	conn.WriteMessage(websocket.CloseMessage, _1000)
 	return conn.Close()
 }
 
@@ -86,6 +88,6 @@ func ReleaseWebSocket(w http.ResponseWriter, r *http.Request) {
 	err := webSocketsHandler.Release(w, r)
 	if err != nil {
 		log.Printf("Error releasing web socket: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError) // DUE to: http: superfluous response.WriteHeader call from github.com/gorilla/handlers.(*responseLogger).WriteHeader (handlers.go:65)
 	}
 }
