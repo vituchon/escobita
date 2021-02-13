@@ -119,13 +119,17 @@ namespace Games {
       })
     }
 
-    bindWebSocket(id: number, webSocket: WebSocket) { // TODO : not sure why the second parameter..
+    bindWebSocket(id: number) {
       return this.$http.get<Game>(`/api/v1/games/${id}/bind-ws`).then((response) => {
         return response.data;
       });
     }
 
-    // TODO : IMPLEMENT UNBIND
+    unbindWebSocket(id: number) {
+      return this.$http.get<Game>(`/api/v1/games/${id}/unbind-ws`).then((response) => {
+        return response.data;
+      });
+    }
 
 
   }
