@@ -285,7 +285,7 @@ func BindClientWebSocketToGame(response http.ResponseWriter, request *http.Reque
 		return
 	}
 	wsByGameId[gameId] = append(wsByGameId[gameId], conn)
-	log.Printf("Bind ws from client(id=%d) into game(id=%d) using conn=%v", getWebPlayerId(request), gameId, conn)
+	log.Printf("Bind ws from client(id=%d) into game(id=%d) using conn=%v", getWebPlayerId(request), gameId, conn.RemoteAddr())
 }
 
 func UnbindClientWebSocketToGame(response http.ResponseWriter, request *http.Request) {
@@ -304,14 +304,19 @@ func UnbindClientWebSocketToGame(response http.ResponseWriter, request *http.Req
 	if isNew {
 		log.Println("Suspicious call to UnbindClientWebSocketToGame! web socket connection wasn't established before!")
 	}
+	UnbindConn(clientConn, gameId, request)
+}
+
+func UnbindConn(givenConn *websocket.Conn, gameId int, request *http.Request) {
 	conns := wsByGameId[gameId]
 	connsPtr := &conns
 	chopped := (*connsPtr)[:0]
 	for _, conn := range conns {
-		if clientConn != conn {
+		if givenConn != conn {
 			chopped = append(chopped, conn)
 		}
 	}
 	*connsPtr = chopped
 	wsByGameId[gameId] = *connsPtr
+	log.Printf("Unbind ws from client(id=%d) for game(id=%d). conn was=%v", getWebPlayerId(request), gameId, givenConn.RemoteAddr())
 }
