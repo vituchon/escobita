@@ -63,9 +63,9 @@ module Game {
 
     private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
 
-    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService, private gamesService: Games.Service,
-      private playersService: Players.Service,  private messagesService: Messages.Service, private webSocketsService: WebSockets.Service, private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService,
-      private $q: ng.IQService) {
+    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService,
+      private gamesService: Games.Service, private playersService: Players.Service,  private messagesService: Messages.Service, private webSocketsService: WebSockets.Service,
+      private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
       this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
@@ -84,7 +84,7 @@ module Game {
 
       this.setupPullRefresh(2000) // experimenting see // (*)
       this.webSocketsService.retrieve().then((ws: WebSocket) => {
-        this.gamesService.bindWebSocket(this.game.id, ws).then(() => {
+        this.gamesService.bindWebSocket(this.game.id).then(() => {
           this.setupPushRefresh(ws)
         })
       }).catch((err) => {
@@ -154,6 +154,12 @@ module Game {
             break;
         }
       }
+      this.$window.addEventListener("beforeunload",(event : Event) => {
+        this.gamesService.unbindWebSocket(this.game.id)
+      })
+      this.$scope.$on('$destroy', () => {
+        this.gamesService.unbindWebSocket(this.game.id)
+      })
     }
 
     private setupPullRefresh(delay: number = 2000) {
@@ -381,5 +387,5 @@ module Game {
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'PlayersService',
-    'MessagesService', 'WebSocketsService', '$interval', '$timeout', '$q', Controller]);
+    'MessagesService', 'WebSocketsService', '$interval', '$timeout', '$q','$window', Controller]);
 }
