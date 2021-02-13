@@ -90,6 +90,7 @@ func buildRouter() *mux.Router {
 
 	Get("/adquire-ws", controllers.AdquireWebSocket)
 	Get("/release-ws", controllers.ReleaseWebSocket)
+	Get("/debug-ws", controllers.DebugWebSockets)
 
 	/*Post("/api/v1/login", controllers.Login)
 	ServeHomeAuth := AuthMiddlewareForHome(http.HandlerFunc(controllers.ServeHome)).(http.HandlerFunc)

@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 	"sync"
@@ -104,4 +105,16 @@ func ReleaseWebSocket(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error releasing web socket: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError) // DUE to: http: superfluous response.WriteHeader call from github.com/gorilla/handlers.(*responseLogger).WriteHeader (handlers.go:65)
 	}
+}
+
+func DebugWebSockets(w http.ResponseWriter, r *http.Request) {
+	conns := webSocketsHandler.GetConns()
+	type item struct {
+		RemoteAddr net.Addr `json:"remoteAddr"`
+	}
+	items := []item{}
+	for _, conn := range conns {
+		items = append(items, item{RemoteAddr: conn.RemoteAddr()})
+	}
+	WriteJsonResponse(w, http.StatusOK, items)
 }
