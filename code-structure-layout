@@ -8,12 +8,13 @@
   │
   ├─presentation/─┐ : Code regarding exposing to clients a way to work with the model and "delivering" meaningful data
   │               ├─web/─┐ : HTTP REST API + Web browser GUI
-  |               |      ├─ assest       : content for web browser GUI clients
-  |               |      ├─ controllers  : receving requests, process and dispaching responses (uses repositories to work with persistent data)
-  |               |      └─ services     : code that actually "talks" to the model abstractions plus additional code that arises from specific functionality tangled into web affairs (like a users' messaging system)
+  |               |      ├─ assest/       : content for web browser GUI clients
+  |               |      ├─ controllers/  : receving requests, process and dispaching responses (uses repositories to work with persistent data)
+  |               |      ├─ services/     : code that actually "talks" to the model abstractions plus additional code that arises from specific functionality tangled into web affairs (like a users' messaging system)
+  │               │      └─ server.go     : ends points declaration (implemented on controllers/) and server fine tune 
   │               │
   │               ├─cli/ : A very basical implementation of the game using the command line (has pending work to do)
   │               ├─commmon/ : Common functionallity common to any kind of presentation (e.a: working with underlying OS's filesystem)
-  │               └─native-gui/ : OS native GUI (next summer...)
-  │
+  │               └─os-gui/ : for one or more specific OS GUI (next summer...)
+  │               
   └─main.go: on launch.. code executes from here
