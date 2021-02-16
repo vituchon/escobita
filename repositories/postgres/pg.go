@@ -56,7 +56,10 @@ func ExecuteTransactionFunc(conn Connection, txFunc TransactionFunc) (result int
 	}
 	defer func() {
 		if p := recover(); p != nil {
-			tx.Rollback()
+			rollbackErr := tx.Rollback()
+			if rollbackErr != nil {
+				log.Printf("Error while doing rollback, error was: '%v'\n", rollbackErr)
+			}
 			panic(p) // re-throw panic after Rollback
 		} else if err != nil {
 			log.Println("Doing Rollback")
