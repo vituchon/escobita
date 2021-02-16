@@ -62,7 +62,7 @@
           <div class="title">En mesa</div>
           <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
             <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
-            <card ng-model="card"></card>
+            <card ng-model="card" ng-click="ctr.isBoardCardSelectedById[card.id] = !ctr.isBoardCardSelectedById[card.id]"></card>
           </div>
         </div>
 
@@ -71,7 +71,7 @@
           <div class="title">En mano</div>
           <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
             <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
-            <card ng-model="card"></card>
+            <card ng-model="card" ng-click="ctr.selectedHandCard = card"></card>
           </div>
         </div>
 
