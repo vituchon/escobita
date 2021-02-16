@@ -130,6 +130,16 @@ module Game {
           this.displayLastAction();
         }
       })
+
+      // event binding on dynamically created, "live" watching  https://stackoverflow.com/a/1207393/903998
+      $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
+        if (event.type === "mouseover") { // taken inspiration from https://stackoverflow.com/a/13504775/903998
+          var rotateDegress = Math.random() * 10 - Math.random() * 5;
+          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.05)');
+        } else {
+          $((<any>(event.target)).parentElement.parentElement).css('transform', 'none');
+        }
+      })
     }
 
     private setupPushRefresh(webSocket: WebSocket) {

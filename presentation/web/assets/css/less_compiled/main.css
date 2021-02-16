@@ -257,6 +257,9 @@
   display: flex;
   justify-content: center;
 }
+.interactive-section .play-section .ng-card-container.card-image {
+  transition: transform 0.25s linear;
+}
 .interactive-section .play-section .deck-section {
   display: flex;
   flex-direction: column;
