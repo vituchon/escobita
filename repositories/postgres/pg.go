@@ -1,6 +1,6 @@
 // Routines for dealing with any postgres dbms bureaucracy
 
-package db
+package postgres
 
 import (
 	"database/sql"
