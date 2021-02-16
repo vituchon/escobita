@@ -108,7 +108,7 @@ func ReleaseWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func DebugWebSockets(w http.ResponseWriter, r *http.Request) {
-	conns := webSocketsHandler.GetConns()
+	conns := webSocketsHandler.connsByClientId
 	type item struct {
 		RemoteAddr net.Addr `json:"remoteAddr"`
 	}
