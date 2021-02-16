@@ -2,7 +2,7 @@
 (ES) Disposición estructural del código
 
 /─┬─model/─┐ : The abstractions regarding the game itself and its internal logic
-  │        ├─ // TODO : explains a litte more key abstractions
+  │        └─ // TODO : explains a litte more key abstractions
   |
   ├─repositories/ : Handling of model abstractions that exists over an underlying persistence storage
   │
@@ -14,8 +14,6 @@
   │               │
   │               ├─cli/ : A very basical implementation of the game using the command line (has pending work to do)
   │               ├─commmon/ : Common functionallity common to any kind of presentation (e.a: working with underlying OS's filesystem)
-  │               ├─native-gui/ : OS native GUI (next summer...)
-  │
-  ├─util/ : Not sure what to put here.. probably won't make it!.... right now some common routines for setting up a connection to a postgres dbms
+  │               └─native-gui/ : OS native GUI (next summer...)
   │
   └─main.go: on launch.. code executes from here
