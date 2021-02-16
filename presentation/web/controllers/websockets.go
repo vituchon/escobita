@@ -96,6 +96,8 @@ func AdquireWebSocket(w http.ResponseWriter, r *http.Request) {
 	if !isNew {
 		log.Printf("Web socket already adquired for client(id='%d')\n", getWebPlayerId(r))
 		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		log.Printf("Web socket adquired OK (connection \"upgraded\") for client(id='%d')\n", getWebPlayerId(r))
 	}
 }
 
@@ -103,7 +105,9 @@ func ReleaseWebSocket(w http.ResponseWriter, r *http.Request) {
 	err := webSocketsHandler.Release(w, r)
 	if err != nil {
 		log.Printf("Error releasing web socket: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError) // DUE to: http: superfluous response.WriteHeader call from github.com/gorilla/handlers.(*responseLogger).WriteHeader (handlers.go:65)
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		log.Printf("Web socket released OK for client(id='%d')\n", getWebPlayerId(r))
 	}
 }
 
