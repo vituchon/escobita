@@ -24,13 +24,13 @@ namespace Cards { // Yup... inside the same Cards namespace as they don't collid
         displayMode: "=?"
       },
       template: `
-        <div class="ng-card-container" ng-if="displayMode === 'text'">
+        <div class="ng-card-container card-text" ng-if="displayMode === 'text'">
           <span>Palo:&nbsp;</span>
           <span class="value">{{::translateSuit(card.suit)}}&nbsp;</span>
           <span>Número:&nbsp;</span>
           <span class="value">{{::card.rank}}</div>
         </div>
-        <div class="ng-card-container" ng-if="displayMode === 'sprite'">
+        <div class="ng-card-container card-image" ng-if="displayMode === 'sprite'">
           <div ng-bind-html="$sce.trustAsHtml(generateImageTag(card.suit,card.rank))"></div>
         </div>`,
       link: function ($scope: ng.IScope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
