@@ -8,7 +8,7 @@ module Game {
   namespace UIMessages {
 
     export const baseFontSize = 12;
-    const maxFontSize = 24;
+    const maxFontSize = 32;
     const fontSizeAmplitude = maxFontSize - baseFontSize;
 
 
@@ -87,9 +87,9 @@ module Game {
         this.gamesService.bindWebSocket(this.game.id).then(() => {
           this.setupPushRefresh(ws)
         })
-      }).catch((err) => {
-        console.warn("could not adquire web socket: ", err);
-        Toastr.error("No se pudo establecer conexión con el servidor. No hay que tener más de una pestaña abierta.")
+      }).catch((reason) => {
+        console.warn("could not adquire web socket: ", reason);
+        Toastr.error(`No se pudo establecer conexión con el servidor, motivo: ${reason}`)
       })
 
       this.$scope.$watch(() => {
