@@ -24,6 +24,17 @@ namespace WebSockets {
     1014:	"Bad gateway",
     1015:	"TLS handshake fail"
   }
+
+  function resolveProtocol() {
+    const isSecure = window.location.protocol.indexOf("https") != -1
+    return (isSecure) ? "wss" : "ws"
+  }
+
+  function resolveHost() {
+    return window.location.host;
+  }
+
+
   export class Service {
 
     private webSocket: WebSocket
@@ -52,7 +63,9 @@ namespace WebSockets {
     private adquire() {
       const deffered = this.$q.defer();
       try {
-        this.webSocket = new WebSocket("ws://localhost:9090/adquire-ws"); // TODO : set domain dynamically (NICE: set protocol ws or wss accordingly)
+        const protocol = resolveProtocol();
+        const host = resolveHost();
+        this.webSocket = new WebSocket(`${protocol}://${host}/adquire-ws`); // TODO : set domain dynamically (NICE: set protocol ws or wss accordingly)
 
         this.webSocket.onopen = (event : Event) => {
           console.log("Web socket opened, event is: ", event)
@@ -86,8 +99,7 @@ namespace WebSockets {
 
   escobita.service('WebSocketsService', ['$http', '$q', '$window', Service]);
 }
-/*var wss:any;
+var wss:any;
 escobita.run(['WebSocketsService', (_wss: any) => {
   wss = _wss;
 }])
-*/
