@@ -48,8 +48,12 @@ namespace WebSockets {
         return this.adquire().catch((err) => {
           console.warn("adquire fails err: ", err, " trying to release and readquire (discard the last and create a new upgraded conn)")
           return this.release().then(() => {
-            return this.adquire();
-          })
+            return this.adquire().catch(() => {
+              throw err
+            });
+          }).catch(() => {
+            throw err
+          });
         })
       } else {
         if (this.webSocket.readyState === WebSocket.OPEN) {
@@ -65,7 +69,7 @@ namespace WebSockets {
       try {
         const protocol = resolveProtocol();
         const host = resolveHost();
-        this.webSocket = new WebSocket(`${protocol}://${host}/adquire-ws`); // TODO : set domain dynamically (NICE: set protocol ws or wss accordingly)
+        this.webSocket = new WebSocket(`${protocol}://${host}/adquire-ws`);
 
         this.webSocket.onopen = (event : Event) => {
           console.log("Web socket opened, event is: ", event)
@@ -76,10 +80,15 @@ namespace WebSockets {
         }
         this.webSocket.onerror = (event : Event) => {
           console.warn("Web socket error, event is: ", event)
-          deffered.reject(event)
+          // really don't know what to do here  :S
         }
         this.webSocket.onclose = (event: CloseEvent) => {
-          console.log(closeDescriptionByCode[event.code])
+          const reason = closeDescriptionByCode[event.code];
+          console.log(reason)
+          const hasNotCloseNormal = event.code !== 1000
+          if (hasNotCloseNormal) {
+            deffered.reject(reason) // if was already resolved then this reject has no effect
+          }
           this.webSocket = undefined
         }
 
@@ -99,7 +108,10 @@ namespace WebSockets {
 
   escobita.service('WebSocketsService', ['$http', '$q', '$window', Service]);
 }
+
+/*
 var wss:any;
 escobita.run(['WebSocketsService', (_wss: any) => {
   wss = _wss;
 }])
+*/
