@@ -602,9 +602,9 @@ interface JQueryMouseEventObject extends JQueryInputEventObject {
 }
 
 interface JQueryKeyEventObject extends JQueryInputEventObject {
-    char: any;
+    char: string;
     charCode: number;
-    key: any;
+    key: string;
     keyCode: number;
 }
 
