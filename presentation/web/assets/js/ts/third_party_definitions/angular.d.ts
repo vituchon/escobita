@@ -674,7 +674,7 @@ declare module angular {
          */
         $odd: boolean;
 
-    }
+	}
 
     interface IAngularEvent {
         /**
@@ -1380,10 +1380,10 @@ declare module angular {
         statusText?: string;
     }
 
+    // tweaking by hand based on definition at https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/angular/index.d.ts#L1711
     interface IHttpPromise<T> extends IPromise<IHttpPromiseCallbackArg<T>> {
-        success(callback: IHttpPromiseCallback<T>): IHttpPromise<T>;
-        error(callback: IHttpPromiseCallback<any>): IHttpPromise<T>;
-        then<TResult>(successCallback: (response: IHttpPromiseCallbackArg<T>) => IPromise<TResult>|TResult, errorCallback?: (response: IHttpPromiseCallbackArg<any>) => any): IPromise<TResult>;
+      success(callback: IHttpPromiseCallback<T>): IHttpPromise<T>;
+      error(callback: IHttpPromiseCallback<any>): IHttpPromise<T>;
     }
 
     // See the jsdoc for transformData() at https://github.com/angular/angular.js/blob/master/src/ng/http.js#L228
