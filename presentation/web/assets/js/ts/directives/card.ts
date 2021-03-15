@@ -5,13 +5,6 @@ namespace Cards { // Yup... inside the same Cards namespace as they don't collid
 
   export const changeDisplayModeEventName = 'change-display-mode';
 
-  interface Scope extends ng.IScope {
-    translateSuit: Function;
-    displayMode: string;
-    generateImageTag: Function;
-    $sce: ng.ISCEService;
-  }
-
   function generateImageTag (suit: number, rank: number) {
     return Cards.Sprites.generateImageTag(suit,rank)
   }
@@ -40,7 +33,7 @@ namespace Cards { // Yup... inside the same Cards namespace as they don't collid
         <div class="ng-card-container card-image" ng-if="displayMode === 'sprite'">
           <div ng-bind-html="$sce.trustAsHtml(generateImageTag(card.suit,card.rank))"></div>
         </div>`,
-      link: function ($scope: Scope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
+      link: function ($scope: ng.IScope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
         $scope.translateSuit = Cards.Suits.translate
         $scope.displayMode = $scope.displayMode || 'sprite';
         $scope.generateImageTag = generateImageTag

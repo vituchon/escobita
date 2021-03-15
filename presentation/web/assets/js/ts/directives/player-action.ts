@@ -4,12 +4,6 @@
 
 namespace Cards {
 
-  interface Scope extends ng.IScope {
-    translateSuit: Function;
-    isTakenAction: boolean;
-    action: Api.PlayerAction;
-  }
-
   /** Angular directive 'playerAction': Render a player action
   *
   * Example usage (in HTML template):
@@ -43,7 +37,7 @@ namespace Cards {
             <strong ng-show="action.isEscobita">¡Fue escobita!</strong>
           </div>
         </div>`,
-      link: function ($scope: Scope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
+      link: function ($scope: ng.IScope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
         $scope.translateSuit = Cards.Suits.translate
         $scope.isTakenAction = Matchs.isTakeAction($scope.action)
       }
