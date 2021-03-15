@@ -2,7 +2,7 @@
 /// <reference path='../services/_services.d.ts' />
 var About;
 (function (About) {
-    var Controller = (function () {
+    var Controller = /** @class */ (function () {
         function Controller($state) {
             this.$state = $state;
         }

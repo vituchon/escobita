@@ -2,7 +2,7 @@
 /// <reference path='../services/_services.d.ts' />
 var Lobby;
 (function (Lobby) {
-    var Controller = (function () {
+    var Controller = /** @class */ (function () {
         function Controller($rootElement, $scope, $timeout, $state, $q, gamesService, playersService) {
             var _this = this;
             this.$rootElement = $rootElement;
