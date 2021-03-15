@@ -1,37 +1,29 @@
-// Type definitions for Angular JS 1.8
+// Type definitions for Angular JS 1.4+
 // Project: http://angularjs.org
-// Definitions by: Diego Vilar <https://github.com/diegovilar>
-//                 Georgii Dolzhykov <https://github.com/thorn0>
-//                 Caleb St-Denis <https://github.com/calebstdenis>
-//                 Leonard Thieu <https://github.com/leonard-thieu>
-//                 Steffen Kowalski <https://github.com/scipper>
-//                 Piotr Błażejewicz <https://github.com/peterblazejewicz>
-// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// Definitions by: Diego Vilar <http://github.com/diegovilar>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="jqlite.d.ts" />
+
+/// <reference path="./jquery.d.ts" />
 
 declare var angular: angular.IAngularStatic;
 
 // Support for painless dependency injection
-declare global {
-    interface Function {
-        $inject?: ReadonlyArray<string>;
-    }
+interface Function {
+    $inject?: string[];
 }
 
-export as namespace angular;
-export as namespace ng;
-
-// Support AMD require
-export = angular;
-
+// Collapse angular into ng
 import ng = angular;
+// Support AMD require
+declare module 'angular' {
+    export = angular;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // ng module (angular.js)
 ///////////////////////////////////////////////////////////////////////////////
-declare namespace angular {
-    type Injectable<T extends Function> = T | Array<string | T>;
+declare module angular {
 
     // not directly implemented, but ensures that constructed class implements $get
     interface IServiceProviderClass {
@@ -64,11 +56,132 @@ declare namespace angular {
          * @param element DOM element which is the root of angular application.
          * @param modules An array of modules to load into the application.
          *     Each item in the array should be the name of a predefined module or a (DI annotated)
-         *     function that will be invoked by the injector as a config block.
+         *     function that will be invoked by the injector as a run block.
          * @param config an object for defining configuration options for the application. The following keys are supported:
          *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
          */
-        bootstrap(element: string|Element|JQuery|Document, modules?: Array<string|Function|any[]>, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        bootstrap(element: string, modules?: string, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: string, modules?: Function, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: string, modules?: string[], config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: JQuery, modules?: string, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: JQuery, modules?: Function, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: JQuery, modules?: string[], config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: Element, modules?: string, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: Element, modules?: Function, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: Element, modules?: string[], config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: Document, modules?: string, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: Document, modules?: Function, config?: IAngularBootstrapConfig): auto.IInjectorService;
+        /**
+         * Use this function to manually start up angular application.
+         *
+         * @param element DOM element which is the root of angular application.
+         * @param modules An array of modules to load into the application.
+         *     Each item in the array should be the name of a predefined module or a (DI annotated)
+         *     function that will be invoked by the injector as a run block.
+         * @param config an object for defining configuration options for the application. The following keys are supported:
+         *     - `strictDi`: disable automatic function annotation for the application. This is meant to assist in finding bugs which break minified code.
+         */
+        bootstrap(element: Document, modules?: string[], config?: IAngularBootstrapConfig): auto.IInjectorService;
 
         /**
          * Creates a deep copy of source, which should be an object or an array.
@@ -88,13 +201,7 @@ declare namespace angular {
          *
          * If jQuery is available, angular.element is an alias for the jQuery function. If jQuery is not available, angular.element delegates to Angular's built-in subset of jQuery, called "jQuery lite" or "jqLite."
          */
-        element: JQueryStatic;
-        /**
-         * Configure several aspects of error handling in AngularJS if used as a setter
-         * or return the current configuration if used as a getter
-         */
-        errorHandlingConfig(): IErrorHandlingConfig;
-        errorHandlingConfig(config: IErrorHandlingConfig): void;
+        element: IAugmentedJQueryStatic;
         equals(value1: any, value2: any): boolean;
         extend(destination: any, ...sources: any[]): any;
 
@@ -107,11 +214,7 @@ declare namespace angular {
          * @param iterator Iterator function.
          * @param context Object to become context (this) for the iterator function.
          */
-        forEach<T, U extends ArrayLike<T> = T[]>(
-            obj: U,
-            iterator: (value: U[number], key: number, obj: U) => void,
-            context?: any
-        ): U;
+        forEach<T>(obj: T[], iterator: (value: T, key: number) => any, context?: any): any;
         /**
          * Invokes the iterator function once for each item in obj collection, which can be either an object or an array. The iterator function is invoked with iterator(value, key), where value is the value of an object property or an array element and key is the object property key or array element index. Specifying a context for the function is optional.
          *
@@ -121,7 +224,7 @@ declare namespace angular {
          * @param iterator Iterator function.
          * @param context Object to become context (this) for the iterator function.
          */
-        forEach<T>(obj: { [index: string]: T; }, iterator: (value: T, key: string, obj: { [index: string]: T; }) => void, context?: any): { [index: string]: T; };
+        forEach<T>(obj: { [index: string]: T; }, iterator: (value: T, key: string) => any, context?: any): any;
         /**
          * Invokes the iterator function once for each item in obj collection, which can be either an object or an array. The iterator function is invoked with iterator(value, key), where value is the value of an object property or an array element and key is the object property key or array element index. Specifying a context for the function is optional.
          *
@@ -131,21 +234,21 @@ declare namespace angular {
          * @param iterator Iterator function.
          * @param context Object to become context (this) for the iterator function.
          */
-        forEach(obj: any, iterator: (value: any, key: any, obj: any) => void, context?: any): any;
+        forEach(obj: any, iterator: (value: any, key: any) => any, context?: any): any;
 
         fromJson(json: string): any;
         identity<T>(arg?: T): T;
         injector(modules?: any[], strictDi?: boolean): auto.IInjectorService;
-        isArray(value: any): value is any[];
-        isDate(value: any): value is Date;
+        isArray(value: any): boolean;
+        isDate(value: any): boolean;
         isDefined(value: any): boolean;
         isElement(value: any): boolean;
-        isFunction(value: any): value is Function;
-        isNumber(value: any): value is number;
-        isObject(value: any): value is Object;
-        isObject<T>(value: any): value is T;
-        isString(value: any): value is string;
+        isFunction(value: any): boolean;
+        isNumber(value: any): boolean;
+        isObject(value: any): boolean;
+        isString(value: any): boolean;
         isUndefined(value: any): boolean;
+        lowercase(str: string): string;
 
         /**
          * Deeply extends the destination object dst by copying own enumerable properties from the src object(s) to dst. You can specify multiple src objects. If you want to preserve original objects, you can do so by passing an empty object as the target: var object = angular.merge({}, object1, object2).
@@ -169,11 +272,12 @@ declare namespace angular {
         module(
             name: string,
             requires?: string[],
-            configFn?: Injectable<Function>): IModule;
+            configFn?: Function): IModule;
 
         noop(...args: any[]): void;
         reloadWithDebugInfo(): void;
-        toJson(obj: any, pretty?: boolean | number): string;
+        toJson(obj: any, pretty?: boolean): string;
+        uppercase(str: string): string;
         version: {
             full: string;
             major: number;
@@ -181,23 +285,6 @@ declare namespace angular {
             dot: number;
             codeName: string;
         };
-
-        /**
-         * If window.name contains prefix NG_DEFER_BOOTSTRAP! when angular.bootstrap is called, the bootstrap process will be paused until angular.resumeBootstrap() is called.
-         * @param extraModules An optional array of modules that should be added to the original list of modules that the app was about to be bootstrapped with.
-         */
-        resumeBootstrap?(extraModules?: string[]): ng.auto.IInjectorService;
-
-        /**
-         * Restores the pre-1.8 behavior of jqLite that turns XHTML-like strings like
-         * `<div /><span />` to `<div></div><span></span>` instead of `<div><span></span></div>`.
-         * The new behavior is a security fix so if you use this method, please try to adjust
-         * to the change & remove the call as soon as possible.
-         * Note that this only patches jqLite. If you use jQuery 3.5.0 or newer, please read
-         * [jQuery 3.5 upgrade guide](https://jquery.com/upgrade-guide/3.5/) for more details
-         * about the workarounds.
-         */
-        UNSAFE_restoreLegacyJqLiteXHTMLReplacement(): void;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -205,19 +292,9 @@ declare namespace angular {
     // see http://docs.angularjs.org/api/angular.Module
     ///////////////////////////////////////////////////////////////////////////
     interface IModule {
-        /**
-         * Use this method to register a component.
-         *
-         * @param name The name of the component.
-         * @param options A definition object passed into the component.
-         */
-        component(name: string, options: IComponentOptions): IModule;
-        /**
-         * Use this method to register a component.
-         *
-         * @param object Object map of components where the keys are the names and the values are the component definition objects
-         */
-        component(object: {[componentName: string]: IComponentOptions}): IModule;
+        animation(name: string, animationFactory: Function): IModule;
+        animation(name: string, inlineAnnotatedFunction: any[]): IModule;
+        animation(object: Object): IModule;
         /**
          * Use this method to register work which needs to be performed on module loading.
          *
@@ -230,14 +307,13 @@ declare namespace angular {
          * @param inlineAnnotatedFunction Execute this function on module load. Useful for service configuration.
          */
         config(inlineAnnotatedFunction: any[]): IModule;
-        config(object: Object): IModule;
         /**
          * Register a constant service, such as a string, a number, an array, an object or a function, with the $injector. Unlike value it can be injected into a module configuration function (see config) and it cannot be overridden by an Angular decorator.
          *
          * @param name The name of the constant.
          * @param value The constant value.
          */
-        constant<T>(name: string, value: T): IModule;
+        constant(name: string, value: any): IModule;
         constant(object: Object): IModule;
         /**
          * The $controller service is used by Angular to create new controllers.
@@ -247,27 +323,50 @@ declare namespace angular {
          * @param name Controller name, or an object map of controllers where the keys are the names and the values are the constructors.
          * @param controllerConstructor Controller constructor fn (optionally decorated with DI annotations in the array notation).
          */
-        controller(name: string, controllerConstructor: Injectable<IControllerConstructor>): IModule;
-        controller(object: {[name: string]: Injectable<IControllerConstructor>}): IModule;
+        controller(name: string, controllerConstructor: Function): IModule;
+        /**
+         * The $controller service is used by Angular to create new controllers.
+         *
+         * This provider allows controller registration via the register method.
+         *
+         * @param name Controller name, or an object map of controllers where the keys are the names and the values are the constructors.
+         * @param controllerConstructor Controller constructor fn (optionally decorated with DI annotations in the array notation).
+         */
+        controller(name: string, inlineAnnotatedConstructor: any[]): IModule;
+        controller(object: Object): IModule;
         /**
          * Register a new directive with the compiler.
          *
          * @param name Name of the directive in camel-case (i.e. ngBind which will match as ng-bind)
          * @param directiveFactory An injectable directive factory function.
          */
-        directive<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController>(name: string, directiveFactory: Injectable<IDirectiveFactory<TScope, TElement, TAttributes, TController>>): IModule;
-        directive<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController>(object: {[directiveName: string]: Injectable<IDirectiveFactory<TScope, TElement, TAttributes, TController>>}): IModule;
-
+        directive(name: string, directiveFactory: IDirectiveFactory): IModule;
+        /**
+         * Register a new directive with the compiler.
+         *
+         * @param name Name of the directive in camel-case (i.e. ngBind which will match as ng-bind)
+         * @param directiveFactory An injectable directive factory function.
+         */
+        directive(name: string, inlineAnnotatedFunction: any[]): IModule;
+        directive(object: Object): IModule;
         /**
          * Register a service factory, which will be called to return the service instance. This is short for registering a service where its provider consists of only a $get property, which is the given service factory function. You should use $provide.factory(getFn) if you do not need to configure your service in a provider.
          *
          * @param name The name of the instance.
          * @param $getFn The $getFn for the instance creation. Internally this is a short hand for $provide.provider(name, {$get: $getFn}).
          */
-        factory(name: string, $getFn: Injectable<Function>): IModule;
-        factory(object: {[name: string]: Injectable<Function>}): IModule;
-        filter(name: string, filterFactoryFunction: Injectable<FilterFactory>): IModule;
-        filter(object: {[name: string]: Injectable<FilterFactory>}): IModule;
+        factory(name: string, $getFn: Function): IModule;
+        /**
+         * Register a service factory, which will be called to return the service instance. This is short for registering a service where its provider consists of only a $get property, which is the given service factory function. You should use $provide.factory(getFn) if you do not need to configure your service in a provider.
+         *
+         * @param name The name of the instance.
+         * @param inlineAnnotatedFunction The $getFn for the instance creation. Internally this is a short hand for $provide.provider(name, {$get: $getFn}).
+         */
+        factory(name: string, inlineAnnotatedFunction: any[]): IModule;
+        factory(object: Object): IModule;
+        filter(name: string, filterFactoryFunction: Function): IModule;
+        filter(name: string, inlineAnnotatedFunction: any[]): IModule;
+        filter(object: Object): IModule;
         provider(name: string, serviceProviderFactory: IServiceProviderFactory): IModule;
         provider(name: string, serviceProviderConstructor: IServiceProviderClass): IModule;
         provider(name: string, inlineAnnotatedConstructor: any[]): IModule;
@@ -276,15 +375,14 @@ declare namespace angular {
         /**
          * Run blocks are the closest thing in Angular to the main method. A run block is the code which needs to run to kickstart the application. It is executed after all of the service have been configured and the injector has been created. Run blocks typically contain code which is hard to unit-test, and for this reason should be declared in isolated modules, so that they can be ignored in the unit-tests.
          */
-        run(initializationFunction: Injectable<Function>): IModule;
+        run(initializationFunction: Function): IModule;
         /**
-         * Register a service constructor, which will be invoked with new to create the service instance. This is short for registering a service where its provider's $get property is a factory function that returns an instance instantiated by the injector from the service constructor function.
-         *
-         * @param name The name of the instance.
-         * @param serviceConstructor An injectable class (constructor function) that will be instantiated.
+         * Run blocks are the closest thing in Angular to the main method. A run block is the code which needs to run to kickstart the application. It is executed after all of the service have been configured and the injector has been created. Run blocks typically contain code which is hard to unit-test, and for this reason should be declared in isolated modules, so that they can be ignored in the unit-tests.
          */
-        service(name: string, serviceConstructor: Injectable<Function>): IModule;
-        service(object: {[name: string]: Injectable<Function>}): IModule;
+        run(inlineAnnotatedFunction: any[]): IModule;
+        service(name: string, serviceConstructor: Function): IModule;
+        service(name: string, inlineAnnotatedConstructor: any[]): IModule;
+        service(object: Object): IModule;
         /**
          * Register a value service with the $injector, such as a string, a number, an array, an object or a function. This is short for registering a service where its provider's $get property is a factory function that takes no arguments and returns the value service.
 
@@ -293,7 +391,7 @@ declare namespace angular {
          * @param name The name of the instance.
          * @param value The value.
          */
-        value<T>(name: string, value: T): IModule;
+        value(name: string, value: any): IModule;
         value(object: Object): IModule;
 
         /**
@@ -301,7 +399,8 @@ declare namespace angular {
          * @param name The name of the service to decorate
          * @param decorator This function will be invoked when the service needs to be instantiated and should return the decorated service instance. The function is called using the injector.invoke method and is therefore fully injectable. Local injection arguments: $delegate - The original service instance, which can be monkey patched, configured, decorated or delegated to.
          */
-        decorator(name: string, decorator: Injectable<Function>): IModule;
+        decorator(name:string, decoratorConstructor: Function): IModule;
+        decorator(name:string, inlineAnnotatedConstructor: any[]): IModule;
 
         // Properties
         name: string;
@@ -310,7 +409,7 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // Attributes
-    // see http://docs.angularjs.org/api/ng/type/$compile.directive.Attributes
+    // see http://docs.angularjs.org/api/ng.$compile.directive.Attributes
     ///////////////////////////////////////////////////////////////////////////
     interface IAttributes {
         /**
@@ -327,7 +426,7 @@ declare namespace angular {
          *
          * For further information check out the guide on @see https://docs.angularjs.org/guide/directive#matching-directives
          */
-        $normalize(name: string): string;
+        $normalize(name: string): void;
 
         /**
          * Adds the CSS class value specified by the classVal parameter to the
@@ -342,12 +441,6 @@ declare namespace angular {
          * the class removal.
          */
         $removeClass(classVal: string): void;
-
-        /**
-         * Adds and removes the appropriate CSS class values to the element based on the difference between
-         * the new and old CSS class values (specified as newClasses and oldClasses).
-         */
-        $updateClass(newClasses: string, oldClasses: string): void;
 
         /**
          * Set DOM element attribute value.
@@ -374,6 +467,7 @@ declare namespace angular {
      * see https://docs.angularjs.org/api/ng/type/form.FormController
      */
     interface IFormController {
+
         /**
          * Indexer which should return ng.INgModelController for most properties but cannot because of "All named properties must be assignable to string indexer type" constraint - see https://github.com/Microsoft/TypeScript/issues/272
          */
@@ -384,13 +478,10 @@ declare namespace angular {
         $valid: boolean;
         $invalid: boolean;
         $submitted: boolean;
-        $error: { [validationErrorKey: string]: Array<INgModelController | IFormController> };
-        $name?: string;
-        $pending?: { [validationErrorKey: string]: Array<INgModelController | IFormController> };
-        $addControl(control: INgModelController | IFormController): void;
-        $getControls(): ReadonlyArray<INgModelController | IFormController>;
-        $removeControl(control: INgModelController | IFormController): void;
-        $setValidity(validationErrorKey: string, isValid: boolean, control: INgModelController | IFormController): void;
+        $error: any;
+        $addControl(control: INgModelController): void;
+        $removeControl(control: INgModelController): void;
+        $setValidity(validationErrorKey: string, isValid: boolean, control: INgModelController): void;
         $setDirty(): void;
         $setPristine(): void;
         $commitViewValue(): void;
@@ -401,7 +492,7 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // NgModelController
-    // see http://docs.angularjs.org/api/ng/type/ngModel.NgModelController
+    // see http://docs.angularjs.org/api/ng.directive:ngModel.NgModelController
     ///////////////////////////////////////////////////////////////////////////
     interface INgModelController {
         $render(): void;
@@ -416,9 +507,7 @@ declare namespace angular {
         $setUntouched(): void;
         $rollbackViewValue(): void;
         $commitViewValue(): void;
-        $processModelValue(): void;
         $isEmpty(value: any): boolean;
-        $overrideModelOptions(options: INgModelOptions): void;
 
         $viewValue: any;
 
@@ -427,8 +516,8 @@ declare namespace angular {
         $parsers: IModelParser[];
         $formatters: IModelFormatter[];
         $viewChangeListeners: IModelViewChangeListener[];
-        $error: { [validationErrorKey: string]: boolean };
-        $name?: string;
+        $error: any;
+        $name: string;
 
         $touched: boolean;
         $untouched: boolean;
@@ -436,32 +525,11 @@ declare namespace angular {
         $validators: IModelValidators;
         $asyncValidators: IAsyncModelValidators;
 
-        $pending?: { [validationErrorKey: string]: boolean };
+        $pending: any;
         $pristine: boolean;
         $dirty: boolean;
         $valid: boolean;
         $invalid: boolean;
-    }
-
-    // Allows tuning how model updates are done.
-    // https://docs.angularjs.org/api/ng/directive/ngModelOptions
-    interface INgModelOptions {
-        updateOn?: string;
-        debounce?: number | { [key: string]: number; };
-        allowInvalid?: boolean;
-        getterSetter?: boolean;
-        timezone?: string;
-        /**
-         * Defines if the time and datetime-local types should show seconds and milliseconds.
-         * The option follows the format string of date filter.
-         * By default, the options is undefined which is equal to 'ss.sss' (seconds and milliseconds)
-         */
-        timeSecondsFormat?: string;
-        /**
-         * Defines if the time and datetime-local types should strip the seconds and milliseconds
-         * from the formatted value if they are zero. This option is applied after `timeSecondsFormat`
-         */
-        timeStripZeroSeconds?: boolean;
     }
 
     interface IModelValidators {
@@ -473,21 +541,6 @@ declare namespace angular {
 
     interface IAsyncModelValidators {
         [index: string]: (modelValue: any, viewValue: any) => IPromise<any>;
-    }
-
-    interface IErrorHandlingConfig {
-        /**
-         * The max depth for stringifying objects.
-         * Setting to a non-positive or non-numeric value, removes the max depth limit
-         * @default 5
-         */
-        objectMaxDepth?: number;
-        /**
-         * Specifies whether the generated error url will contain the parameters of the thrown error.
-         * Disabling the parameters can be useful if the generated error url is very long.
-         * @default true;
-         */
-        urlErrorParamsEnabled?: boolean;
     }
 
     interface IModelParser {
@@ -507,6 +560,8 @@ declare namespace angular {
      * see https://docs.angularjs.org/api/ng/type/$rootScope.Scope and https://docs.angularjs.org/api/ng/service/$rootScope
      */
     interface IRootScopeService {
+        [index: string]: any;
+
         $apply(): any;
         $apply(exp: string): any;
         $apply(exp: (scope: IScope) => any): any;
@@ -528,76 +583,6 @@ declare namespace angular {
         $broadcast(name: string, ...args: any[]): IAngularEvent;
         $destroy(): void;
         $digest(): void;
-
-        /**
-         * Suspend watchers of this scope subtree so that they will not be invoked during digest.
-         *
-         * This can be used to optimize your application when you know that running those watchers
-         * is redundant.
-         *
-         * **Warning**
-         *
-         * Suspending scopes from the digest cycle can have unwanted and difficult to debug results.
-         * Only use this approach if you are confident that you know what you are doing and have
-         * ample tests to ensure that bindings get updated as you expect.
-         *
-         * Some of the things to consider are:
-         *
-         * * Any external event on a directive/component will not trigger a digest while the hosting
-         *   scope is suspended - even if the event handler calls `$apply()` or `$rootScope.$digest()`.
-         * * Transcluded content exists on a scope that inherits from outside a directive but exists
-         *   as a child of the directive's containing scope. If the containing scope is suspended the
-         *   transcluded scope will also be suspended, even if the scope from which the transcluded
-         *   scope inherits is not suspended.
-         * * Multiple directives trying to manage the suspended status of a scope can confuse each other:
-         *    * A call to `$suspend()` on an already suspended scope is a no-op.
-         *    * A call to `$resume()` on a non-suspended scope is a no-op.
-         *    * If two directives suspend a scope, then one of them resumes the scope, the scope will no
-         *      longer be suspended. This could result in the other directive believing a scope to be
-         *      suspended when it is not.
-         * * If a parent scope is suspended then all its descendants will be also excluded from future
-         *   digests whether or not they have been suspended themselves. Note that this also applies to
-         *   isolate child scopes.
-         * * Calling `$digest()` directly on a descendant of a suspended scope will still run the watchers
-         *   for that scope and its descendants. When digesting we only check whether the current scope is
-         *   locally suspended, rather than checking whether it has a suspended ancestor.
-         * * Calling `$resume()` on a scope that has a suspended ancestor will not cause the scope to be
-         *   included in future digests until all its ancestors have been resumed.
-         * * Resolved promises, e.g. from explicit `$q` deferreds and `$http` calls, trigger `$apply()`
-         *   against the `$rootScope` and so will still trigger a global digest even if the promise was
-         *   initiated by a component that lives on a suspended scope.
-         */
-        $suspend(): void;
-
-        /**
-         * Call this method to determine if this scope has been explicitly suspended. It will not
-         * tell you whether an ancestor has been suspended.
-         * To determine if this scope will be excluded from a digest triggered at the $rootScope,
-         * for example, you must check all its ancestors:
-         *
-         * ```
-         * function isExcludedFromDigest(scope) {
-         *   while(scope) {
-         *     if (scope.$isSuspended()) return true;
-         *     scope = scope.$parent;
-         *   }
-         *   return false;
-         * ```
-         *
-         * Be aware that a scope may not be included in digests if it has a suspended ancestor,
-         * even if `$isSuspended()` returns false.
-         *
-         * @returns true if the current scope has been suspended.
-         */
-        $isSuspended(): boolean;
-
-        /**
-         * Resume watchers of this scope subtree in case it was suspended.
-         *
-         * See {$rootScope.Scope#$suspend} for information about the dangers of using this approach.
-         */
-        $resume(): void;
-
         /**
          * Dispatches an event name upwards through the scope hierarchy notifying the registered $rootScope.Scope listeners.
          *
@@ -615,8 +600,8 @@ declare namespace angular {
         $eval(expression: (scope: IScope) => any, locals?: Object): any;
 
         $evalAsync(): void;
-        $evalAsync(expression: string, locals?: Object): void;
-        $evalAsync(expression: (scope: IScope) => void, locals?: Object): void;
+        $evalAsync(expression: string): void;
+        $evalAsync(expression: (scope: IScope) => any): void;
 
         // Defaults to false by the implementation checking strategy
         $new(isolate?: boolean, parent?: IScope): IScope;
@@ -629,18 +614,18 @@ declare namespace angular {
          * @param name Event name to listen on.
          * @param listener Function to call when the event is emitted.
          */
-        $on(name: string, listener: (event: IAngularEvent, ...args: any[]) => any): () => void;
+        $on(name: string, listener: (event: IAngularEvent, ...args: any[]) => any): Function;
 
-        $watch(watchExpression: string, listener?: string, objectEquality?: boolean): () => void;
-        $watch<T>(watchExpression: string, listener?: (newValue: T, oldValue: T, scope: IScope) => any, objectEquality?: boolean): () => void;
-        $watch(watchExpression: (scope: IScope) => any, listener?: string, objectEquality?: boolean): () => void;
-        $watch<T>(watchExpression: (scope: IScope) => T, listener?: (newValue: T, oldValue: T, scope: IScope) => any, objectEquality?: boolean): () => void;
+        $watch(watchExpression: string, listener?: string, objectEquality?: boolean): Function;
+        $watch<T>(watchExpression: string, listener?: (newValue: T, oldValue: T, scope: IScope) => any, objectEquality?: boolean): Function;
+        $watch(watchExpression: (scope: IScope) => any, listener?: string, objectEquality?: boolean): Function;
+        $watch<T>(watchExpression: (scope: IScope) => T, listener?: (newValue: T, oldValue: T, scope: IScope) => any, objectEquality?: boolean): Function;
 
-        $watchCollection<T>(watchExpression: string, listener: (newValue: T, oldValue: T, scope: IScope) => any): () => void;
-        $watchCollection<T>(watchExpression: (scope: IScope) => T, listener: (newValue: T, oldValue: T, scope: IScope) => any): () => void;
+        $watchCollection<T>(watchExpression: string, listener: (newValue: T, oldValue: T, scope: IScope) => any): Function;
+        $watchCollection<T>(watchExpression: (scope: IScope) => T, listener: (newValue: T, oldValue: T, scope: IScope) => any): Function;
 
-        $watchGroup(watchExpressions: any[], listener: (newValue: any, oldValue: any, scope: IScope) => any): () => void;
-        $watchGroup(watchExpressions: Array<{ (scope: IScope): any }>, listener: (newValue: any, oldValue: any, scope: IScope) => any): () => void;
+        $watchGroup(watchExpressions: any[], listener: (newValue: any, oldValue: any, scope: IScope) => any): Function;
+        $watchGroup(watchExpressions: { (scope: IScope): any }[], listener: (newValue: any, oldValue: any, scope: IScope) => any): Function;
 
         $parent: IScope;
         $root: IRootScopeService;
@@ -658,6 +643,7 @@ declare namespace angular {
      * see https://docs.angularjs.org/api/ng/directive/ngRepeat
      */
     interface IRepeatScope extends IScope {
+
         /**
          * iterator offset of the repeated element (0..length-1).
          */
@@ -687,6 +673,7 @@ declare namespace angular {
          * true if the iterator position $index is odd (otherwise false).
          */
         $odd: boolean;
+
     }
 
     interface IAngularEvent {
@@ -705,11 +692,11 @@ declare namespace angular {
         /**
          * calling stopPropagation function will cancel further event propagation (available only for events that were $emit-ed).
          */
-        stopPropagation?(): void;
+        stopPropagation?: Function;
         /**
          * calling preventDefault sets defaultPrevented flag to true.
          */
-        preventDefault(): void;
+        preventDefault: Function;
         /**
          * true if preventDefault was called.
          */
@@ -718,29 +705,67 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // WindowService
-    // see http://docs.angularjs.org/api/ng/service/$window
+    // see http://docs.angularjs.org/api/ng.$window
     ///////////////////////////////////////////////////////////////////////////
     interface IWindowService extends Window {
         [key: string]: any;
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // BrowserService
+    // TODO undocumented, so we need to get it from the source code
+    ///////////////////////////////////////////////////////////////////////////
+    interface IBrowserService {
+        defer: angular.ITimeoutService;
+        [key: string]: any;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     // TimeoutService
-    // see http://docs.angularjs.org/api/ng/service/$timeout
+    // see http://docs.angularjs.org/api/ng.$timeout
     ///////////////////////////////////////////////////////////////////////////
     interface ITimeoutService {
         (delay?: number, invokeApply?: boolean): IPromise<void>;
-        <T>(fn: (...args: any[]) => T | IPromise<T>, delay?: number, invokeApply?: boolean, ...args: any[]): IPromise<T>;
+        <T>(fn: (...args: any[]) => T, delay?: number, invokeApply?: boolean, ...args: any[]): IPromise<T>;
         cancel(promise?: IPromise<any>): boolean;
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // IntervalService
-    // see http://docs.angularjs.org/api/ng/service/$interval
+    // see http://docs.angularjs.org/api/ng.$interval
     ///////////////////////////////////////////////////////////////////////////
     interface IIntervalService {
-        (func: Function, delay: number, count?: number, invokeApply?: boolean, ...args: any[]): IPromise<any>;
+        (func: Function, delay: number, count?: number, invokeApply?: boolean): IPromise<any>;
         cancel(promise: IPromise<any>): boolean;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // AngularProvider
+    // see http://docs.angularjs.org/api/ng/provider/$animateProvider
+    ///////////////////////////////////////////////////////////////////////////
+    interface IAnimateProvider {
+        /**
+         * Registers a new injectable animation factory function.
+         *
+         * @param name The name of the animation.
+         * @param factory The factory function that will be executed to return the animation object.
+         */
+        register(name: string, factory: () => IAnimateCallbackObject): void;
+
+        /**
+         * Gets and/or sets the CSS class expression that is checked when performing an animation.
+         *
+         * @param expression The className expression which will be checked against all animations.
+         * @returns The current CSS className expression value. If null then there is no expression value.
+         */
+        classNameFilter(expression?: RegExp): RegExp;
+    }
+
+    /**
+     * The animation object which contains callback functions for each event that is expected to be animated.
+     */
+    interface IAnimateCallbackObject {
+        eventFn(element: Node, doneFn: () => void): Function;
     }
 
     /**
@@ -751,136 +776,13 @@ declare namespace angular {
      * see https://docs.angularjs.org/api/ng/service/$filter
      */
     interface IFilterService {
-        (name: 'filter'): IFilterFilter;
-        (name: 'currency'): IFilterCurrency;
-        (name: 'number'): IFilterNumber;
-        (name: 'date'): IFilterDate;
-        (name: 'json'): IFilterJson;
-        (name: 'lowercase'): IFilterLowercase;
-        (name: 'uppercase'): IFilterUppercase;
-        (name: 'limitTo'): IFilterLimitTo;
-        (name: 'orderBy'): IFilterOrderBy;
         /**
          * Usage:
          * $filter(name);
          *
          * @param name Name of the filter function to retrieve
          */
-        <T>(name: string): T;
-    }
-
-    interface IFilterFilter {
-        <T>(array: T[], expression: string | IFilterFilterPatternObject | IFilterFilterPredicateFunc<T>, comparator?: IFilterFilterComparatorFunc<T>|boolean): T[];
-    }
-
-    interface IFilterFilterPatternObject {
-        [name: string]: any;
-    }
-
-    interface IFilterFilterPredicateFunc<T> {
-        (value: T, index: number, array: T[]): boolean;
-    }
-
-    interface IFilterFilterComparatorFunc<T> {
-        (actual: T, expected: T): boolean;
-    }
-
-    interface IFilterOrderByItem {
-        value: any;
-        type: string;
-        index: any;
-    }
-
-    interface IFilterOrderByComparatorFunc {
-        (left: IFilterOrderByItem, right: IFilterOrderByItem): -1 | 0 | 1;
-    }
-
-    interface IFilterCurrency {
-        /**
-         * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default symbol for current locale is used.
-         * @param amount Input to filter.
-         * @param symbol Currency symbol or identifier to be displayed.
-         * @param fractionSize Number of decimal places to round the amount to, defaults to default max fraction size for current locale
-         * @return Formatted number
-         */
-        (amount: number, symbol?: string, fractionSize?: number): string;
-    }
-
-    interface IFilterNumber {
-        /**
-         * Formats a number as text.
-         * @param number Number to format.
-         * @param fractionSize Number of decimal places to round the number to. If this is not provided then the fraction size is computed from the current locale's number formatting pattern. In the case of the default locale, it will be 3.
-         * @return Number rounded to decimalPlaces and places a “,” after each third digit.
-         */
-        (value: number|string, fractionSize?: number|string): string;
-    }
-
-    interface IFilterDate {
-        /**
-         * Formats date to a string based on the requested format.
-         *
-         * @param date Date to format either as Date object, milliseconds (string or number) or various ISO 8601 datetime string formats (e.g. yyyy-MM-ddTHH:mm:ss.sssZ and its shorter versions like yyyy-MM-ddTHH:mmZ, yyyy-MM-dd or yyyyMMddTHHmmssZ). If no timezone is specified in the string input, the time is considered to be in the local timezone.
-         * @param format Formatting rules (see Description). If not specified, mediumDate is used.
-         * @param timezone Timezone to be used for formatting. It understands UTC/GMT and the continental US time zone abbreviations, but for general use, use a time zone offset, for example, '+0430' (4 hours, 30 minutes east of the Greenwich meridian) If not specified, the timezone of the browser will be used.
-         * @return Formatted string or the input if input is not recognized as date/millis.
-         */
-        (date: Date | number | string, format?: string, timezone?: string): string;
-    }
-
-    interface IFilterJson {
-        /**
-         * Allows you to convert a JavaScript object into JSON string.
-         * @param object Any JavaScript object (including arrays and primitive types) to filter.
-         * @param spacing The number of spaces to use per indentation, defaults to 2.
-         * @return JSON string.
-         */
-        (object: any, spacing?: number): string;
-    }
-
-    interface IFilterLowercase {
-        /**
-         * Converts string to lowercase.
-         */
-        (value: string): string;
-    }
-
-    interface IFilterUppercase {
-        /**
-         * Converts string to uppercase.
-         */
-        (value: string): string;
-    }
-
-    interface IFilterLimitTo {
-        /**
-         * Creates a new array containing only a specified number of elements. The elements are taken from either the beginning or the end of the source array, string or number, as specified by the value and sign (positive or negative) of limit.
-         * @param input Source array to be limited.
-         * @param limit The length of the returned array. If the limit number is positive, limit number of items from the beginning of the source array/string are copied. If the number is negative, limit number of items from the end of the source array are copied. The limit will be trimmed if it exceeds array.length. If limit is undefined, the input will be returned unchanged.
-         * @param begin Index at which to begin limitation. As a negative index, begin indicates an offset from the end of input. Defaults to 0.
-         * @return A new sub-array of length limit or less if input array had less than limit elements.
-         */
-        <T>(input: T[], limit: string|number, begin?: string|number): T[];
-        /**
-         * Creates a new string containing only a specified number of elements. The elements are taken from either the beginning or the end of the source string or number, as specified by the value and sign (positive or negative) of limit. If a number is used as input, it is converted to a string.
-         * @param input Source string or number to be limited.
-         * @param limit The length of the returned string. If the limit number is positive, limit number of items from the beginning of the source string are copied. If the number is negative, limit number of items from the end of the source string are copied. The limit will be trimmed if it exceeds input.length. If limit is undefined, the input will be returned unchanged.
-         * @param begin Index at which to begin limitation. As a negative index, begin indicates an offset from the end of input. Defaults to 0.
-         * @return A new substring of length limit or less if input had less than limit elements.
-         */
-        (input: string|number, limit: string|number, begin?: string|number): string;
-    }
-
-    interface IFilterOrderBy {
-        /**
-         * Orders a specified array by the expression predicate. It is ordered alphabetically for strings and numerically for numbers. Note: if you notice numbers are not being sorted as expected, make sure they are actually being saved as numbers and not strings.
-         * @param array The array to sort.
-         * @param expression A predicate to be used by the comparator to determine the order of elements.
-         * @param reverse Reverse the order of the array.
-         * @param comparator Function used to determine the relative order of value pairs.
-         * @return An array containing the items from the specified collection, ordered by a comparator function based on the values computed using the expression predicate.
-         */
-        <T>(array: T[], expression: string|((value: T) => any)|Array<((value: T) => any)|string>, reverse?: boolean, comparator?: IFilterOrderByComparatorFunc): T[];
+        (name: string): Function;
     }
 
     /**
@@ -901,7 +803,7 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // LocaleService
-    // see http://docs.angularjs.org/api/ng/service/$locale
+    // see http://docs.angularjs.org/api/ng.$locale
     ///////////////////////////////////////////////////////////////////////////
     interface ILocaleService {
         id: string;
@@ -910,7 +812,7 @@ declare namespace angular {
         // Check angular's i18n files for exemples
         NUMBER_FORMATS: ILocaleNumberFormatDescriptor;
         DATETIME_FORMATS: ILocaleDateTimeFormatDescriptor;
-        pluralCat(num: any): string;
+        pluralCat: (num: any) => string;
     }
 
     interface ILocaleNumberFormatDescriptor {
@@ -950,8 +852,8 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // LogService
-    // see http://docs.angularjs.org/api/ng/service/$log
-    // see http://docs.angularjs.org/api/ng/provider/$logProvider
+    // see http://docs.angularjs.org/api/ng.$log
+    // see http://docs.angularjs.org/api/ng.$logProvider
     ///////////////////////////////////////////////////////////////////////////
     interface ILogService {
         debug: ILogCall;
@@ -974,11 +876,11 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // ParseService
-    // see http://docs.angularjs.org/api/ng/service/$parse
-    // see http://docs.angularjs.org/api/ng/provider/$parseProvider
+    // see http://docs.angularjs.org/api/ng.$parse
+    // see http://docs.angularjs.org/api/ng.$parseProvider
     ///////////////////////////////////////////////////////////////////////////
     interface IParseService {
-        (expression: string, interceptorFn?: (value: any, scope: IScope, locals: any) => any, expensiveChecks?: boolean): ICompiledExpression;
+        (expression: string): ICompiledExpression;
     }
 
     interface IParseProvider {
@@ -987,32 +889,10 @@ declare namespace angular {
 
         unwrapPromises(): boolean;
         unwrapPromises(value: boolean): IParseProvider;
-
-        /**
-         * Configure $parse service to add literal values that will be present as literal at expressions.
-         *
-         * @param literalName Token for the literal value. The literal name value must be a valid literal name.
-         * @param literalValue Value for this literal. All literal values must be primitives or `undefined`.
-         **/
-        addLiteral(literalName: string, literalValue: any): void;
-
-        /**
-         * Allows defining the set of characters that are allowed in Angular expressions. The function identifierStart will get called to know if a given character is a valid character to be the first character for an identifier. The function identifierContinue will get called to know if a given character is a valid character to be a follow-up identifier character. The functions identifierStart and identifierContinue will receive as arguments the single character to be identifier and the character code point. These arguments will be string and numeric. Keep in mind that the string parameter can be two characters long depending on the character representation. It is expected for the function to return true or false, whether that character is allowed or not.
-         * Since this function will be called extensivelly, keep the implementation of these functions fast, as the performance of these functions have a direct impact on the expressions parsing speed.
-         *
-         * @param identifierStart The function that will decide whether the given character is a valid identifier start character.
-         * @param identifierContinue The function that will decide whether the given character is a valid identifier continue character.
-         **/
-        setIdentifierFns(
-            identifierStart?: (character: string, codePoint: number) => boolean,
-            identifierContinue?: (character: string, codePoint: number) => boolean): void;
     }
 
     interface ICompiledExpression {
         (context: any, locals?: any): any;
-
-        literal: boolean;
-        constant: boolean;
 
         // If value is not provided, undefined is gonna be used since the implementation
         // does not check the parameter. Let's force a value for consistency. If consumer
@@ -1026,17 +906,8 @@ declare namespace angular {
      */
     interface ILocationService {
         absUrl(): string;
-
-        /**
-         * Returns the hash fragment
-         */
         hash(): string;
-
-        /**
-         * Changes the hash fragment and returns `$location`
-         */
-        hash(newHash: string|null): ILocationService;
-
+        hash(newHash: string): ILocationService;
         host(): string;
 
         /**
@@ -1076,7 +947,7 @@ declare namespace angular {
          * @param search New search params
          * @param paramValue If search is a string or a Number, then paramValue will override only a single search property. If paramValue is null, the property specified via the first argument will be deleted. If paramValue is an array, it will override the property of the search component of $location specified via the first argument. If paramValue is true, the property specified via the first argument will be added with no value nor trailing equal sign.
          */
-        search(search: string, paramValue: string|number|null|string[]|boolean): ILocationService;
+        search(search: string, paramValue: string|number|string[]|boolean): ILocationService;
 
         state(): any;
         state(state: any): ILocationService;
@@ -1098,16 +969,13 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // DocumentService
-    // see http://docs.angularjs.org/api/ng/service/$document
+    // see http://docs.angularjs.org/api/ng.$document
     ///////////////////////////////////////////////////////////////////////////
-    interface IDocumentService extends JQLite {
-        // Must return intersection type for index signature compatibility with JQuery
-        [index: number]: HTMLElement & Document;
-    }
+    interface IDocumentService extends IAugmentedJQuery {}
 
     ///////////////////////////////////////////////////////////////////////////
     // ExceptionHandlerService
-    // see http://docs.angularjs.org/api/ng/service/$exceptionHandler
+    // see http://docs.angularjs.org/api/ng.$exceptionHandler
     ///////////////////////////////////////////////////////////////////////////
     interface IExceptionHandlerService {
         (exception: Error, cause?: string): void;
@@ -1115,9 +983,9 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // RootElementService
-    // see http://docs.angularjs.org/api/ng/service/$rootElement
+    // see http://docs.angularjs.org/api/ng.$rootElement
     ///////////////////////////////////////////////////////////////////////////
-    interface IRootElementService extends JQLite {}
+    interface IRootElementService extends JQuery {}
 
     interface IQResolveReject<T> {
         (): void;
@@ -1129,7 +997,9 @@ declare namespace angular {
      * See http://docs.angularjs.org/api/ng/service/$q
      */
     interface IQService {
+        new <T>(resolver: (resolve: IQResolveReject<T>) => any): IPromise<T>;
         new <T>(resolver: (resolve: IQResolveReject<T>, reject: IQResolveReject<any>) => any): IPromise<T>;
+        <T>(resolver: (resolve: IQResolveReject<T>) => any): IPromise<T>;
         <T>(resolver: (resolve: IQResolveReject<T>, reject: IQResolveReject<any>) => any): IPromise<T>;
 
         /**
@@ -1139,16 +1009,7 @@ declare namespace angular {
          *
          * @param promises An array of promises.
          */
-        all<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>, T5 | IPromise<T5>, T6 | IPromise<T6>, T7 | IPromise<T7>, T8 | IPromise<T8>, T9 | IPromise<T9>, T10 | IPromise<T10>]): IPromise<[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]>;
-        all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>, T5 | IPromise<T5>, T6 | IPromise<T6>, T7 | IPromise<T7>, T8 | IPromise<T8>, T9 | IPromise<T9>]): IPromise<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
-        all<T1, T2, T3, T4, T5, T6, T7, T8>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>, T5 | IPromise<T5>, T6 | IPromise<T6>, T7 | IPromise<T7>, T8 | IPromise<T8>]): IPromise<[T1, T2, T3, T4, T5, T6, T7, T8]>;
-        all<T1, T2, T3, T4, T5, T6, T7>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>, T5 | IPromise<T5>, T6 | IPromise<T6>, T7 | IPromise<T7>]): IPromise<[T1, T2, T3, T4, T5, T6, T7]>;
-        all<T1, T2, T3, T4, T5, T6>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>, T5 | IPromise<T5>, T6 | IPromise<T6>]): IPromise<[T1, T2, T3, T4, T5, T6]>;
-        all<T1, T2, T3, T4, T5>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>, T5 | IPromise<T5>]): IPromise<[T1, T2, T3, T4, T5]>;
-        all<T1, T2, T3, T4>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>, T4 | IPromise <T4>]): IPromise<[T1, T2, T3, T4]>;
-        all<T1, T2, T3>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>, T3 | IPromise<T3>]): IPromise<[T1, T2, T3]>;
-        all<T1, T2>(values: [T1 | IPromise<T1>, T2 | IPromise<T2>]): IPromise<[T1, T2]>;
-        all<TAll>(promises: Array<TAll | IPromise<TAll>>): IPromise<TAll[]>;
+        all<T>(promises: IPromise<any>[]): IPromise<T[]>;
         /**
          * Combines multiple promises into a single promise that is resolved when all of the input promises are resolved.
          *
@@ -1156,17 +1017,12 @@ declare namespace angular {
          *
          * @param promises A hash of promises.
          */
-        all<T>(promises: { [K in keyof T]: (IPromise<T[K]> | T[K]); }): IPromise<T>;
+        all(promises: { [id: string]: IPromise<any>; }): IPromise<{ [id: string]: any; }>;
+        all<T extends {}>(promises: { [id: string]: IPromise<any>; }): IPromise<T>;
         /**
          * Creates a Deferred object which represents a task which will finish in the future.
          */
         defer<T>(): IDeferred<T>;
-        /**
-         * Returns a promise that resolves or rejects as soon as one of those promises resolves or rejects, with the value or reason from that promise.
-         *
-         * @param promises A list or hash of promises.
-         */
-        race<T>(promises: Array<IPromise<T>> | {[key: string]: IPromise<T>}): IPromise<T>;
         /**
          * Creates a promise that is resolved as rejected with the specified reason. This api should be used to forward rejection in a chain of promises. If you are dealing with the last promise in a promise chain, you don't need to worry about it.
          *
@@ -1174,114 +1030,44 @@ declare namespace angular {
          *
          * @param reason Constant, message, exception or an object representing the rejection reason.
          */
-        reject(reason?: any): IPromise<never>;
+        reject(reason?: any): IPromise<any>;
         /**
          * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
          *
          * @param value Value or a promise
          */
-        resolve<T>(value: PromiseLike<T>|T): IPromise<T>;
-        /**
-         * @deprecated Since TS 2.4, inference is stricter and no longer produces the desired type when T1 !== T2.
-         * To use resolve with two different types, pass a union type to the single-type-argument overload.
-         */
-        resolve<T1, T2>(value: PromiseLike<T1>|T2): IPromise<T1|T2>;
-        /**
-         * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
-         */
-        resolve(): IPromise<void>;
+        when<T>(value: IPromise<T>|T): IPromise<T>;
         /**
          * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
          *
          * @param value Value or a promise
-         */
-        when<T>(value: PromiseLike<T>|T): IPromise<T>;
-        when<T1, T2>(value: PromiseLike<T1>|T2): IPromise<T1|T2>;
-        when<TResult, T>(value: PromiseLike<T>|T, successCallback: (promiseValue: T) => PromiseLike<TResult>|TResult): IPromise<TResult>;
-        when<TResult, T>(value: T, successCallback: (promiseValue: T) => PromiseLike<TResult>|TResult, errorCallback: null | undefined | ((reason: any) => any), notifyCallback?: (state: any) => any): IPromise<TResult>;
-        when<TResult, TResult2, T>(value: PromiseLike<T>, successCallback: (promiseValue: T) => PromiseLike<TResult>|TResult, errorCallback: (reason: any) => TResult2 | PromiseLike<TResult2>, notifyCallback?: (state: any) => any): IPromise<TResult | TResult2>;
-        /**
-         * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
          */
         when(): IPromise<void>;
     }
 
-    interface IQProvider {
-        /**
-         * Retrieves or overrides whether to generate an error when a rejected promise is not handled.
-         * This feature is enabled by default.
-         *
-         * @returns Current value
-         */
-        errorOnUnhandledRejections(): boolean;
-
-        /**
-         * Retrieves or overrides whether to generate an error when a rejected promise is not handled.
-         * This feature is enabled by default.
-         *
-         * @param value Whether to generate an error when a rejected promise is not handled.
-         * @returns Self for chaining otherwise.
-         */
-        errorOnUnhandledRejections(value: boolean): IQProvider;
-    }
-
     interface IPromise<T> {
         /**
-         * Regardless of when the promise was or will be resolved or rejected, then calls one of
-         * the success or error callbacks asynchronously as soon as the result is available. The
-         * callbacks are called with a single argument: the result or rejection reason.
-         * Additionally, the notify callback may be called zero or more times to provide a
-         * progress indication, before the promise is resolved or rejected.
-         * The `successCallBack` may return `IPromise<never>` for when a `$q.reject()` needs to
-         * be returned.
-         * This method returns a new promise which is resolved or rejected via the return value
-         * of the `successCallback`, `errorCallback`. It also notifies via the return value of
-         * the `notifyCallback` method. The promise can not be resolved or rejected from the
-         * `notifyCallback` method.
+         * Regardless of when the promise was or will be resolved or rejected, then calls one of the success or error callbacks asynchronously as soon as the result is available. The callbacks are called with a single argument: the result or rejection reason. Additionally, the notify callback may be called zero or more times to provide a progress indication, before the promise is resolved or rejected.
+         * The successCallBack may return IPromise<void> for when a $q.reject() needs to be returned
+         * This method returns a new promise which is resolved or rejected via the return value of the successCallback, errorCallback. It also notifies via the return value of the notifyCallback method. The promise can not be resolved or rejected from the notifyCallback method.
          */
-        then<TResult1 = T, TResult2 = never>(
-            successCallback?:
-                | ((value: T) => PromiseLike<never> | PromiseLike<TResult1> | TResult1)
-                | null,
-            errorCallback?:
-                | ((reason: any) => PromiseLike<never> | PromiseLike<TResult2> | TResult2)
-                | null,
-            notifyCallback?: (state: any) => any
-        ): IPromise<TResult1 | TResult2>;
-        then<TResult1 = T, TResult2 = never>(
-            successCallback?:
-                | ((value: T) => IPromise<never> | IPromise<TResult1> | TResult1)
-                | null,
-            errorCallback?:
-                | ((reason: any) => IPromise<never> | IPromise<TResult2> | TResult2)
-                | null,
-            notifyCallback?: (state: any) => any
-        ): IPromise<TResult1 | TResult2>;
+        then<TResult>(successCallback: (promiseValue: T) => IHttpPromise<TResult>|IPromise<TResult>|TResult|IPromise<void>, errorCallback?: (reason: any) => any, notifyCallback?: (state: any) => any): IPromise<TResult>;
 
         /**
          * Shorthand for promise.then(null, errorCallback)
          */
-        catch<TResult = never>(
-            onRejected?:
-                | ((reason: any) => PromiseLike<never> | PromiseLike<TResult> | TResult)
-                | null
-        ): IPromise<T | TResult>;
-        catch<TResult = never>(
-            onRejected?:
-                | ((reason: any) => IPromise<never> | IPromise<TResult> | TResult)
-                | null
-        ): IPromise<T | TResult>;
+        catch<TResult>(onRejected: (reason: any) => IHttpPromise<TResult>|IPromise<TResult>|TResult): IPromise<TResult>;
 
         /**
          * Allows you to observe either the fulfillment or rejection of a promise, but to do so without modifying the final value. This is useful to release resources or do some clean-up that needs to be done whether the promise was rejected or resolved. See the full specification for more information.
          *
          * Because finally is a reserved word in JavaScript and reserved keywords are not supported as property names by ES3, you'll need to invoke the method like promise['finally'](callback) to make your code IE8 and Android 2.x compatible.
          */
-        finally(finallyCallback: () => void): IPromise<T>;
+        finally(finallyCallback: () => any): IPromise<T>;
     }
 
     interface IDeferred<T> {
-        resolve(value?: T|IPromise<T>): void;
+        resolve(value?: T): void;
         reject(reason?: any): void;
         notify(state?: any): void;
         promise: IPromise<T>;
@@ -1289,7 +1075,7 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // AnchorScrollService
-    // see http://docs.angularjs.org/api/ng/service/$anchorScroll
+    // see http://docs.angularjs.org/api/ng.$anchorScroll
     ///////////////////////////////////////////////////////////////////////////
     interface IAnchorScrollService {
         (): void;
@@ -1355,7 +1141,7 @@ declare namespace angular {
              */
             size: number;
 
-            // ...: any additional properties from the options object when creating the cache.
+            //...: any additional properties from the options object when creating the cache.
         };
 
         /**
@@ -1373,7 +1159,7 @@ declare namespace angular {
          *
          * @param key the key of the data to be retrieved
          */
-        get<T>(key: string): T | undefined;
+        get<T>(key: string): T;
 
         /**
          * Removes an entry from the Cache object.
@@ -1395,156 +1181,63 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // CompileService
-    // see http://docs.angularjs.org/api/ng/service/$compile
-    // see http://docs.angularjs.org/api/ng/provider/$compileProvider
+    // see http://docs.angularjs.org/api/ng.$compile
+    // see http://docs.angularjs.org/api/ng.$compileProvider
     ///////////////////////////////////////////////////////////////////////////
     interface ICompileService {
-        (element: string | Element | JQuery, transclude?: ITranscludeFunction, maxPriority?: number): ITemplateLinkingFunction;
+        (element: string, transclude?: ITranscludeFunction, maxPriority?: number): ITemplateLinkingFunction;
+        (element: Element, transclude?: ITranscludeFunction, maxPriority?: number): ITemplateLinkingFunction;
+        (element: JQuery, transclude?: ITranscludeFunction, maxPriority?: number): ITemplateLinkingFunction;
     }
 
     interface ICompileProvider extends IServiceProvider {
-        directive<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController>(name: string, directiveFactory: Injectable<IDirectiveFactory<TScope, TElement, TAttributes, TController>>): ICompileProvider;
-        directive<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController>(object: {[directiveName: string]: Injectable<IDirectiveFactory<TScope, TElement, TAttributes, TController>>}): ICompileProvider;
+        directive(name: string, directiveFactory: Function): ICompileProvider;
 
-        component(name: string, options: IComponentOptions): ICompileProvider;
-        component(object: {[componentName: string]: IComponentOptions}): ICompileProvider;
+        // Undocumented, but it is there...
+        directive(directivesMap: any): ICompileProvider;
 
-        /** @deprecated The old name of aHrefSanitizationTrustedUrlList. Kept for compatibility. */
         aHrefSanitizationWhitelist(): RegExp;
-        /** @deprecated The old name of aHrefSanitizationTrustedUrlList. Kept for compatibility. */
         aHrefSanitizationWhitelist(regexp: RegExp): ICompileProvider;
 
-        aHrefSanitizationTrustedUrlList(): RegExp;
-        aHrefSanitizationTrustedUrlList(regexp: RegExp): ICompileProvider;
-
-        /** @deprecated The old name of imgSrcSanitizationTrustedUrlList. Kept for compatibility. */
         imgSrcSanitizationWhitelist(): RegExp;
-        /** @deprecated The old name of imgSrcSanitizationTrustedUrlList. Kept for compatibility. */
         imgSrcSanitizationWhitelist(regexp: RegExp): ICompileProvider;
 
-        imgSrcSanitizationTrustedUrlList(): RegExp;
-        imgSrcSanitizationTrustedUrlList(regexp: RegExp): ICompileProvider;
-
-        debugInfoEnabled(): boolean;
-        debugInfoEnabled(enabled: boolean): ICompileProvider;
-
-        /**
-         * Call this method to enable/disable whether directive controllers are assigned bindings before calling the controller's constructor.
-         * If enabled (true), the compiler assigns the value of each of the bindings to the properties of the controller object before the constructor of this object is called.
-         * If disabled (false), the compiler calls the constructor first before assigning bindings.
-         * Defaults to false.
-         * See: https://docs.angularjs.org/api/ng/provider/$compileProvider#preAssignBindingsEnabled
-         */
-        preAssignBindingsEnabled(): boolean;
-        preAssignBindingsEnabled(enabled: boolean): ICompileProvider;
-
-        /**
-         * Sets the number of times $onChanges hooks can trigger new changes before giving up and assuming that the model is unstable.
-         * Increasing the TTL could have performance implications, so you should not change it without proper justification.
-         * Default: 10.
-         * See: https://docs.angularjs.org/api/ng/provider/$compileProvider#onChangesTtl
-         */
-        onChangesTtl(): number;
-        onChangesTtl(limit: number): ICompileProvider;
-
-        /**
-         * It indicates to the compiler whether or not directives on comments should be compiled.
-         * It results in a compilation performance gain since the compiler doesn't have to check comments when looking for directives.
-         * Defaults to true.
-         * See: https://docs.angularjs.org/api/ng/provider/$compileProvider#commentDirectivesEnabled
-         */
-        commentDirectivesEnabled(): boolean;
-        commentDirectivesEnabled(enabled: boolean): ICompileProvider;
-
-        /**
-         * It indicates to the compiler whether or not directives on element classes should be compiled.
-         * It results in a compilation performance gain since the compiler doesn't have to check element classes when looking for directives.
-         * Defaults to true.
-         * See: https://docs.angularjs.org/api/ng/provider/$compileProvider#cssClassDirectivesEnabled
-         */
-        cssClassDirectivesEnabled(): boolean;
-        cssClassDirectivesEnabled(enabled: boolean): ICompileProvider;
-
-        /**
-        * Call this method to enable/disable strict component bindings check.
-        * If enabled, the compiler will enforce that for all bindings of a
-        * component that are not set as optional with ?, an attribute needs
-        * to be provided on the component's HTML tag.
-        * Defaults to false.
-        * See: https://docs.angularjs.org/api/ng/provider/$compileProvider#strictComponentBindingsEnabled
-        */
-        strictComponentBindingsEnabled(): boolean;
-        strictComponentBindingsEnabled(enabled: boolean): ICompileProvider;
+        debugInfoEnabled(enabled?: boolean): any;
     }
 
     interface ICloneAttachFunction {
         // Let's hint but not force cloneAttachFn's signature
-        (clonedElement?: JQLite, scope?: IScope): any;
+        (clonedElement?: JQuery, scope?: IScope): any;
     }
 
     // This corresponds to the "publicLinkFn" returned by $compile.
     interface ITemplateLinkingFunction {
-        (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ITemplateLinkingFunctionOptions): JQLite;
+        (scope: IScope, cloneAttachFn?: ICloneAttachFunction): IAugmentedJQuery;
     }
 
-    interface ITemplateLinkingFunctionOptions {
-        parentBoundTranscludeFn?: ITranscludeFunction;
-        transcludeControllers?: {
-            [controller: string]: { instance: IController }
-        };
-        futureParentElement?: JQuery;
-    }
-
-    /**
-     * This corresponds to $transclude passed to controllers and to the transclude function passed to link functions.
-     * https://docs.angularjs.org/api/ng/service/$compile#-controller-
-     * http://teropa.info/blog/2015/06/09/transclusion.html
-     */
+    // This corresponds to $transclude (and also the transclude function passed to link).
     interface ITranscludeFunction {
         // If the scope is provided, then the cloneAttachFn must be as well.
-        (scope: IScope, cloneAttachFn: ICloneAttachFunction, futureParentElement?: JQuery, slotName?: string): JQLite;
+        (scope: IScope, cloneAttachFn: ICloneAttachFunction): IAugmentedJQuery;
         // If one argument is provided, then it's assumed to be the cloneAttachFn.
-        (cloneAttachFn?: ICloneAttachFunction, futureParentElement?: JQuery, slotName?: string): JQLite;
-
-        /**
-         * Returns true if the specified slot contains content (i.e. one or more DOM nodes)
-         */
-        isSlotFilled(slotName: string): boolean;
+        (cloneAttachFn?: ICloneAttachFunction): IAugmentedJQuery;
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // ControllerService
-    // see http://docs.angularjs.org/api/ng/service/$controller
-    // see http://docs.angularjs.org/api/ng/provider/$controllerProvider
+    // see http://docs.angularjs.org/api/ng.$controller
+    // see http://docs.angularjs.org/api/ng.$controllerProvider
     ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * The minimal local definitions required by $controller(ctrl, locals) calls.
-     */
-    interface IControllerLocals {
-        $scope: ng.IScope;
-        $element: JQuery;
-    }
-
     interface IControllerService {
         // Although the documentation doesn't state this, locals are optional
-        <T>(controllerConstructor: new (...args: any[]) => T, locals?: any): T;
-        <T>(controllerConstructor: (...args: any[]) => T, locals?: any): T;
-        <T>(controllerName: string, locals?: any): T;
+        (controllerConstructor: Function, locals?: any, bindToController?: any): any;
+        (controllerName: string, locals?: any, bindToController?: any): any;
     }
 
     interface IControllerProvider extends IServiceProvider {
         register(name: string, controllerConstructor: Function): void;
         register(name: string, dependencyAnnotatedConstructor: any[]): void;
-    }
-
-    /**
-     * xhrFactory
-     * Replace or decorate this service to create your own custom XMLHttpRequest objects.
-     * see https://docs.angularjs.org/api/ng/service/$xhrFactory
-     */
-    interface IXhrFactory<T> {
-        (method: string, url: string): T;
+        allowGlobals(): void;
     }
 
     /**
@@ -1653,12 +1346,6 @@ declare namespace angular {
          * See [XMLHttpRequest.responseType]https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#xmlhttprequest-responsetype
          */
         responseType?: string;
-
-        /**
-         * Name of the parameter added (by AngularJS) to the request to specify the name (in the server response) of the JSON-P callback to invoke.
-         * If unspecified, $http.defaults.jsonpCallbackParam will be used by default. This property is only applicable to JSON-P requests.
-         */
-        jsonpCallbackParam?: string;
     }
 
     /**
@@ -1674,16 +1361,6 @@ declare namespace angular {
          * Absolute or relative URL of the resource that is being requested.
          */
         url: string;
-        /**
-         * Event listeners to be bound to the XMLHttpRequest object.
-         * To bind events to the XMLHttpRequest upload object, use uploadEventHandlers. The handler will be called in the context of a $apply block.
-         */
-        eventHandlers?: { [type: string]: EventListenerOrEventListenerObject };
-        /**
-         * Event listeners to be bound to the XMLHttpRequest upload object.
-         * To bind events to the XMLHttpRequest object, use eventHandlers. The handler will be called in the context of a $apply block.
-         */
-        uploadEventHandlers?: { [type: string]: EventListenerOrEventListenerObject };
     }
 
     interface IHttpHeadersGetter {
@@ -1695,42 +1372,37 @@ declare namespace angular {
         (data: T, status: number, headers: IHttpHeadersGetter, config: IRequestConfig): void;
     }
 
-    interface IHttpResponse<T> {
-        data: T;
-        status: number;
-        headers: IHttpHeadersGetter;
-        config: IRequestConfig;
-        statusText: string;
-        /** Added in AngularJS 1.6.6 */
-        xhrStatus: 'complete' | 'error' | 'timeout' | 'abort';
+    interface IHttpPromiseCallbackArg<T> {
+        data?: T;
+        status?: number;
+        headers?: IHttpHeadersGetter;
+        config?: IRequestConfig;
+        statusText?: string;
     }
 
-    /** @deprecated The old name of IHttpResponse. Kept for compatibility. */
-    type IHttpPromiseCallbackArg<T> = IHttpResponse<T>;
-
-    type IHttpPromise<T> = IPromise<IHttpResponse<T>>;
+    interface IHttpPromise<T> extends IPromise<IHttpPromiseCallbackArg<T>> {
+        success(callback: IHttpPromiseCallback<T>): IHttpPromise<T>;
+        error(callback: IHttpPromiseCallback<any>): IHttpPromise<T>;
+        then<TResult>(successCallback: (response: IHttpPromiseCallbackArg<T>) => IPromise<TResult>|TResult, errorCallback?: (response: IHttpPromiseCallbackArg<any>) => any): IPromise<TResult>;
+    }
 
     // See the jsdoc for transformData() at https://github.com/angular/angular.js/blob/master/src/ng/http.js#L228
-    interface IHttpRequestTransformer {
+    interface IHttpResquestTransformer {
         (data: any, headersGetter: IHttpHeadersGetter): any;
     }
 
-    // The definition of fields are the same as IHttpResponse
+    // The definition of fields are the same as IHttpPromiseCallbackArg
     interface IHttpResponseTransformer {
         (data: any, headersGetter: IHttpHeadersGetter, status: number): any;
     }
 
-    interface HttpHeaderType {
-        [requestType: string]: string|((config: IRequestConfig) => string);
-    }
-
     interface IHttpRequestConfigHeaders {
-        [requestType: string]: any;
-        common?: any;
-        get?: any;
-        post?: any;
-        put?: any;
-        patch?: any;
+        [requestType: string]: string|(() => string);
+        common?: string|(() => string);
+        get?: string|(() => string);
+        post?: string|(() => string);
+        put?: string|(() => string);
+        patch?: string|(() => string);
     }
 
     /**
@@ -1752,7 +1424,7 @@ declare namespace angular {
          * headers and returns its transformed (typically serialized) version.
          * @see {@link https://docs.angularjs.org/api/ng/service/$http#transforming-requests-and-responses}
          */
-        transformRequest?: IHttpRequestTransformer |IHttpRequestTransformer[];
+        transformRequest?: IHttpResquestTransformer |IHttpResquestTransformer[];
 
         /**
          * Transform function or an array of such functions. The transform function takes the http response body and
@@ -1788,10 +1460,10 @@ declare namespace angular {
     }
 
     interface IHttpInterceptor {
-        request?(config: IRequestConfig): IRequestConfig | IPromise<IRequestConfig>;
-        requestError?(rejection: any): IRequestConfig | IPromise<IRequestConfig>;
-        response?<T>(response: IHttpResponse<T>): IPromise<IHttpResponse<T>> | IHttpResponse<T>;
-        responseError?<T>(rejection: any): IPromise<IHttpResponse<T>> | IHttpResponse<T>;
+        request?: (config: IRequestConfig) => IRequestConfig|IPromise<IRequestConfig>;
+        requestError?: (rejection: any) => any;
+        response?: <T>(response: IHttpPromiseCallbackArg<T>) => IPromise<T>|T;
+        responseError?: (rejection: any) => any;
     }
 
     interface IHttpInterceptorFactory {
@@ -1805,21 +1477,22 @@ declare namespace angular {
          * Register service factories (names or implementations) for interceptors which are called before and after
          * each request.
          */
-        interceptors: Array<string | Injectable<IHttpInterceptorFactory>>;
+        interceptors: (string|IHttpInterceptorFactory|(string|IHttpInterceptorFactory)[])[];
         useApplyAsync(): boolean;
         useApplyAsync(value: boolean): IHttpProvider;
 
-        /** @deprecated The old name of xsrfTrustedOrigins. Kept for compatibility. */
-        xsrfWhitelistedOrigins: string[];
         /**
-         * Array containing URLs whose origins are trusted to receive the XSRF token.
+         *
+         * @param {boolean=} value If true, `$http` will return a normal promise without the `success` and `error` methods.
+         * @returns {boolean|Object} If a value is specified, returns the $httpProvider for chaining.
+         *    otherwise, returns the current configured value.
          */
-        xsrfTrustedOrigins: string[];
+        useLegacyPromiseExtensions(value:boolean) : boolean | IHttpProvider;
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // HttpBackendService
-    // see http://docs.angularjs.org/api/ng/service/$httpBackend
+    // see http://docs.angularjs.org/api/ng.$httpBackend
     // You should never need to use this service directly.
     ///////////////////////////////////////////////////////////////////////////
     interface IHttpBackendService {
@@ -1829,8 +1502,8 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // InterpolateService
-    // see http://docs.angularjs.org/api/ng/service/$interpolate
-    // see http://docs.angularjs.org/api/ng/provider/$interpolateProvider
+    // see http://docs.angularjs.org/api/ng.$interpolate
+    // see http://docs.angularjs.org/api/ng.$interpolateProvider
     ///////////////////////////////////////////////////////////////////////////
     interface IInterpolateService {
         (text: string, mustHaveExpression?: boolean, trustedContext?: string, allOrNothing?: boolean): IInterpolationFunction;
@@ -1851,13 +1524,13 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // TemplateCacheService
-    // see http://docs.angularjs.org/api/ng/service/$templateCache
+    // see http://docs.angularjs.org/api/ng.$templateCache
     ///////////////////////////////////////////////////////////////////////////
     interface ITemplateCacheService extends ICacheObject {}
 
     ///////////////////////////////////////////////////////////////////////////
     // SCEService
-    // see http://docs.angularjs.org/api/ng/service/$sce
+    // see http://docs.angularjs.org/api/ng.$sce
     ///////////////////////////////////////////////////////////////////////////
     interface ISCEService {
         getTrusted(type: string, mayBeTrusted: any): any;
@@ -1882,7 +1555,7 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // SCEProvider
-    // see http://docs.angularjs.org/api/ng/provider/$sceProvider
+    // see http://docs.angularjs.org/api/ng.$sceProvider
     ///////////////////////////////////////////////////////////////////////////
     interface ISCEProvider extends IServiceProvider {
         enabled(value: boolean): void;
@@ -1890,7 +1563,7 @@ declare namespace angular {
 
     ///////////////////////////////////////////////////////////////////////////
     // SCEDelegateService
-    // see http://docs.angularjs.org/api/ng/service/$sceDelegate
+    // see http://docs.angularjs.org/api/ng.$sceDelegate
     ///////////////////////////////////////////////////////////////////////////
     interface ISCEDelegateService {
         getTrusted(type: string, mayBeTrusted: any): any;
@@ -1898,23 +1571,16 @@ declare namespace angular {
         valueOf(value: any): any;
     }
 
+
     ///////////////////////////////////////////////////////////////////////////
     // SCEDelegateProvider
-    // see http://docs.angularjs.org/api/ng/provider/$sceDelegateProvider
+    // see http://docs.angularjs.org/api/ng.$sceDelegateProvider
     ///////////////////////////////////////////////////////////////////////////
     interface ISCEDelegateProvider extends IServiceProvider {
-        /** @deprecated since 1.8.1 */
+        resourceUrlBlacklist(blacklist: any[]): void;
+        resourceUrlWhitelist(whitelist: any[]): void;
         resourceUrlBlacklist(): any[];
-        /** @deprecated since 1.8.1 */
-        resourceUrlBlacklist(bannedList: any[]): void;
-        bannedResourceUrlList(): any[];
-        bannedResourceUrlList(bannedList: any[]): void;
-        /** @deprecated since 1.8.1 */
         resourceUrlWhitelist(): any[];
-        /** @deprecated since 1.8.1 */
-        resourceUrlWhitelist(trustedList: any[]): void;
-        trustedResourceUrlList(): any[];
-        trustedResourceUrlList(trustedList: any[]): void;
     }
 
     /**
@@ -1940,334 +1606,126 @@ declare namespace angular {
         (tpl: string, ignoreRequestError?: boolean): IPromise<string>;
         /**
          * total amount of pending template requests being downloaded.
+         * @type {number}
          */
         totalPendingRequests: number;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Component
-    // see http://angularjs.blogspot.com.br/2015/11/angularjs-15-beta2-and-14-releases.html
-    // and http://toddmotto.com/exploring-the-angular-1-5-component-method/
-    ///////////////////////////////////////////////////////////////////////////
-    /**
-     * Component definition object (a simplified directive definition object)
-     */
-    interface IComponentOptions {
-        /**
-         * Controller constructor function that should be associated with newly created scope or the name of a registered
-         * controller if passed as a string. Empty function by default.
-         * Use the array form to define dependencies (necessary if strictDi is enabled and you require dependency injection)
-         */
-        controller?: string | Injectable<IControllerConstructor>;
-        /**
-         * An identifier name for a reference to the controller. If present, the controller will be published to its scope under
-         * the specified name. If not present, this will default to '$ctrl'.
-         */
-        controllerAs?: string;
-        /**
-         * html template as a string or a function that returns an html template as a string which should be used as the
-         * contents of this component. Empty string by default.
-         * If template is a function, then it is injected with the following locals:
-         * $element - Current element
-         * $attrs - Current attributes object for the element
-         * Use the array form to define dependencies (necessary if strictDi is enabled and you require dependency injection)
-         */
-        template?: string | Injectable<(...args: any[]) => string>;
-        /**
-         * Path or function that returns a path to an html template that should be used as the contents of this component.
-         * If templateUrl is a function, then it is injected with the following locals:
-         * $element - Current element
-         * $attrs - Current attributes object for the element
-         * Use the array form to define dependencies (necessary if strictDi is enabled and you require dependency injection)
-         */
-        templateUrl?: string | Injectable<(...args: any[]) => string>;
-        /**
-         * Define DOM attribute binding to component properties. Component properties are always bound to the component
-         * controller and not to the scope.
-         */
-        bindings?: {[boundProperty: string]: string};
-        /**
-         * Whether transclusion is enabled. Disabled by default.
-         */
-        transclude?: boolean | {[slot: string]: string};
-        /**
-         * Requires the controllers of other directives and binds them to this component's controller.
-         * The object keys specify the property names under which the required controllers (object values) will be bound.
-         * Note that the required controllers will not be available during the instantiation of the controller,
-         * but they are guaranteed to be available just before the $onInit method is executed!
-         */
-        require?: {[controller: string]: string};
-    }
-
-    type IControllerConstructor =
-        (new (...args: any[]) => IController) |
-        // Instead of classes, plain functions are often used as controller constructors, especially in examples.
-        ((...args: any[]) => (void | IController));
-
-    /**
-     * Directive controllers have a well-defined lifecycle. Each controller can implement "lifecycle hooks". These are methods that
-     * will be called by Angular at certain points in the life cycle of the directive.
-     * https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks
-     * https://docs.angularjs.org/guide/component
-     */
-    interface IController {
-        /**
-         * Called on each controller after all the controllers on an element have been constructed and had their bindings
-         * initialized (and before the pre & post linking functions for the directives on this element). This is a good
-         * place to put initialization code for your controller.
-         */
-        $onInit?(): void;
-        /**
-         * Called on each turn of the digest cycle. Provides an opportunity to detect and act on changes.
-         * Any actions that you wish to take in response to the changes that you detect must be invoked from this hook;
-         * implementing this has no effect on when `$onChanges` is called. For example, this hook could be useful if you wish
-         * to perform a deep equality check, or to check a `Dat`e object, changes to which would not be detected by Angular's
-         * change detector and thus not trigger `$onChanges`. This hook is invoked with no arguments; if detecting changes,
-         * you must store the previous value(s) for comparison to the current values.
-         */
-        $doCheck?(): void;
-        /**
-         * Called whenever one-way bindings are updated. The onChangesObj is a hash whose keys are the names of the bound
-         * properties that have changed, and the values are an {@link IChangesObject} object  of the form
-         * { currentValue, previousValue, isFirstChange() }. Use this hook to trigger updates within a component such as
-         * cloning the bound value to prevent accidental mutation of the outer value.
-         */
-        $onChanges?(onChangesObj: IOnChangesObject): void;
-        /**
-         * Called on a controller when its containing scope is destroyed. Use this hook for releasing external resources,
-         * watches and event handlers.
-         */
-        $onDestroy?(): void;
-        /**
-         * Called after this controller's element and its children have been linked. Similar to the post-link function this
-         * hook can be used to set up DOM event handlers and do direct DOM manipulation. Note that child elements that contain
-         * templateUrl directives will not have been compiled and linked since they are waiting for their template to load
-         * asynchronously and their own compilation and linking has been suspended until that occurs. This hook can be considered
-         * analogous to the ngAfterViewInit and ngAfterContentInit hooks in Angular 2. Since the compilation process is rather
-         * different in Angular 1 there is no direct mapping and care should be taken when upgrading.
-         */
-        $postLink?(): void;
-
-        // IController implementations frequently do not implement any of its methods.
-        // A string indexer indicates to TypeScript not to issue a weak type error in this case.
-        [s: string]: any;
-    }
-
-    /**
-     * Interface for the $onInit lifecycle hook
-     * https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks
-     */
-    interface IOnInit {
-        /**
-         * Called on each controller after all the controllers on an element have been constructed and had their bindings
-         * initialized (and before the pre & post linking functions for the directives on this element). This is a good
-         * place to put initialization code for your controller.
-         */
-        $onInit(): void;
-    }
-
-    /**
-     * Interface for the $doCheck lifecycle hook
-     * https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks
-     */
-    interface IDoCheck {
-        /**
-         * Called on each turn of the digest cycle. Provides an opportunity to detect and act on changes.
-         * Any actions that you wish to take in response to the changes that you detect must be invoked from this hook;
-         * implementing this has no effect on when `$onChanges` is called. For example, this hook could be useful if you wish
-         * to perform a deep equality check, or to check a `Dat`e object, changes to which would not be detected by Angular's
-         * change detector and thus not trigger `$onChanges`. This hook is invoked with no arguments; if detecting changes,
-         * you must store the previous value(s) for comparison to the current values.
-         */
-        $doCheck(): void;
-    }
-
-    /**
-     * Interface for the $onChanges lifecycle hook
-     * https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks
-     */
-    interface IOnChanges {
-        /**
-         * Called whenever one-way bindings are updated. The onChangesObj is a hash whose keys are the names of the bound
-         * properties that have changed, and the values are an {@link IChangesObject} object  of the form
-         * { currentValue, previousValue, isFirstChange() }. Use this hook to trigger updates within a component such as
-         * cloning the bound value to prevent accidental mutation of the outer value.
-         */
-        $onChanges(onChangesObj: IOnChangesObject): void;
-    }
-
-    /**
-     * Interface for the $onDestroy lifecycle hook
-     * https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks
-     */
-    interface IOnDestroy {
-        /**
-         * Called on a controller when its containing scope is destroyed. Use this hook for releasing external resources,
-         * watches and event handlers.
-         */
-        $onDestroy(): void;
-    }
-
-    /**
-     * Interface for the $postLink lifecycle hook
-     * https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks
-     */
-    interface IPostLink {
-        /**
-         * Called after this controller's element and its children have been linked. Similar to the post-link function this
-         * hook can be used to set up DOM event handlers and do direct DOM manipulation. Note that child elements that contain
-         * templateUrl directives will not have been compiled and linked since they are waiting for their template to load
-         * asynchronously and their own compilation and linking has been suspended until that occurs. This hook can be considered
-         * analogous to the ngAfterViewInit and ngAfterContentInit hooks in Angular 2. Since the compilation process is rather
-         * different in Angular 1 there is no direct mapping and care should be taken when upgrading.
-         */
-        $postLink(): void;
-    }
-
-    interface IOnChangesObject {
-        [property: string]: IChangesObject<any>;
-    }
-
-    interface IChangesObject<T> {
-        currentValue: T;
-        previousValue: T;
-        isFirstChange(): boolean;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     // Directive
-    // see http://docs.angularjs.org/api/ng/provider/$compileProvider#directive
+    // see http://docs.angularjs.org/api/ng.$compileProvider#directive
     // and http://docs.angularjs.org/guide/directive
     ///////////////////////////////////////////////////////////////////////////
 
-    type IDirectiveController = IController | IController[] | {[key: string]: IController};
-
-    interface IDirectiveFactory<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController> {
-        (...args: any[]): IDirective<TScope, TElement, TAttributes, TController> | IDirectiveLinkFn<TScope, TElement, TAttributes, TController>;
+    interface IDirectiveFactory {
+        (...args: any[]): IDirective;
     }
 
-    interface IDirectiveLinkFn<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController> {
+    interface IDirectiveLinkFn {
         (
-            scope: TScope,
-            instanceElement: TElement,
-            instanceAttributes: TAttributes,
-            controller?: TController,
-            transclude?: ITranscludeFunction
+            scope: IScope,
+            instanceElement: IAugmentedJQuery,
+            instanceAttributes: IAttributes,
+            controller: {},
+            transclude: ITranscludeFunction
         ): void;
     }
 
-    interface IDirectivePrePost<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController> {
-        pre?: IDirectiveLinkFn<TScope, TElement, TAttributes, TController>;
-        post?: IDirectiveLinkFn<TScope, TElement, TAttributes, TController>;
+    interface IDirectivePrePost {
+        pre?: IDirectiveLinkFn;
+        post?: IDirectiveLinkFn;
     }
 
-    interface IDirectiveCompileFn<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController> {
+    interface IDirectiveCompileFn {
         (
-            templateElement: TElement,
-            templateAttributes: TAttributes,
-            /**
-             * @deprecated
-             * Note: The transclude function that is passed to the compile function is deprecated,
-             * as it e.g. does not know about the right outer scope. Please use the transclude function
-             * that is passed to the link function instead.
-             */
+            templateElement: IAugmentedJQuery,
+            templateAttributes: IAttributes,
             transclude: ITranscludeFunction
-        ): void | IDirectiveLinkFn<TScope, TElement, TAttributes, TController> | IDirectivePrePost<TScope, TElement, TAttributes, TController>;
+        ): IDirectivePrePost;
     }
 
-    interface IDirective<TScope extends IScope = IScope, TElement extends JQLite = JQLite, TAttributes extends IAttributes = IAttributes, TController extends IDirectiveController = IController> {
-        compile?: IDirectiveCompileFn<TScope, TElement, TAttributes, TController>;
-        controller?: string | Injectable<IControllerConstructor>;
+    interface IDirective {
+        compile?: IDirectiveCompileFn;
+        controller?: any;
         controllerAs?: string;
-        /**
-         * Deprecation warning: although bindings for non-ES6 class controllers are currently bound to this before
-         * the controller constructor is called, this use is now deprecated. Please place initialization code that
-         * relies upon bindings inside a $onInit method on the controller, instead.
-         */
-        bindToController?: boolean | {[boundProperty: string]: string};
-        link?: IDirectiveLinkFn<TScope, TElement, TAttributes, TController> | IDirectivePrePost<TScope, TElement, TAttributes, TController>;
-        multiElement?: boolean;
+        bindToController?: boolean|Object;
+        link?: IDirectiveLinkFn | IDirectivePrePost;
+        name?: string;
         priority?: number;
-        /**
-         * @deprecated
-         */
         replace?: boolean;
-        require?: string | string[] | {[controller: string]: string};
+        require?: any;
         restrict?: string;
-        scope?: boolean | {[boundProperty: string]: string};
-        template?: string | ((tElement: TElement, tAttrs: TAttributes) => string);
-        templateNamespace?: string;
-        templateUrl?: string | ((tElement: TElement, tAttrs: TAttributes) => string);
+        scope?: any;
+        template?: any;
+        templateUrl?: any;
         terminal?: boolean;
-        transclude?: boolean | 'element' | {[slot: string]: string};
+        transclude?: any;
     }
 
     /**
-     * These interfaces are kept for compatibility with older versions of these type definitions.
-     * Actually, Angular doesn't create a special subclass of jQuery objects. It extends jQuery.prototype
-     * like jQuery plugins do, that's why all jQuery objects have these Angular-specific methods, not
-     * only those returned from angular.element.
-     * See: http://docs.angularjs.org/api/angular.element
+     * angular.element
+     * when calling angular.element, angular returns a jQuery object,
+     * augmented with additional methods like e.g. scope.
+     * see: http://docs.angularjs.org/api/angular.element
      */
-    interface IAugmentedJQueryStatic extends JQueryStatic {}
-    interface IAugmentedJQuery extends JQLite {}
+    interface IAugmentedJQueryStatic extends JQueryStatic {
+        (selector: string, context?: any): IAugmentedJQuery;
+        (element: Element): IAugmentedJQuery;
+        (object: {}): IAugmentedJQuery;
+        (elementArray: Element[]): IAugmentedJQuery;
+        (object: JQuery): IAugmentedJQuery;
+        (func: Function): IAugmentedJQuery;
+        (array: any[]): IAugmentedJQuery;
+        (): IAugmentedJQuery;
+    }
 
-    /**
-     * Same as IController. Keeping it for compatibility with older versions of these type definitions.
-     */
-    interface IComponentController extends IController {}
+    interface IAugmentedJQuery extends JQuery {
+        // TODO: events, how to define?
+        //$destroy
+
+        find(selector: string): IAugmentedJQuery;
+        find(element: any): IAugmentedJQuery;
+        find(obj: JQuery): IAugmentedJQuery;
+        controller(): any;
+        controller(name: string): any;
+        injector(): any;
+        scope(): IScope;
+        isolateScope(): IScope;
+
+        inheritedData(key: string, value: any): JQuery;
+        inheritedData(obj: { [key: string]: any; }): JQuery;
+        inheritedData(key?: string): any;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    // AnimateService
+    // see http://docs.angularjs.org/api/ng.$animate
+    ///////////////////////////////////////////////////////////////////////
+    interface IAnimateService {
+        addClass(element: JQuery, className: string, done?: Function): IPromise<any>;
+        enter(element: JQuery, parent: JQuery, after: JQuery, done?: Function): void;
+        leave(element: JQuery, done?: Function): void;
+        move(element: JQuery, parent: JQuery, after: JQuery, done?: Function): void;
+        removeClass(element: JQuery, className: string, done?: Function): void;
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // AUTO module (angular.js)
     ///////////////////////////////////////////////////////////////////////////
-    namespace auto {
+    export module auto {
+
         ///////////////////////////////////////////////////////////////////////
         // InjectorService
         // see http://docs.angularjs.org/api/AUTO.$injector
         ///////////////////////////////////////////////////////////////////////
         interface IInjectorService {
-            annotate(fn: Function, strictDi?: boolean): string[];
+            annotate(fn: Function): string[];
             annotate(inlineAnnotatedFunction: any[]): string[];
             get<T>(name: string, caller?: string): T;
-            get(name: '$anchorScroll'): IAnchorScrollService;
-            get(name: '$cacheFactory'): ICacheFactoryService;
-            get(name: '$compile'): ICompileService;
-            get(name: '$controller'): IControllerService;
-            get(name: '$document'): IDocumentService;
-            get(name: '$exceptionHandler'): IExceptionHandlerService;
-            get(name: '$filter'): IFilterService;
-            get(name: '$http'): IHttpService;
-            get(name: '$httpBackend'): IHttpBackendService;
-            get(name: '$httpParamSerializer'): IHttpParamSerializer;
-            get(name: '$httpParamSerializerJQLike'): IHttpParamSerializer;
-            get(name: '$interpolate'): IInterpolateService;
-            get(name: '$interval'): IIntervalService;
-            get(name: '$locale'): ILocaleService;
-            get(name: '$location'): ILocationService;
-            get(name: '$log'): ILogService;
-            get(name: '$parse'): IParseService;
-            get(name: '$q'): IQService;
-            get(name: '$rootElement'): IRootElementService;
-            get(name: '$rootScope'): IRootScopeService;
-            get(name: '$sce'): ISCEService;
-            get(name: '$sceDelegate'): ISCEDelegateService;
-            get(name: '$templateCache'): ITemplateCacheService;
-            get(name: '$templateRequest'): ITemplateRequestService;
-            get(name: '$timeout'): ITimeoutService;
-            get(name: '$window'): IWindowService;
-            get<T>(name: '$xhrFactory'): IXhrFactory<T>;
             has(name: string): boolean;
-            instantiate<T>(typeConstructor: {new(...args: any[]): T}, locals?: any): T;
-            invoke<T = any>(func: Injectable<Function | ((...args: any[]) => T)>, context?: any, locals?: any): T;
-            /**
-             * Add the specified modules to the current injector.
-             * This method will add each of the injectables to the injector and execute all of the config and run blocks for each module passed to the method.
-             * @param modules A module, module name or annotated injection function.
-             */
-            loadNewModules(modules: Array<IModule|string|Injectable<(...args: any[]) => void>>): void;
-            /** An object map of all the modules that have been loaded into the injector. */
-            modules: {[moduleName: string]: IModule};
-            strictDi: boolean;
+            instantiate<T>(typeConstructor: Function, locals?: any): T;
+            invoke(inlineAnnotatedFunction: any[]): any;
+            invoke(func: Function, context?: any, locals?: any): any;
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -2309,25 +1767,8 @@ declare namespace angular {
             provider(name: string, provider: IServiceProvider): IServiceProvider;
             provider(name: string, serviceProviderConstructor: Function): IServiceProvider;
             service(name: string, constructor: Function): IServiceProvider;
-            service(name: string, inlineAnnotatedFunction: any[]): IServiceProvider;
             value(name: string, value: any): IServiceProvider;
         }
-    }
 
-    /**
-     * $http params serializer that converts objects to strings
-     * see https://docs.angularjs.org/api/ng/service/$httpParamSerializer
-     */
-    interface IHttpParamSerializer {
-        (obj: Object): string;
     }
-
-    interface IFilterFunction extends Function {
-        /**
-         * By default, filters are only run once the input value changes. By marking the filter as `$stateful`, the filter will be run on every `$digest` to update the output. **This is strongly discouraged.**
-         * See https://docs.angularjs.org/guide/filter#stateful-filters
-         */
-        $stateful?: boolean;
-    }
-    type FilterFactory = (...I: any[]) => IFilterFunction;
 }
