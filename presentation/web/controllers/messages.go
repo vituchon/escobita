@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"local/escobita/presentation/web/services"
+	"github.com/vituchon/escobita/presentation/web/services"
 	"net/http"
 	"strconv"
 )

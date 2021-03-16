@@ -1,8 +1,9 @@
 package repositories
 
 import (
-	"local/escobita/model"
 	"sync"
+
+	"github.com/vituchon/escobita/model"
 )
 
 type PersistentGame struct {

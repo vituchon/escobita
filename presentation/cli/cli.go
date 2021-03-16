@@ -9,7 +9,7 @@ import (
 
 	//"errors"
 	"fmt"
-	"local/escobita/model"
+	"github.com/vituchon/escobita/model"
 	"os"
 )
 

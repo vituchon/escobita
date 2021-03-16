@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"encoding/json"
-	"local/escobita/model"
+	"github.com/vituchon/escobita/model"
 	"strconv"
 )
 
