@@ -46,17 +46,16 @@ module Lobby {
     }
 
     public createGame(game: Api.Game) {
-      if(_.isEmpty(game) || _.isEmpty(game.name)){
-        Toastr.info("Debe ingresar un nombre de juego");
-        return;
-      }
-
       this.loading = true;
       this.gamesService.createGame(game).then((createdGame) => {
         this.games.push(createdGame)
       }).finally(() => {
         this.loading = false;
       })
+    }
+
+    public canCreate(game: Api.Game): boolean {
+      return !_.isEmpty(game) && !_.isEmpty(game.name);
     }
 
     public updateGameList() {
