@@ -58,7 +58,7 @@ module Lobby {
     }
 
     private canNotCreateGame(game: Api.Game) {
-      return _.isEmpty(game) || _.isEmpty(game.name)
+      return this.loading || _.isEmpty(game) || _.isEmpty(game.name)
     }
 
     public updateGameList() {
