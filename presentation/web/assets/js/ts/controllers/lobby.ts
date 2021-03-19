@@ -46,9 +46,6 @@ module Lobby {
     }
 
     public createGame(game: Api.Game) {
-      if (this.canNotCreateGame(game)) {
-        return
-      }
       this.loading = true;
       this.gamesService.createGame(game).then((createdGame) => {
         this.games.push(createdGame)
