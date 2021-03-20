@@ -51,7 +51,7 @@
           <input placeholder="Nombre del juego" ng-model="game.name"  style="flex-grow: 100;">
           <span  style="flex-grow: 2;"></span>
           <div class="materialButton colorButton" ng-class="{'disabled-button': !ctr.canCreateGame(game)}"
-            ng-click="ctr.canCreateGame(game) && (ctr.createGame(game) || (game.name = ''))">Crear nuevo juego</div>
+            ng-click="ctr.canCreateGame(game) && ctr.createAndResetGame(game)">Crear nuevo juego</div>
         </div>
       </div>
 

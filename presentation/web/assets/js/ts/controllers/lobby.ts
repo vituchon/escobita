@@ -45,12 +45,19 @@ module Lobby {
 
     }
 
-    public createGame(game: Api.Game) {
+    private createGame(game: Api.Game) {
       this.loading = true;
-      this.gamesService.createGame(game).then((createdGame) => {
+      return this.gamesService.createGame(game).then((createdGame) => {
         this.games.push(createdGame)
+        return createdGame;
       }).finally(() => {
         this.loading = false;
+      })
+    }
+
+    public createAndResetGame(game: Api.Game) {
+      this.createGame(game).then(() => {
+        game.name = '';
       })
     }
 
