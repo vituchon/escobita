@@ -369,6 +369,27 @@
   margin: 5px;
   font-size: 14px;
 }
+.game-player-header {
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+.game-player-header .see-player-button {
+  border-radius: 10px;
+  height: fit-content;
+  width: fit-content;
+  min-width: unset;
+}
+.game-player-header .player-action {
+  background-color: lightblue;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+}
+.game-player-header .player-action .ng-player-action-container {
+  align-items: center;
+}
 .player-actions-container {
   display: flex;
   flex-direction: column;

@@ -31,8 +31,20 @@
 
 
     <div class="title">Jugadores presentes</div>
-    <div ng-repeat="player in ctr.game.players" style="margin-left: 10px;">
+    <!-- the check performed at Games.addPlayer at joining a game ensures that won't be two players with the same name, but they could share it and they will actually share the player -->
+    <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.name">
       <span>{{$index+1}}. {{player.name}}</span> <!-- recall game players doesn't have id -->
+      <span style="width: 10px;"></span>
+      <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
+      <div ng-show="ctr.player.name !== player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
+       <img ng-show="!peekPlayer" src="/presentation/web/assets/images/eyes_open.png" height="20px">
+       <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
+      </div>
+      <div ng-if="ctr.isMatchInProgress && peekPlayer" class="player-action">
+        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerName[player.name]">
+          <player-action ng-if="$last" order="$index" ng-model="action"></player-action>
+        </div>
+      </div>
     </div>
 
     <div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
