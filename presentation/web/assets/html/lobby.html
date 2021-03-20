@@ -48,9 +48,10 @@
       <div class="section">
         <div class="title">Crear un nuevo juego</div>
         <div style="display:flex; flex-direction: row;  align-items: center;">
-          <input placeholder="Nombre del juego" ng-model="game.name"  style="flex-grow: 100;">
+          <input placeholder="Nombre del juego" ng-model="ctr.playerGame.name"  style="flex-grow: 100;">
           <span  style="flex-grow: 2;"></span>
-          <div class="materialButton colorButton" ng-class="{'disabled-button': ctr.loading}" ng-click="!ctr.loading && ctr.createGame(game)">Crear nuevo juego</div>
+          <div class="materialButton colorButton" ng-class="{'disabled-button': !ctr.canCreateNewGame}"
+            ng-click="ctr.canCreateNewGame && ctr.createAndResetGame(ctr.playerGame)">Crear nuevo juego</div>
         </div>
       </div>
 

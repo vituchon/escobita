@@ -13,6 +13,9 @@ module Lobby {
     public loading: boolean = false;
     public showCards: boolean = false;
 
+    public playerGame: Games.Game; // dataholder for a current user's new game
+    private canCreateNewGame: boolean;
+
     constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
         private playersService: Players.Service) {
@@ -43,20 +46,32 @@ module Lobby {
         $rootElement.unbind("keydown keypress")
       });
 
+      $scope.$watch(() => {
+        return this.canCreateGame(this.playerGame)
+      }, (can) => {
+        this.canCreateNewGame = !!can;
+      })
+
     }
 
-    public createGame(game: Api.Game) {
-      if(_.isEmpty(game) || _.isEmpty(game.name)){
-        Toastr.info("Debe ingresar un nombre de juego");
-        return;
-      }
-
+    private createGame(game: Api.Game) {
       this.loading = true;
-      this.gamesService.createGame(game).then((createdGame) => {
+      return this.gamesService.createGame(game).then((createdGame) => {
         this.games.push(createdGame)
+        return createdGame;
       }).finally(() => {
         this.loading = false;
       })
+    }
+
+    public createAndResetGame(game: Api.Game) {
+      this.createGame(game).then(() => {
+        game.name = '';
+      })
+    }
+
+    private canCreateGame(game: Api.Game) {
+      return !this.loading && !_.isEmpty(game) && !_.isEmpty(game.name)
     }
 
     public updateGameList() {
