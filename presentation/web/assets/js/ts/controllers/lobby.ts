@@ -13,6 +13,9 @@ module Lobby {
     public loading: boolean = false;
     public showCards: boolean = false;
 
+    public playerGame: Games.Game; // dataholder for a current user's new game
+    private canCreateNewGame: boolean;
+
     constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
         private playersService: Players.Service) {
@@ -42,6 +45,12 @@ module Lobby {
       $scope.$on('$destroy', function() {
         $rootElement.unbind("keydown keypress")
       });
+
+      $scope.$watch(() => {
+        return this.canCreateGame(this.playerGame)
+      }, (can) => {
+        this.canCreateNewGame = !!can;
+      })
 
     }
 
