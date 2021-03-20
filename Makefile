@@ -19,7 +19,7 @@ ts_src_root_path = presentation/web/assets/js/ts
 ts_out_root_path = presentation/web/assets/js/ts_compiled
 
 ts_files = $(shell find $(ts_src_root_path) -name '*.ts')
-ts_flags = --pretty --noImplicitAny --noImplicitReturns --noFallthroughCasesInSwitch --rootDir $(ts_src_root_path)
+ts_flags = --preserveWatchOutput --pretty --noImplicitAny --noImplicitReturns --noFallthroughCasesInSwitch --rootDir $(ts_src_root_path)
 ts_unbundled_out_path = --outDir $(ts_out_root_path)
 #ts_bundled_out_path = --outFile $(ts_out_root_path)/ts-bundle.js
 
