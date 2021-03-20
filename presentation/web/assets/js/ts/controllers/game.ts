@@ -7,13 +7,13 @@ module Game {
 
   namespace UIMessages {
 
-    export const baseFontSize = 12;
-    const maxFontSize = 32;
-    const fontSizeAmplitude = maxFontSize - baseFontSize;
+    export const minFontSize = 10;
+    const maxFontSize = 34;
+    const fontSizeAmplitude = maxFontSize - minFontSize;
 
 
     function determineFontSize(position: number) {
-        const size = baseFontSize + (fontSizeAmplitude) / position; // B + M/X (Homográfica desplazada)
+        const size = minFontSize + (fontSizeAmplitude) / position; // B + M/X (Homográfica desplazada)
         return size;
     }
 
@@ -388,7 +388,7 @@ module Game {
 
     public getFontSize(player: Players.Player) {
       if (_.isEmpty(this.currentFontSizeByPlayerName)) {
-        return UIMessages.baseFontSize;
+        return UIMessages.minFontSize;
       } else {
         return this.currentFontSizeByPlayerName[player.name]
       }
