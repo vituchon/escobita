@@ -42,7 +42,8 @@ module Game {
     public selectedHandCard: Api.Card;
 
     public playerMessage: Api.Message; // current player message
-    public allowSendMessage: boolean = true; // avoid message spawn
+    private sendingMessage: boolean = false;
+    private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = false;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
@@ -268,8 +269,11 @@ module Game {
     }
 
     public sendAndCleanMessage(msg: Api.Message) {
+      this.sendingMessage = true;
       this.messagesService.createMessage(msg).then(() => {
         this.cleanMessage(msg);
+      }).finally(() => {
+        this.sendingMessage = false;
       })
       this.allowSendMessage = false;
       this.$timeout(() => {
@@ -278,7 +282,7 @@ module Game {
     }
 
     public canSendMessage(msg: Api.Message) {
-      return !this.loading && this.allowSendMessage && !_.isEmpty(msg.text);
+      return !this.loading && this.allowSendMessage && !this.sendingMessage && !_.isEmpty(msg.text);
     }
 
     private cleanMessage(msg: Api.Message) {
