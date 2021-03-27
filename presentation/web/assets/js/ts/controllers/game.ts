@@ -268,17 +268,16 @@ module Game {
     }
 
     public sendMessage(text: string) {
-      // TODO : // TODO : the above condition technically is not part of a send message operation it could be placed into a new abstraction
-      const messageIsBlank =  _.isUndefined(text);
-      if (this.disableSendMessageBtn || messageIsBlank) {
-        return
-      }
       const message = Messages.newMessage(this.game.id, this.player.id, text)
       this.messagesService.createMessage(message)
       this.disableSendMessageBtn = true;
       this.$timeout(() => {
         this.disableSendMessageBtn = false;
       }, 2000)
+    }
+
+    public canSendMessage(text: string) {
+      return this.disableSendMessageBtn && !_.isUndefined(text);
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
