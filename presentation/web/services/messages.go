@@ -24,12 +24,22 @@ func GetMessages() ([]WebMessage, error) {
 }
 
 // the game would serve as the room
-// dev notes: GetMessages y GetMessagesByGame son funciones iguales con filtro disinto, getMessages es filtro TRUE y el
+// TODO: GetMessages y GetMessagesByGame, GetMessageByGameAndTime son funciones iguales con filtro disinto, getMessages es filtro TRUE y el
 // otro por match de GameId, por ahora son busquedas sequenciales
 func GetMessagesByGame(gameId int) ([]WebMessage, error) {
 	messages := make([]WebMessage, 0, len(messagesById))
 	for _, message := range messagesById {
 		if message.GameId == gameId {
+			messages = append(messages, message)
+		}
+	}
+	return messages, nil
+}
+
+func GetMessagesByGameAndTime(gameId int, since int64) ([]WebMessage, error) {
+	messages := make([]WebMessage, 0, len(messagesById))
+	for _, message := range messagesById {
+		if message.GameId == gameId && message.Created >= since {
 			messages = append(messages, message)
 		}
 	}
