@@ -15,35 +15,55 @@ type WebMessage struct {
 
 var messagesById map[int]WebMessage = make(map[int]WebMessage)
 
-func GetMessages() ([]WebMessage, error) {
-	messages := make([]WebMessage, 0, len(messagesById))
-	for _, message := range messagesById {
-		messages = append(messages, message)
-	}
-	return messages, nil
+type MessageFilterFunc = func(message WebMessage) bool
+
+func MessageFilterByNone(message WebMessage) bool {
+	return true
 }
 
-// the game would serve as the room
-// TODO: GetMessages y GetMessagesByGame, GetMessageByGameAndTime son funciones iguales con filtro disinto, getMessages es filtro TRUE y el
-// otro por match de GameId, por ahora son busquedas sequenciales
-func GetMessagesByGame(gameId int) ([]WebMessage, error) {
+type MessageFilterByGameId struct {
+	GameId int
+}
+
+func (f MessageFilterByGameId) fulfill(message WebMessage) bool {
+	return message.GameId == f.GameId
+}
+
+type MessageFilterByTime struct {
+	Since int64
+}
+
+func (f MessageFilterByTime) fulfill(message WebMessage) bool {
+	return message.Created >= f.Since
+}
+
+func doGetMessages(filterFunc MessageFilterFunc) ([]WebMessage, error) {
 	messages := make([]WebMessage, 0, len(messagesById))
 	for _, message := range messagesById {
-		if message.GameId == gameId {
+		if filterFunc(message) {
 			messages = append(messages, message)
 		}
 	}
 	return messages, nil
+}
+
+func GetMessages() ([]WebMessage, error) {
+	return doGetMessages(MessageFilterByNone)
+}
+
+// the game would serve as the "room"
+func GetMessagesByGame(gameId int) ([]WebMessage, error) {
+	filter := MessageFilterByGameId{gameId}
+	return doGetMessages(filter.fulfill)
 }
 
 func GetMessagesByGameAndTime(gameId int, since int64) ([]WebMessage, error) {
-	messages := make([]WebMessage, 0, len(messagesById))
-	for _, message := range messagesById {
-		if message.GameId == gameId && message.Created >= since {
-			messages = append(messages, message)
-		}
+	filterByGame := MessageFilterByGameId{gameId}
+	filterByTime := MessageFilterByTime{since}
+	filterByBoth := func(message WebMessage) bool {
+		return filterByGame.fulfill(message) && filterByTime.fulfill(message)
 	}
-	return messages, nil
+	return doGetMessages(filterByBoth)
 }
 
 func GetMessageById(id int) (*WebMessage, error) {
