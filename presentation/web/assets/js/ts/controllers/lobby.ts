@@ -95,6 +95,10 @@ module Lobby {
       })
     }
 
+    public canUpdatePlayerName(name: string) {
+      return !this.loading && !_.isEmpty(name);
+    }
+
     public updatePlayersList() {
       this.playersService.getPlayers().then((players) => {
         this.players = players
