@@ -37,7 +37,7 @@ module Game {
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
     public isPlayerGameOwner: boolean;
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
-    public messages: Messages.Message[]; // all from the server related to this game
+    public messages: Messages.Message[] = []; // all from the server related to this game
     public isBoardCardSelectedById: _.Dictionary<boolean>;
     public selectedHandCard: Api.Card;
 
@@ -45,6 +45,7 @@ module Game {
     private sendingMessage: boolean = false;
     private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = false;
+    private lastChatUpdateUnixTimestamp: number = 0;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
 
@@ -242,30 +243,19 @@ module Game {
         this.playersById = Util.toMapById(this.players);
         return this.players
       }).then((players) => {
-        return this.messagesService.getMessagesByGame(this.game.id).then((messages) => {
-          const incomingMessages = this.determineIncomingMessages(this.messages,messages)
+        return this.messagesService.getMessagesByGame(this.game.id, this.lastChatUpdateUnixTimestamp).then((incomingMessages) => {
+          console.log("incoming are: ", incomingMessages)
+          this.lastChatUpdateUnixTimestamp = moment().unix();
           _.forEach(incomingMessages,(incomingMessage) => {
             const player = this.playersById[incomingMessage.playerId]
             const $elem = Toastr.chat(player.name,incomingMessage.text)
             const fontSize = this.getFontSize(player)
             $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px");
           })
-          this.messages = messages;
-          return messages;
+          this.messages.push(...incomingMessages)
+          return undefined; // it is the default return value, see https://plnkr.co/edit/ZdXQymjYFON0VIcD
         })
       })
-    }
-
-    private determineIncomingMessages(received: Api.Message[], all: Api.Message[]) {
-      if (_.isEmpty(received)) {
-        return all
-      } else {
-        return _.filter(all,(message) => {
-          const machtingMessage = _.find(received,(recievedMessage) => recievedMessage.id === message.id)
-          const notReceived = _.isUndefined(machtingMessage)
-          return notReceived
-        })
-      }
     }
 
     public sendAndCleanMessage(msg: Api.Message) {
