@@ -41,8 +41,9 @@ module Game {
     public isBoardCardSelectedById: _.Dictionary<boolean>;
     public selectedHandCard: Api.Card;
 
-    public messageText: string; // buffer for user input
-    public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
+    public playerMessage: Api.Message; // current player message
+    private sendingMessage: boolean = false;
+    private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = false;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
@@ -69,6 +70,7 @@ module Game {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
       this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
+      this.playerMessage = Messages.newMessage(this.game.id,this.player.id,"");
 
       this.$scope.$watch(() => {
         return this.isMatchInProgress
@@ -105,9 +107,8 @@ module Game {
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
             $timeout(() => {
-              if (this.isChatEnabled) {
-                this.sendMessage(this.messageText);
-                this.messageText = "";
+              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
+                this.sendAndCleanMessage(this.playerMessage);
               }
             });
             event.preventDefault();
@@ -267,18 +268,25 @@ module Game {
       }
     }
 
-    public sendMessage(text: string) {
-      // TODO : // TODO : the above condition technically is not part of a send message operation it could be placed into a new abstraction
-      const messageIsBlank =  _.isUndefined(text);
-      if (this.disableSendMessageBtn || messageIsBlank) {
-        return
-      }
-      const message = Messages.newMessage(this.game.id, this.player.id, text)
-      this.messagesService.createMessage(message)
-      this.disableSendMessageBtn = true;
+    public sendAndCleanMessage(msg: Api.Message) {
+      this.sendingMessage = true;
+      this.messagesService.createMessage(msg).then(() => {
+        this.cleanMessage(msg);
+      }).finally(() => {
+        this.sendingMessage = false;
+      })
+      this.allowSendMessage = false;
       this.$timeout(() => {
-        this.disableSendMessageBtn = false;
+        this.allowSendMessage = true;
       }, 2000)
+    }
+
+    public canSendMessage(msg: Api.Message) {
+      return !this.loading && this.allowSendMessage && !this.sendingMessage && !_.isEmpty(msg.text);
+    }
+
+    private cleanMessage(msg: Api.Message) {
+      msg.text = '';
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
