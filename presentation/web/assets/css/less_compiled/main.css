@@ -508,6 +508,12 @@ ui-view {
   cursor: pointer;
   font-weight: 700;
   font-size: 14px;
+  border: none;
+}
+.materialButton[disabled] {
+  background-color: #f6f6f6;
+  opacity: 0.5;
+  cursor: default !important;
 }
 .materialButton.raised {
   box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);

@@ -624,6 +624,13 @@ ui-view {
   cursor:         pointer;
   font-weight:    700;
   font-size:      14px;
+  border:         none;
+
+  &[disabled] {
+    background-color: lighten(#AAAAAA, 30%);
+    opacity: 0.5;
+    cursor: default !important;
+  }
   &.raised{
     box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
     &:hover{
