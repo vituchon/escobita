@@ -277,7 +277,7 @@ module Game {
     }
 
     public canSendMessage(text: string) {
-      return this.allowSendMessage && !_.isUndefined(text);
+      return !this.loading && this.allowSendMessage && !_.isUndefined(text);
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
