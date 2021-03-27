@@ -41,7 +41,7 @@ module Game {
     public isBoardCardSelectedById: _.Dictionary<boolean>;
     public selectedHandCard: Api.Card;
 
-    public messageText: string; // buffer for user input
+    public playerMessage: Api.Message; // current player message
     public allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = false;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
@@ -69,6 +69,7 @@ module Game {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
       this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
+      this.playerMessage = Messages.newMessage(this.game.id,this.player.id,"");
 
       this.$scope.$watch(() => {
         return this.isMatchInProgress
@@ -105,9 +106,8 @@ module Game {
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
             $timeout(() => {
-              if (this.isChatEnabled) {
-                this.sendMessage(this.messageText);
-                this.messageText = "";
+              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
+                this.sendAndCleanMessage(this.playerMessage);
               }
             });
             event.preventDefault();
@@ -267,17 +267,22 @@ module Game {
       }
     }
 
-    public sendMessage(text: string) {
-      const message = Messages.newMessage(this.game.id, this.player.id, text)
-      this.messagesService.createMessage(message)
+    public sendAndCleanMessage(msg: Api.Message) {
+      this.messagesService.createMessage(msg).then(() => {
+        this.cleanMessage(msg);
+      })
       this.allowSendMessage = false;
       this.$timeout(() => {
         this.allowSendMessage = true;
       }, 2000)
     }
 
-    public canSendMessage(text: string) {
-      return !this.loading && this.allowSendMessage && !_.isUndefined(text);
+    public canSendMessage(msg: Api.Message) {
+      return !this.loading && this.allowSendMessage && !_.isEmpty(msg.text);
+    }
+
+    private cleanMessage(msg: Api.Message) {
+      msg.text = '';
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
