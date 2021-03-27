@@ -42,7 +42,7 @@ module Game {
     public selectedHandCard: Api.Card;
 
     public messageText: string; // buffer for user input
-    public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
+    public allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = false;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
@@ -270,14 +270,14 @@ module Game {
     public sendMessage(text: string) {
       const message = Messages.newMessage(this.game.id, this.player.id, text)
       this.messagesService.createMessage(message)
-      this.disableSendMessageBtn = true;
+      this.allowSendMessage = false;
       this.$timeout(() => {
-        this.disableSendMessageBtn = false;
+        this.allowSendMessage = true;
       }, 2000)
     }
 
     public canSendMessage(text: string) {
-      return this.disableSendMessageBtn && !_.isUndefined(text);
+      return this.allowSendMessage && !_.isUndefined(text);
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
