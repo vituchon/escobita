@@ -261,7 +261,7 @@ module Game {
 
     public sendAndCleanMessage(msg: Api.Message) {
       this.sendingMessage = true;
-      this.messagesService.createMessage(msg).then(() => {
+      this.messagesService.sendMessage(msg).then(() => {
         this.cleanMessage(msg);
       }).finally(() => {
         this.sendingMessage = false;

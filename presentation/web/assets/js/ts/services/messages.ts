@@ -56,7 +56,7 @@ namespace Messages {
       })
     }
 
-    createMessage(message: Message): ng.IPromise<Message> {
+    sendMessage(message: Message): ng.IPromise<Message> {
       return this.$http.post<Message>(`/api/v1/messages`,message).then((response) => {
         return response.data
       })
