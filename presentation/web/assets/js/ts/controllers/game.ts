@@ -107,6 +107,7 @@ module Game {
 
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
+            $("#chat-press-enter-hint").hide();
             $timeout(() => {
               if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
                 this.sendAndCleanMessage(this.playerMessage);
