@@ -37,8 +37,14 @@ namespace Messages {
       })*/
     }
 
-    getMessagesByGame(gameId: number): ng.IPromise<Message[]> {
-      return this.$http.get<Message[]>(`/api/v1/messages/get-by-game/${gameId}`).then((response) => {
+    getMessagesByGame(gameId: number, since?: number): ng.IPromise<Message[]> {
+      const parameters = {
+        'since': since,
+      }
+      const config:ng.IRequestShortcutConfig = {
+        params: parameters
+      }
+      return this.$http.get<Message[]>(`/api/v1/messages/get-by-game/${gameId}`, config).then((response) => {
         return response.data;
       })
     }
@@ -50,7 +56,7 @@ namespace Messages {
       })
     }
 
-    createMessage(message: Message): ng.IPromise<Message> {
+    sendMessage(message: Message): ng.IPromise<Message> {
       return this.$http.post<Message>(`/api/v1/messages`,message).then((response) => {
         return response.data
       })

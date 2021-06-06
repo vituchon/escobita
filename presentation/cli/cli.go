@@ -9,7 +9,7 @@ import (
 
 	//"errors"
 	"fmt"
-	"local/escobita/model"
+	"github.com/vituchon/escobita/model"
 	"os"
 )
 
@@ -66,7 +66,7 @@ func StartApp() {
 		}
 		//fmt.Println(match)
 	}
-} api
+}
 
 func readTakeActionFromStdin(player model.Player, match model.Match) model.PlayerTakeAction {
 	fmt.Println("==" + player.Name + " selecciona combinación entre las de mesa y una de mano==")

@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"local/escobita/presentation/web/services"
 	"net/http"
 	"strconv"
+
+	"github.com/vituchon/escobita/presentation/web/services"
 )
 
 func GetMessages(response http.ResponseWriter, request *http.Request) {
@@ -53,8 +54,7 @@ func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
 			return
 		}
 	}
-	fmt.Printf("Tenemos este since %d", *since)
-	messages, err := services.GetMessagesByGame(id)
+	messages, err := services.GetMessagesByGameAndTime(id, int64(*since))
 	if err != nil {
 		fmt.Printf("error while retrieving messages for game(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)

@@ -7,13 +7,13 @@ module Game {
 
   namespace UIMessages {
 
-    export const baseFontSize = 12;
-    const maxFontSize = 32;
-    const fontSizeAmplitude = maxFontSize - baseFontSize;
+    export const minFontSize = 10;
+    const maxFontSize = 34;
+    const fontSizeAmplitude = maxFontSize - minFontSize;
 
 
     function determineFontSize(position: number) {
-        const size = baseFontSize + (fontSizeAmplitude) / position; // B + M/X (Homográfica desplazada)
+        const size = minFontSize + (fontSizeAmplitude) / position; // B + M/X (Homográfica desplazada)
         return size;
     }
 
@@ -37,13 +37,15 @@ module Game {
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
     public isPlayerGameOwner: boolean;
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
-    public messages: Messages.Message[]; // all from the server related to this game
+    public messages: Messages.Message[] = []; // all from the server related to this game
     public isBoardCardSelectedById: _.Dictionary<boolean>;
     public selectedHandCard: Api.Card;
 
-    public messageText: string; // buffer for user input
-    public disableSendMessageBtn: boolean = false; // avoids multiples clicks!
+    public playerMessage: Api.Message; // current player message
+    private sendingMessage: boolean = false;
+    private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = false;
+    private lastChatUpdateUnixTimestamp: number = 0;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
 
@@ -69,6 +71,7 @@ module Game {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
       this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
+      this.playerMessage = Messages.newMessage(this.game.id,this.player.id,"");
 
       this.$scope.$watch(() => {
         return this.isMatchInProgress
@@ -104,10 +107,10 @@ module Game {
 
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
+            $("#chat-press-enter-hint").hide();
             $timeout(() => {
-              if (this.isChatEnabled) {
-                this.sendMessage(this.messageText);
-                this.messageText = "";
+              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
+                this.sendAndCleanMessage(this.playerMessage);
               }
             });
             event.preventDefault();
@@ -241,44 +244,40 @@ module Game {
         this.playersById = Util.toMapById(this.players);
         return this.players
       }).then((players) => {
-        return this.messagesService.getMessagesByGame(this.game.id).then((messages) => {
-          const incomingMessages = this.determineIncomingMessages(this.messages,messages)
+        return this.messagesService.getMessagesByGame(this.game.id, this.lastChatUpdateUnixTimestamp).then((incomingMessages) => {
+          console.log("incoming are: ", incomingMessages)
+          this.lastChatUpdateUnixTimestamp = moment().unix();
           _.forEach(incomingMessages,(incomingMessage) => {
             const player = this.playersById[incomingMessage.playerId]
             const $elem = Toastr.chat(player.name,incomingMessage.text)
             const fontSize = this.getFontSize(player)
             $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px");
           })
-          this.messages = messages;
-          return messages;
+          this.messages.push(...incomingMessages)
+          return undefined; // it is the default return value, see https://plnkr.co/edit/ZdXQymjYFON0VIcD
         })
       })
     }
 
-    private determineIncomingMessages(received: Api.Message[], all: Api.Message[]) {
-      if (_.isEmpty(received)) {
-        return all
-      } else {
-        return _.filter(all,(message) => {
-          const machtingMessage = _.find(received,(recievedMessage) => recievedMessage.id === message.id)
-          const notReceived = _.isUndefined(machtingMessage)
-          return notReceived
-        })
-      }
+    public sendAndCleanMessage(msg: Api.Message) {
+      this.sendingMessage = true;
+      this.messagesService.sendMessage(msg).then(() => {
+        this.cleanMessage(msg);
+      }).finally(() => {
+        this.sendingMessage = false;
+      })
+      this.allowSendMessage = false;
+      this.$timeout(() => {
+        this.allowSendMessage = true;
+      }, 2000)
     }
 
-    public sendMessage(text: string) {
-      // TODO : // TODO : the above condition technically is not part of a send message operation it could be placed into a new abstraction
-      const messageIsBlank =  _.isUndefined(text);
-      if (this.disableSendMessageBtn || messageIsBlank) {
-        return
-      }
-      const message = Messages.newMessage(this.game.id, this.player.id, text)
-      this.messagesService.createMessage(message)
-      this.disableSendMessageBtn = true;
-      this.$timeout(() => {
-        this.disableSendMessageBtn = false;
-      }, 2000)
+    public canSendMessage(msg: Api.Message) {
+      return !this.loading && this.allowSendMessage && !this.sendingMessage && !_.isEmpty(msg.text);
+    }
+
+    private cleanMessage(msg: Api.Message) {
+      msg.text = '';
     }
 
     public startGame(game: Games.Game, players: Players.Player[]) {
@@ -388,7 +387,7 @@ module Game {
 
     public getFontSize(player: Players.Player) {
       if (_.isEmpty(this.currentFontSizeByPlayerName)) {
-        return UIMessages.baseFontSize;
+        return UIMessages.minFontSize;
       } else {
         return this.currentFontSizeByPlayerName[player.name]
       }

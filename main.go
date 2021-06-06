@@ -1,7 +1,7 @@
 package main
 
 import (
-	"local/escobita/presentation/web"
+	"github.com/vituchon/escobita/presentation/web"
 )
 
 func main() {

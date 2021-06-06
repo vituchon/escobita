@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"local/escobita/model"
-	"local/escobita/repositories"
 	"net/http"
 	"strconv"
+
+	"github.com/vituchon/escobita/model"
+	"github.com/vituchon/escobita/repositories"
 
 	"github.com/gorilla/sessions"
 )

@@ -13,8 +13,8 @@ import (
 	"os"
 	"time"
 
-	"local/escobita/presentation/util"
-	"local/escobita/presentation/web/controllers"
+	"github.com/vituchon/escobita/presentation/util"
+	"github.com/vituchon/escobita/presentation/web/controllers"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"

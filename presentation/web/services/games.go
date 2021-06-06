@@ -1,8 +1,8 @@
 package services
 
 import (
-	"local/escobita/model"
-	"local/escobita/repositories"
+	"github.com/vituchon/escobita/model"
+	"github.com/vituchon/escobita/repositories"
 )
 
 // Escobita Oriented Functions
