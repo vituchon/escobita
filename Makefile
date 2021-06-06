@@ -1,7 +1,7 @@
 .PHONY: run
 
 setup:
-	sudo npm install -g typescript@2.2.2
+	sudo npm install -g typescript@4.2.3
 	sudo npm install -g less@3.12.2
 	sudo apt-get install inotify-tools
 
