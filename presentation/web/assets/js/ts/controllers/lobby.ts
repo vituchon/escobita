@@ -117,7 +117,7 @@ module Lobby {
           this.$state.go("game", {
             game: game,
             player: player,
-          }, {relative: false})
+          })
         })
       }).finally(() => {
         this.loading = false
