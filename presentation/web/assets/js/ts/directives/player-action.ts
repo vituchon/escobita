@@ -11,6 +11,13 @@ namespace Cards {
   *
   * @ng-model: Reference to an object of type " Api.PlayerTakeAction | Api.PlayerDropAction"
   */
+
+  interface Scope extends ng.IScope {
+    isTakenAction: boolean;
+    translateSuit: (suit: number) => string;
+    action: Api.PlayerTakeAction | Api.PlayerDropAction;
+  }
+
   escobita.directive('playerAction', () => {
     return {
       restrict: 'E',
@@ -37,7 +44,7 @@ namespace Cards {
             <strong ng-show="action.isEscobita">¡Fue escobita!</strong>
           </div>
         </div>`,
-      link: function ($scope: ng.IScope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
+      link: function ($scope: Scope, $element: JQuery, attrs: ng.IAttributes, ngModel: ng.INgModelController) {
         $scope.translateSuit = Cards.Suits.translate
         $scope.isTakenAction = Matchs.isTakeAction($scope.action)
       }
