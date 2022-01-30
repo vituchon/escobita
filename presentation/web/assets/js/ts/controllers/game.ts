@@ -86,7 +86,7 @@ module Game {
       })
 
       this.setupPullRefresh(2000) // experimenting see // (*)
-      this.webSocketsService.retrieve().then((ws: WebSocket) => {
+      this.webSocketsService.retrieve().then((ws) => {
         this.gamesService.bindWebSocket(this.game.id).then(() => {
           this.setupPushRefresh(ws)
         })

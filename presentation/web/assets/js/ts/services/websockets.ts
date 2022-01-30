@@ -65,7 +65,7 @@ namespace WebSockets {
     }
 
     private adquire() {
-      const deffered = this.$q.defer();
+      const deffered = this.$q.defer<WebSocket>();
       try {
         const protocol = resolveProtocol();
         const host = resolveHost();
