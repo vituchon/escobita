@@ -39,6 +39,7 @@
             <span>{{game.name}}</span>
             <span class="flex-space-filler"></span>
             <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
+            <button style="background-color: yellow; color: black;"class="materialButton colorButton" disabled ng-if="!ctr.doesGameAcceptPlayers(game)">Partida en progreso</button>
           </div>
         </div>
       </div>

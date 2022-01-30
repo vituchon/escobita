@@ -267,6 +267,14 @@
   border-radius: 20px;
   padding: 20;
 }
+.interactive-section .play-section .deck-section .cards {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.interactive-section .play-section .deck-section .cards .card {
+  flex-basis: 33%;
+}
 .interactive-section .play-section .hand-section {
   display: flex;
   flex-direction: column;

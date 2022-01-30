@@ -50,7 +50,7 @@
     <div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
      <span>Turno de:</span>&nbsp;<span>{{ctr.currentTurnPlayer.name}}</span>
      <br/>
-     <strong ng-show="ctr.isPlayerTurn" style="color: red; background-color: yellow;">Es tu turno! Juega!</strong>
+     <strong ng-show="ctr.isPlayerTurn" style="color: red; background-color: yellow;font-size: larger;">Es tu turno! Juega!</strong>
     </div>
 
     <!--
@@ -72,18 +72,22 @@
         <!-- DECK -->
         <div class="deck-section" ng-show="ctr.isMatchInProgress">
           <div class="title">En mesa</div>
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
-            <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
-            <card ng-model="card" ng-click="ctr.isBoardCardSelectedById[card.id] = !ctr.isBoardCardSelectedById[card.id]"></card>
+          <div class="cards">
+            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
+              <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
+              <card ng-model="card" ng-click="ctr.isBoardCardSelectedById[card.id] = !ctr.isBoardCardSelectedById[card.id]"></card>
+            </div>
           </div>
         </div>
 
         <!-- HAND -->
         <div class="hand-section" ng-show="ctr.isMatchInProgress">
           <div class="title">En mano</div>
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
-            <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
-            <card ng-model="card" ng-click="ctr.selectedHandCard = card"></card>
+          <div class="cards">
+            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+              <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
+              <card ng-model="card" ng-click="ctr.selectedHandCard = card"></card>
+            </div>
           </div>
         </div>
 
