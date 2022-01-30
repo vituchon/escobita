@@ -138,7 +138,7 @@ module Game {
       $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
         if (event.type === "mouseover") { // taken inspiration from https://stackoverflow.com/a/13504775/903998
           var rotateDegress = Math.random() * 10 - Math.random() * 5;
-          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.05)');
+          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.1)');
         } else {
           $((<any>(event.target)).parentElement.parentElement).css('transform', 'none');
         }

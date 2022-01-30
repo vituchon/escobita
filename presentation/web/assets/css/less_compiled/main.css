@@ -438,6 +438,7 @@
 .stats-section .player-stats-container .player-stats-item .player-name {
   color: darkgrey;
   font-weight: bold;
+  font-size: x-large;
 }
 .stats-section .player-stats-container .player-stats-item .stats-name {
   font-weight: normal;
@@ -710,7 +711,7 @@ dialog .dialogContent {
 }
 .panel .title {
   font-size: 24px;
-  padding: 10px;
+  padding: 10px 0px;
   font-weight: bold;
   color: #333333;
 }
