@@ -51,6 +51,19 @@ escobita.run(['$state', ($state: ng.ui.IStateService) => { // so on landing it g
 }])
 
 
+var $get: (url: string) => ng.IPromise<any>;
+escobita.run(['$http', ($http: ng.IHttpService) => {
+  $get = function getRequestUsing$http (url: string) {
+    return $http.get(url).then((response) => {
+      return response.data;
+    }).catch((err) => {
+      console.warn(err)
+      return undefined
+    })
+  }
+}])
+
+
 escobita.directive('loading', [() => {
   return {
     restrict: 'E',
