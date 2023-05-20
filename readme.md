@@ -1,5 +1,5 @@
 * `cd $GOPATH`
-* `mkdir --parents /src/github.com/vituchon`
+* `mkdir --parents src/github.com/vituchon`
 * `cd src/github.com/vituchon/`
 * `git clone git@github.com:vituchon/escobita.git`
 * `make setup`
