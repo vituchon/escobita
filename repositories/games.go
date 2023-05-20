@@ -10,16 +10,8 @@ type PersistentGame struct {
 	model.Game               // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
 	Id         *int          `json:"id,omitempty"`
 	Name       string        `json:"name"`
-	PlayerId   int           `json:"playerId"`          // owner
-	Matchs     []model.Match `json:"matchs, omitempty"` // played matchs
-}
-
-type Games interface {
-	GetGames() ([]PersistentGame, error)
-	GetGameById(id int) (*PersistentGame, error)
-	CreateGame(game PersistentGame) (created *PersistentGame, err error)
-	UpdateGame(game PersistentGame) (updated *PersistentGame, err error)
-	DeleteGame(id int) error
+	PlayerId   int           `json:"playerId"`         // owner
+	Matchs     []model.Match `json:"matchs,omitempty"` // played matchs
 }
 
 type GamesMemoryStorage struct {

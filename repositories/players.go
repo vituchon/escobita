@@ -2,8 +2,9 @@ package repositories
 
 import (
 	"encoding/json"
-	"github.com/vituchon/escobita/model"
 	"strconv"
+
+	"github.com/vituchon/escobita/model"
 )
 
 type PersistentPlayer struct {
@@ -35,14 +36,6 @@ func (pp *PersistentPlayer) UnmarshalJSON(b []byte) error {
 	id := int(stuff["id"].(float64))
 	pp.Id = &id
 	return nil
-}
-
-type Players interface {
-	GetPlayers() ([]PersistentPlayer, error)
-	GetPlayerById(id int) (*PersistentPlayer, error)
-	CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error)
-	UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error)
-	DeletePlayer(id int) error
 }
 
 type PlayersMemoryStorage struct {
