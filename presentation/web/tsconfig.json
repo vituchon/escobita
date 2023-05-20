@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "lib": ["ES6","DOM"],
+        "target": "ES2020",
+        "rootDir": "assets/js/ts",
+        "outDir": "assets/js/ts_compiled",
+        "preserveWatchOutput": true,
+        "pretty": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+    },
+    "include": ["assets/js/ts/**/*"]
+  }
