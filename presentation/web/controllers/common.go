@@ -18,6 +18,8 @@ func Healthcheck(response http.ResponseWriter, request *http.Request) {
 const ServerVersion = "0.0.1"
 
 func Version(response http.ResponseWriter, request *http.Request) {
+	/*response.Header().Set("Access-Control-Allow-Origin", "*")
+	response.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")*/
 	response.Write([]byte(ServerVersion))
 	response.WriteHeader(http.StatusOK)
 }
