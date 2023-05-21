@@ -129,6 +129,7 @@ func buildRouter() *mux.Router {
 	apiPost("/messages", controllers.CreateMessage)
 	apiPut("/messages/{id:[0-9]+}", controllers.UpdateMessage)
 	apiDelete("/messages/{id:[0-9]+}", controllers.DeleteMessage)
+
 	return root
 }
 
