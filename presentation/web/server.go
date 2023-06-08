@@ -68,7 +68,10 @@ func StartServer() {
 		WriteTimeout: 300 * time.Second,
 	}
 	fmt.Printf("escobita web server listening at port %v", server.Addr)
-	server.ListenAndServe()
+	err = server.ListenAndServe()
+	if (err != nil) {
+		fmt.Println("Unexpected error initiliazing web server: ", err)
+	}
 
 	// TODO (for greater good) : Perhaps we are now in condition to add https://github.com/gorilla/mux#graceful-shutdown
 }
