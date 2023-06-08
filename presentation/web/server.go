@@ -19,7 +19,12 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
+
+	embed "embed"
 )
+
+//go:embed assets/*
+var assets embed.FS
 
 // TODO : nice implement something like this
 /*
@@ -69,7 +74,7 @@ func StartServer() {
 	}
 	fmt.Printf("escobita web server listening at port %v", server.Addr)
 	err = server.ListenAndServe()
-	if (err != nil) {
+	if err != nil {
 		fmt.Println("Unexpected error initiliazing web server: ", err)
 	}
 
@@ -78,9 +83,16 @@ func StartServer() {
 
 func buildRouter() *mux.Router {
 	root := mux.NewRouter()
-	fileServer := http.FileServer(http.Dir("./"))
 	// TODO : word "presentation" in the path may be redudant, perpahs using just "assets" would be enought!
-	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
+	// BEFORE go:embed
+	/*fileServer := http.FileServer(http.Dir("./"))
+	root.PathPrefix("/presentation/web/assets").Handler(fileServer)*/
+
+	// AFTER go:embed
+	fileServer := http.FileServer(http.FS(assets))
+	//root.PathPrefix("/presentation/web/").Handler(fileServer)
+	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))
+
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
 	//root.Use(SslRedirect, AccessLogMiddleware, OrgAwareMiddleware)
 	root.Use(ClientSessionAwareMiddleware)
@@ -183,7 +195,7 @@ func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 
 // Dev notes: the request context has the organization due to the ContextAwareMiddle, so there will be always a valid portal's client session when invoking this function
 func serveRoot(response http.ResponseWriter, request *http.Request) {
-	t, err := template.ParseFiles("presentation/web/assets/html/root.html")
+	t, err := template.ParseFS(assets, "assets/html/root.html")
 	if err != nil {
 		fmt.Printf("Error while parsing template : %v", err)
 		response.WriteHeader(http.StatusInternalServerError)
