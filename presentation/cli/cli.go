@@ -9,8 +9,9 @@ import (
 
 	//"errors"
 	"fmt"
-	"github.com/vituchon/escobita/model"
 	"os"
+
+	"github.com/vituchon/escobita/model"
 )
 
 func StartApp() {
