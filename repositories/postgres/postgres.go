@@ -9,6 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Handy type alias as *sql.DB is actually a connection to a given database1
 type Connection = *sql.DB
 
 type Tx = *sql.Tx
