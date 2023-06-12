@@ -7,3 +7,6 @@
 * `tsc --project presentation/web/tsconfig.json`
 * `go run .`
 * invite friends :D!!
+
+
+* Some Entity-Relation Diagrams : https://docs.google.com/presentation/d/1R2rrpCpk-U0T-xqGnpi40je73T2GNUEfxZdS048mx7s/edit#slide=id.p
