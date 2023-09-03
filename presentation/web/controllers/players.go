@@ -83,7 +83,7 @@ func GetPlayerById(response http.ResponseWriter, request *http.Request) {
 
 func CreatePlayer(response http.ResponseWriter, request *http.Request) {
 	var player repositories.PersistentPlayer
-	err := ParseJsonFromReader(request.Body, &player)
+	err := parseJsonFromReader(request.Body, &player)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
@@ -104,7 +104,7 @@ func CreatePlayer(response http.ResponseWriter, request *http.Request) {
 
 func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 	var player repositories.PersistentPlayer
-	err := ParseJsonFromReader(request.Body, &player)
+	err := parseJsonFromReader(request.Body, &player)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)

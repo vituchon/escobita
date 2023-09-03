@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	/*"bufio"
+	"bytes"*/
 	"encoding/json"
 	"fmt"
+	//"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -45,7 +48,7 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 
 func CreateGame(response http.ResponseWriter, request *http.Request) {
 	var game repositories.PersistentGame
-	err := ParseJsonFromReader(request.Body, &game)
+	err := parseJsonFromReader(request.Body, &game)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
@@ -64,7 +67,7 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 
 func UpdateGame(response http.ResponseWriter, request *http.Request) {
 	var game repositories.PersistentGame
-	err := ParseJsonFromReader(request.Body, &game)
+	err := parseJsonFromReader(request.Body, &game)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
@@ -102,7 +105,21 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 
 func ResumeGame(response http.ResponseWriter, request *http.Request) {
 	var game repositories.PersistentGame
-	err := ParseJsonFromReader(request.Body, &game)
+
+	/*bufferedReader := bufio.NewReader(request.Body)
+
+	// Read all data into a single buffer
+	buffer, err := bufferedReader.ReadBytes(0) // 0 means to read until the end
+	if err != nil && err != io.EOF {
+		fmt.Printf("Error reading from reader: %v\n", err)
+		return
+	}
+
+	// Print the entire content
+	fmt.Println("Game:", string(buffer))
+
+	err = parseJsonFromReader(bytes.NewReader(buffer), &game)*/
+	err := parseJsonFromReader(request.Body, &game)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
@@ -149,7 +166,7 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Printf("==========\ngame: %+v,\n============\n", *game)
 	var takeAction model.PlayerTakeAction
-	err = ParseJsonFromReader(request.Body, &takeAction)
+	err = parseJsonFromReader(request.Body, &takeAction)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
@@ -184,7 +201,7 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	var dropAction model.PlayerDropAction
-	err = ParseJsonFromReader(request.Body, &dropAction)
+	err = parseJsonFromReader(request.Body, &dropAction)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)

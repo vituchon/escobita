@@ -65,7 +65,7 @@ func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
 
 func CreateMessage(response http.ResponseWriter, request *http.Request) {
 	var message services.WebMessage
-	err := ParseJsonFromReader(request.Body, &message)
+	err := parseJsonFromReader(request.Body, &message)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
@@ -82,7 +82,7 @@ func CreateMessage(response http.ResponseWriter, request *http.Request) {
 
 func UpdateMessage(response http.ResponseWriter, request *http.Request) {
 	var message services.WebMessage
-	err := ParseJsonFromReader(request.Body, &message)
+	err := parseJsonFromReader(request.Body, &message)
 	if err != nil {
 		fmt.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)

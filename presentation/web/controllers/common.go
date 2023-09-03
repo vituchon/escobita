@@ -40,10 +40,9 @@ func WriteJsonResponse(response http.ResponseWriter, status int, data interface{
 }
 
 // Parses a json that cames from a reader an place in into the variable passed as argument
-func ParseJsonFromReader(reader io.Reader, val interface{}) error {
+func parseJsonFromReader(reader io.Reader, val interface{}) error {
 	err := json.NewDecoder(reader).Decode(val)
 	if err != nil {
-		fmt.Printf("error decoding %T, error: %s", val, err.Error())
 		return err
 	}
 	return nil
