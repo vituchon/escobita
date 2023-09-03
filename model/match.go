@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -8,7 +9,7 @@ import (
 type Match struct {
 	Players          []Player        `json:"players"`
 	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayerName"`
-	ActionsLog       []PlayerAction  `json:"playerActions"`
+	ActionsLog       PlayerActions   `json:"playerActions"`
 	Cards            MatchCards      `json:"matchCards"`
 	FirstPlayerIndex int             `json:"firstPlayerIndex"`
 	RoundNumber      int             `json:"roundNumber"`
@@ -23,7 +24,7 @@ func newMatch(players []Player, deck Deck) Match {
 	match := Match{
 		Players:          players,
 		ActionsByPlayer:  newActionsByPlayer(players),
-		ActionsLog:       make([]PlayerAction, 0, totalTurns),
+		ActionsLog:       make(PlayerActions, 0, totalTurns),
 		Cards:            newMatchCards(players, deck),
 		RoundNumber:      0,
 		FirstPlayerIndex: 0,
@@ -46,12 +47,37 @@ func (m Match) String() string {
 	return fmt.Sprintf("Match, first player is %v and current round is %v,\nLeft cards:%v\nBoard cards: %v\nPlayers:\n%v", m.Players[m.FirstPlayerIndex], m.RoundNumber, matchLeftCards, matchBoardCards, joinedPlayersDescription)
 }
 
-type ActionsByPlayer map[Player][]PlayerAction
+type ActionsByPlayer map[Player]PlayerActions
+
+type PlayerActions []PlayerAction
+
+// Dev notes: Marshalling of interfaces' array or map whose values are interfaces requires "special treatment" request.Body. See https://stackoverflow.com/q/52783848/903998 and https://stackoverflow.com/a/42765078
+func (actions *PlayerActions) UnmarshalJSON(b []byte) error {
+	var rawActions []map[string]interface{}
+	if err := json.Unmarshal(b, &rawActions); err != nil {
+		return err
+	}
+
+	var parsedActions []PlayerAction
+	for _, rawAction := range rawActions {
+		_, hasBoardCardsField := rawAction["boardCards"] // if it contains board cards then is take action, else is a drop action. Recall that there aren't more actions.
+		if hasBoardCardsField {
+			var takeAction PlayerTakeAction
+			parsedActions = append(parsedActions, takeAction)
+		} else {
+			var dropAction PlayerDropAction
+			parsedActions = append(parsedActions, dropAction)
+		}
+	}
+	*actions = parsedActions
+	return nil
+
+}
 
 func newActionsByPlayer(players []Player) ActionsByPlayer {
 	actionsByPlayer := make(ActionsByPlayer)
 	for _, player := range players {
-		actionsByPlayer[player] = make([]PlayerAction, 0, 10)
+		actionsByPlayer[player] = make(PlayerActions, 0, 10)
 	}
 	return actionsByPlayer
 }

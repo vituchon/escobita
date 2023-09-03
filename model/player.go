@@ -8,13 +8,13 @@ type Player struct {
 	Name string `json:"name"`
 }
 
-type Party []Player // just an idea
+type Party []Player
 
 func (player Player) String() string {
 	return player.Name
 }
 
-// implementing encoding.TextMarshaler for be complaint with Marshal/unMarshal when key of map is a struct
+// Dev notes: Implementing encoding.TextMarshaler for be complaint with Marshal/unMarshal on using a Player as a map's key
 func (player Player) MarshalText() (text []byte, err error) {
 	return []byte(player.Name), nil
 }
@@ -31,9 +31,11 @@ func (p Player) MarshalJSON() ([]byte, error) {
 func (p *Player) UnmarshalJSON(b []byte) error {
 	var stuff map[string]interface{}
 	err := json.Unmarshal(b, &stuff)
+	// dev notes: on Match#ActionsByPlayer the marshalling generates a key with the name (an string, refer to Player#MarshalText), so when unmarshalling I need to take that string as the name
 	if err != nil {
-		return err
+		p.Name = string(b)
+	} else {
+		p.Name = stuff["name"].(string)
 	}
-	p.Name = stuff["name"].(string)
 	return nil
 }
