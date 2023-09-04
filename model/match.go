@@ -59,8 +59,7 @@ func (actions *PlayerActions) UnmarshalJSON(b []byte) error {
 	}
 
 	var parsedActions []PlayerAction
-	for i, rawAction := range rawActions {
-		fmt.Println(i, rawAction)
+	for _, rawAction := range rawActions {
 		_, hasBoardCardsField := rawAction["boardCards"] // if it contains board cards then is take action, else is a drop action. Recall that there aren't more actions.
 		if hasBoardCardsField {
 			var takeAction PlayerTakeAction = parsePlayerTakeAction(rawAction)
@@ -71,9 +70,6 @@ func (actions *PlayerActions) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	for i, parsedAction := range parsedActions {
-		fmt.Println(i, parsedAction)
-	}
 	*actions = parsedActions
 	return nil
 }
