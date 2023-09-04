@@ -3,6 +3,7 @@ package model
 import (
 	"log"
 	"math/rand"
+	"time"
 )
 
 var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
@@ -132,6 +133,10 @@ func determineValue(card Card) int {
 	} else {
 		return card.Rank - 2
 	}
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano()) // dev notes: following advice https://stackoverflow.com/questions/12264789/shuffle-array-in-go#comment105168476_46185753
 }
 
 func shuffle(deck Deck) {
