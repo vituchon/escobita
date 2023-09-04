@@ -4,6 +4,8 @@ import (
 	"testing"
 )
 
+// TODO: Add at least a test to verify for solo player game, if the player perform only ONE take action... and the end he will got all the 40 cards taken.. so i can check that!
+
 func TestMatchFlow(t *testing.T) {
 	var party []Player = []Player{
 		Player{Name: "P1"},
@@ -19,30 +21,35 @@ func TestMatchFlow(t *testing.T) {
 		expectedRounds int
 	}{
 		{
+			title:          "match flow for 1 players",
+			players:        party[:1],
+			expectedRounds: 12,
+		},
+		{
 			title:          "match flow for 2 players",
 			players:        party[:2],
 			expectedRounds: 6,
-		}, /*
-			{
-				title:          "match flow for 3 players",
-				players:        party[:3],
-				expectedRounds: 4,
-			},
-			{
-				title:          "match flow for 4 players",
-				players:        party[:4],
-				expectedRounds: 3,
-			},
-			{
-				title:          "match flow for 5 players",
-				players:        party[:5],
-				expectedRounds: 2, // it doesn't fit perfect as 36(cards) / (5(player) * 3(cards)) = 2,4 rounds
-			},
-			{
-				title:          "match flow for 6 players",
-				players:        party[:6],
-				expectedRounds: 2,
-			},*/
+		},
+		{
+			title:          "match flow for 3 players",
+			players:        party[:3],
+			expectedRounds: 4,
+		},
+		{
+			title:          "match flow for 4 players",
+			players:        party[:4],
+			expectedRounds: 3,
+		},
+		/*{
+			title:          "match flow for 5 players",
+			players:        party[:5],
+			expectedRounds: 2, // it doesn't fit perfect as 36(cards) / (5(player) * 3(cards)) = 2,4 rounds
+		},*/
+		{
+			title:          "match flow for 6 players",
+			players:        party[:6],
+			expectedRounds: 2,
+		},
 	}
 
 	for _, testRun := range testRuns {
@@ -50,12 +57,12 @@ func TestMatchFlow(t *testing.T) {
 		match := CreateAndBegins(testRun.players)
 		actualRounds := 0
 		//t.Log(actualRounds, match)
-		for match.HasMoreRounds() && actualRounds < 10 { // the match ends by dealing cards until there a no more cards left
+		for match.HasMoreRounds() && actualRounds < 100 { // the match ends by dealing cards until there a no more cards left
 			actualRounds++
 			actualTurns := 0
 			round := match.NextRound()
 			turnsCountByPlayer := make(map[Player]int)
-			for round.HasNextTurn() && actualTurns < 20 { // the round ends when each player consumes his three turns per round
+			for round.HasNextTurn() { // the round ends when each player consumes his three turns per round
 				player := round.NextTurn()
 				//t.Log("turno: ", actualRounds, ", jugador: ", player, "cartas:", match.MatchCards.PerPlayer[player])
 				//t.Log(match)
@@ -86,12 +93,7 @@ func TestMatchFlow(t *testing.T) {
 			t.Errorf("Match should end before %d rounds and rounds were %d", testRun.expectedRounds, actualRounds)
 		}
 
-		var actionsLogCount int
-		if len(match.Players) == 5 {
-			actionsLogCount = 30
-		} else {
-			actionsLogCount = 36
-		}
+		const actionsLogCount int = 36
 		if len(match.ActionsLog) != actionsLogCount {
 			t.Errorf("Match quantity of actions must be 36 and computed is %d", len(match.ActionsLog))
 		}
