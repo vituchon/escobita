@@ -23,9 +23,6 @@ import (
 	embed "embed"
 )
 
-//go:embed assets/*
-var assets embed.FS
-
 // TODO : nice implement something like this
 /*
 type Server struct {
@@ -57,7 +54,16 @@ func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
 	return
 }
 
+//go:embed assets/*
+var assets embed.FS
+
 func StartServer() {
+	//file, err := assets.Open("assets/html/root.html")
+	//bytes, err := ioutil.ReadFile("./pepe.txt")
+
+	//fmt.Println(err, string(bytes))
+	//fileBytes, err := ioutil.ReadAll(file)
+
 	key, err := retrieveCookieStoreKey(storeKeyFilePath)
 	if err != nil {
 		fmt.Printf("Unexpected error while retrieving cookie store key: %v", err)
@@ -90,7 +96,6 @@ func buildRouter() *mux.Router {
 
 	// AFTER go:embed
 	fileServer := http.FileServer(http.FS(assets))
-	//root.PathPrefix("/presentation/web/").Handler(fileServer)
 	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))
 
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
