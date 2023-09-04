@@ -83,46 +83,48 @@ func parsePlayerDropAction(m map[string]interface{}) PlayerDropAction {
 	handCardMap := (m["handCard"]).(map[string]interface{})
 	return PlayerDropAction{
 		basePlayerAction: basePlayerAction{
-			Player: Player{
-				Name: playerMap["name"].(string),
-			},
+			Player: parsePlayer(playerMap),
 		},
-		HandCard: Card{
-			Id:   int(handCardMap["id"].(float64)),
-			Rank: Rank(handCardMap["rank"].(float64)),
-			Suit: Suit(handCardMap["suit"].(float64)),
-		},
+		HandCard: parseSingleCard(handCardMap),
 	}
 }
 
 func parsePlayerTakeAction(m map[string]interface{}) PlayerTakeAction {
 	playerMap := (m["player"]).(map[string]interface{})
 	handCardMap := (m["handCard"]).(map[string]interface{})
-	boardCardsMap := (m["boardCards"]).([]interface{})
+	rawBoardCards := (m["boardCards"]).([]interface{})
 
-	var boardCards []Card
-	for _, boardCardMap := range boardCardsMap {
-		_boardCardMap := boardCardMap.(map[string]interface{})
-		boardCard := Card{
-			Id:   int(_boardCardMap["id"].(float64)),
-			Rank: Rank(_boardCardMap["rank"].(float64)),
-			Suit: Suit(_boardCardMap["suit"].(float64)),
-		}
-		boardCards = append(boardCards, boardCard)
-	}
 	return PlayerTakeAction{
 		basePlayerAction: basePlayerAction{
-			Player: Player{
-				Name: playerMap["name"].(string),
-			},
+			Player: parsePlayer(playerMap),
 		},
 		Is_Escobita: m["isEscobita"].(bool),
-		HandCard: Card{
-			Id:   int(handCardMap["id"].(float64)),
-			Rank: Rank(handCardMap["rank"].(float64)),
-			Suit: Suit(handCardMap["suit"].(float64)),
-		},
-		BoardCards: boardCards,
+		HandCard:    parseSingleCard(handCardMap),
+		BoardCards:  parseMultipleCards(rawBoardCards),
+	}
+}
+
+func parseSingleCard(m map[string]interface{}) Card {
+	return Card{
+		Id:   int(m["id"].(float64)),
+		Rank: Rank(m["rank"].(float64)),
+		Suit: Suit(m["suit"].(float64)),
+	}
+}
+
+func parseMultipleCards(rawCards []interface{}) []Card {
+	var boardCards []Card = make([]Card, len(rawCards), len(rawCards))
+	for i, rawCard := range rawCards {
+		m := rawCard.(map[string]interface{})
+		boardCard := parseSingleCard(m)
+		boardCards[i] = boardCard
+	}
+	return boardCards
+}
+
+func parsePlayer(m map[string]interface{}) Player {
+	return Player{
+		Name: m["name"].(string),
 	}
 }
 
