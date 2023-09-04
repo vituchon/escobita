@@ -59,19 +59,71 @@ func (actions *PlayerActions) UnmarshalJSON(b []byte) error {
 	}
 
 	var parsedActions []PlayerAction
-	for _, rawAction := range rawActions {
+	for i, rawAction := range rawActions {
+		fmt.Println(i, rawAction)
 		_, hasBoardCardsField := rawAction["boardCards"] // if it contains board cards then is take action, else is a drop action. Recall that there aren't more actions.
 		if hasBoardCardsField {
-			var takeAction PlayerTakeAction
+			var takeAction PlayerTakeAction = parsePlayerTakeAction(rawAction)
 			parsedActions = append(parsedActions, takeAction)
 		} else {
-			var dropAction PlayerDropAction
+			var dropAction PlayerDropAction = parsePlayerDropAction(rawAction)
 			parsedActions = append(parsedActions, dropAction)
 		}
 	}
+
+	for i, parsedAction := range parsedActions {
+		fmt.Println(i, parsedAction)
+	}
 	*actions = parsedActions
 	return nil
+}
 
+func parsePlayerDropAction(m map[string]interface{}) PlayerDropAction {
+	playerMap := (m["player"]).(map[string]interface{})
+	handCardMap := (m["handCard"]).(map[string]interface{})
+	return PlayerDropAction{
+		basePlayerAction: basePlayerAction{
+			Player: Player{
+				Name: playerMap["name"].(string),
+			},
+		},
+		HandCard: Card{
+			Id:   int(handCardMap["id"].(float64)),
+			Rank: Rank(handCardMap["rank"].(float64)),
+			Suit: Suit(handCardMap["suit"].(float64)),
+		},
+	}
+}
+
+func parsePlayerTakeAction(m map[string]interface{}) PlayerTakeAction {
+	playerMap := (m["player"]).(map[string]interface{})
+	handCardMap := (m["handCard"]).(map[string]interface{})
+	boardCardsMap := (m["boardCards"]).([]interface{})
+
+	var boardCards []Card
+	for _, boardCardMap := range boardCardsMap {
+		_boardCardMap := boardCardMap.(map[string]interface{})
+		boardCard := Card{
+			Id:   int(_boardCardMap["id"].(float64)),
+			Rank: Rank(_boardCardMap["rank"].(float64)),
+			Suit: Suit(_boardCardMap["suit"].(float64)),
+		}
+		boardCards = append(boardCards, boardCard)
+	}
+	return PlayerTakeAction{
+		basePlayerAction: basePlayerAction{
+			Player: Player{
+				Name: playerMap["name"].(string),
+			},
+		},
+		Is_Escobita: m["isEscobita"].(bool),
+		HandCard: Card{
+			Id:   int(handCardMap["id"].(float64)),
+			Rank: Rank(handCardMap["rank"].(float64)),
+			Suit: Suit(handCardMap["suit"].(float64)),
+		},
+		BoardCards: boardCards,
+	}
 }
 
 func newActionsByPlayer(players []Player) ActionsByPlayer {
