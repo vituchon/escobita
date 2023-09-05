@@ -14,7 +14,7 @@ module Lobby {
     public showCards: boolean = false;
 
     public playerGame: Games.Game; // dataholder for a current user's new game
-    private canCreateNewGame: boolean;
+    public canCreateNewGame: boolean;
 
     constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
