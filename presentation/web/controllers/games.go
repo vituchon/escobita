@@ -43,7 +43,17 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, game)
 }
 
+const MAX_GAMES_PER_PLAYER = 1
+
 func CreateGame(response http.ResponseWriter, request *http.Request) {
+	playerId := getWebPlayerId(request) // will be the game's owner
+	if gamesRepository.GetGamesCreatedCount(playerId) == MAX_GAMES_PER_PLAYER {
+		msg := fmt.Sprintf("Player(id='%d') has reached the maximum game creation limit: '%v'", playerId, MAX_GAMES_PER_PLAYER)
+		response.WriteHeader(http.StatusBadRequest)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+
 	var game repositories.PersistentGame
 	err := parseJsonFromReader(request.Body, &game)
 	if err != nil {
@@ -51,7 +61,8 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	game.PlayerId = getWebPlayerId(request) // asign owner
+
+	game.PlayerId = playerId
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
 		fmt.Printf("error while creating Game: '%v'", err)

@@ -14,6 +14,7 @@ type Games interface { // NOTAR queno llamo GamesRepository pues el nombre del p
 	CreateGame(game PersistentGame) (created *PersistentGame, err error)
 	UpdateGame(game PersistentGame) (updated *PersistentGame, err error)
 	DeleteGame(id int) error
+	GetGamesCreatedCount(playerId int) int
 }
 
 type Players interface { // aplica misma idea que con Games por eso no agrego el Repository como posfijo

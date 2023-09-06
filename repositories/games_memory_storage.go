@@ -15,13 +15,14 @@ type PersistentGame struct {
 }
 
 type GamesMemoryStorage struct {
-	gamesById  map[int]PersistentGame
-	idSequence int
-	mutex      sync.Mutex
+	gamesById              map[int]PersistentGame
+	gamesCreatedByPlayerId map[int]int
+	idSequence             int
+	mutex                  sync.Mutex
 }
 
 func NewGamesMemoryStorage() *GamesMemoryStorage {
-	return &GamesMemoryStorage{gamesById: make(map[int]PersistentGame), idSequence: 0}
+	return &GamesMemoryStorage{gamesById: make(map[int]PersistentGame), gamesCreatedByPlayerId: make(map[int]int), idSequence: 0}
 }
 
 func (repo GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
@@ -54,6 +55,7 @@ func (repo *GamesMemoryStorage) CreateGame(game PersistentGame) (created *Persis
 	game.Id = &nextId
 	repo.gamesById[nextId] = game
 	repo.idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
+	repo.gamesCreatedByPlayerId[game.PlayerId]++
 	return &game, nil
 }
 
@@ -70,6 +72,14 @@ func (repo *GamesMemoryStorage) UpdateGame(game PersistentGame) (updated *Persis
 func (repo *GamesMemoryStorage) DeleteGame(id int) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
+	game := repo.gamesById[id]
+	repo.gamesCreatedByPlayerId[game.PlayerId]--
 	delete(repo.gamesById, id)
 	return nil
+}
+
+func (repo GamesMemoryStorage) GetGamesCreatedCount(playerId int) int {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+	return repo.gamesCreatedByPlayerId[playerId]
 }
