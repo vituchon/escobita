@@ -25,6 +25,8 @@ func NewGamesMemoryStorage() *GamesMemoryStorage {
 }
 
 func (repo GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	games := make([]PersistentGame, 0, len(repo.gamesById))
 	for _, game := range repo.gamesById {
 		games = append(games, game)
@@ -33,6 +35,8 @@ func (repo GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
 }
 
 func (repo GamesMemoryStorage) GetGameById(id int) (*PersistentGame, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	game, exists := repo.gamesById[id]
 	if !exists {
 		return nil, EntityNotExistsErr
@@ -45,11 +49,11 @@ func (repo *GamesMemoryStorage) CreateGame(game PersistentGame) (created *Persis
 		return nil, DuplicatedEntityErr
 	}
 	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	nextId := repo.idSequence + 1
 	game.Id = &nextId
 	repo.gamesById[nextId] = game
 	repo.idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
-	repo.mutex.Unlock()
 	return &game, nil
 }
 
@@ -57,11 +61,15 @@ func (repo *GamesMemoryStorage) UpdateGame(game PersistentGame) (updated *Persis
 	if game.Id == nil {
 		return nil, EntityNotExistsErr
 	}
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	repo.gamesById[*game.Id] = game
 	return &game, nil
 }
 
 func (repo *GamesMemoryStorage) DeleteGame(id int) error {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	delete(repo.gamesById, id)
 	return nil
 }

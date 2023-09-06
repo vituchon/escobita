@@ -3,6 +3,7 @@ package repositories
 import (
 	"encoding/json"
 	"strconv"
+	"sync"
 
 	"github.com/vituchon/escobita/model"
 )
@@ -40,6 +41,7 @@ func (pp *PersistentPlayer) UnmarshalJSON(b []byte) error {
 
 type PlayersMemoryStorage struct {
 	playersById map[int]PersistentPlayer
+	mutex       sync.Mutex
 }
 
 func NewPlayersMemoryStorage() *PlayersMemoryStorage {
@@ -47,6 +49,8 @@ func NewPlayersMemoryStorage() *PlayersMemoryStorage {
 }
 
 func (repo PlayersMemoryStorage) GetPlayers() ([]PersistentPlayer, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	players := make([]PersistentPlayer, 0, len(repo.playersById))
 	for _, player := range repo.playersById {
 		players = append(players, player)
@@ -55,6 +59,8 @@ func (repo PlayersMemoryStorage) GetPlayers() ([]PersistentPlayer, error) {
 }
 
 func (repo PlayersMemoryStorage) GetPlayerById(id int) (*PersistentPlayer, error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	player, exists := repo.playersById[id]
 	if !exists {
 		return nil, EntityNotExistsErr
@@ -63,6 +69,8 @@ func (repo PlayersMemoryStorage) GetPlayerById(id int) (*PersistentPlayer, error
 }
 
 func (repo *PlayersMemoryStorage) CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	if player.Id == nil {
 		return nil, InvalidEntityStateErr
 	}
@@ -71,6 +79,8 @@ func (repo *PlayersMemoryStorage) CreatePlayer(player PersistentPlayer) (created
 }
 
 func (repo *PlayersMemoryStorage) UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error) {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	if player.Id == nil {
 		return nil, InvalidEntityStateErr
 	}
@@ -79,6 +89,8 @@ func (repo *PlayersMemoryStorage) UpdatePlayer(player PersistentPlayer) (updated
 }
 
 func (repo *PlayersMemoryStorage) DeletePlayer(id int) error {
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 	delete(repo.playersById, id)
 	return nil
 }
