@@ -19,21 +19,19 @@ ts_src_root_path = presentation/web/assets/js/ts
 ts_out_root_path = presentation/web/assets/js/ts_compiled
 
 ts_files = $(shell find $(ts_src_root_path) -name '*.ts')
-ts_flags = --preserveWatchOutput --pretty --noImplicitAny --noImplicitReturns --noFallthroughCasesInSwitch --rootDir $(ts_src_root_path)
-ts_unbundled_out_path = --outDir $(ts_out_root_path)
+ts_flags = --project presentation/web/tsconfig.json
 #ts_bundled_out_path = --outFile $(ts_out_root_path)/ts-bundle.js
 
-ts-compile: $(ts_files)
-	@echo 'Compiling typescript files at "$(ts_src_root_path)"...'
-	@tsc $(ts_flags) $(ts_unbundled_out_path) $?
+ts-compile:
+	@echo 'Compiling typescript files'
+	@tsc $(ts_flags) $?
 	@echo 'Done compiling typescript'
 
-#ts-bundle: $(ts_files)
+#ts-bundle:
 #	@tsc $(ts_flags) $(ts_bundled_out_path) $?
 
-ts-compile-watch: $(ts_files)
-# TODO(vgiordano): The above cmd only watchs modifications over existing files. Not new ones. Would be nice to polish in order to compile new ones.
-	@tsc -w $(ts_flags) $(ts_unbundled_out_path) $?
+ts-compile-watch:
+	@tsc -w $(ts_flags) $?
 
 ts-clean:
 	rm -rfv $(ts_out_root_path)
