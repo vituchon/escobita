@@ -21,12 +21,12 @@
     <div ng-show="ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
       <strong >Eres el administrador</strong>&nbsp;
       <span>Solo vos podés comenzar la partida, una vez comenzada se cierran las puertas!</span><br/>
-      <span>Se puede usar el chat para charlar mientras tanto, apreta el botón activar chat!</span>
+      <span>Se puede usar el chat para charlar mientras tanto, apreta el botón <strong>activar chat</strong></span>
     </div>
 
     <div ng-show="!ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
       <span>El administrador esta configurando la partida para el gusto de todos.</span><br/>
-      <span>Se puede usar el chat para charlar mientras tanto, apreta el botón activar chat!</span>
+      <span>Se puede usar el chat para charlar mientras tanto, apreta el botón <strong>activar chat</strong></span>
     </div>
 
 
@@ -48,14 +48,11 @@
     </div>
 
     <div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
-     <span>Turno de:</span>&nbsp;<span>{{ctr.currentTurnPlayer.name}}</span>
+     <span style="color: blue; background-color: yellow;font-size: larger;">Turno de:</span>&nbsp;<span>{{ctr.currentTurnPlayer.name}}</span>
      <br/>
      <strong ng-show="ctr.isPlayerTurn" style="color: red; background-color: yellow;font-size: larger;">Es tu turno! Juega!</strong>
     </div>
 
-    <!--
-    <div class="materialButton colorButton" ng-click="ctr.refreshGame()">Actualizar Partida</div>
-    -->
   </div>
 
   <div class="section game-match-section">

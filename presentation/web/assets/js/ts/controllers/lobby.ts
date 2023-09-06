@@ -16,7 +16,9 @@ module Lobby {
     public playerGame: Games.Game; // dataholder for a current user's new game
     public canCreateNewGame: boolean;
 
-    constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
+    public viewGamesMode: string;
+
+    constructor($rootElement: ng.IRootElementService, $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
         private playersService: Players.Service) {
       this.games = [];
@@ -24,6 +26,7 @@ module Lobby {
       const getClientPlayerPromise = this.playersService.getClientPlayer().then((player) => {
         this.player = player;
         this.playerName = this.player.name
+        return player
       })
       const getGamesPromise = this.gamesService.getGames().then((games) => {
         this.games = games
@@ -52,6 +55,12 @@ module Lobby {
         this.canCreateNewGame = !!can;
       })
 
+      getClientPlayerPromise.then((player) => {
+        if (!_.isEmpty(player.name)) {
+          this.showCards = true;
+          this.showPlayerNameStatic(false);
+        }
+      })
     }
 
     private createGame(game: Api.Game) {
@@ -90,9 +99,40 @@ module Lobby {
         this.player = player;
       }).then(() => {
         this.showCards = true;
+        this.showPlayerNameStatic(true);
       }).finally(() => {
         this.loading = false
       })
+    }
+
+    public showPlayerNameStatic(animate: boolean) {
+      const enter = document.getElementById('enter-player-name-section');
+      const display = document.getElementById('display-player-name-section');
+      if (animate) {
+        enter.style.transition = "transform 1s ease";
+        display.style.transition = "transform 1s ease";
+      } else {
+        enter.style.transition = "none";
+        display.style.transition = "none";
+      }
+
+      enter.style.transform = 'translateX(-101%)';
+      display.style.transform = 'translateX(0%)';
+    }
+
+    public showPlayerNameForm(animate: boolean) {
+      const enter = document.getElementById('enter-player-name-section');
+      const display = document.getElementById('display-player-name-section');
+      if (animate) {
+        enter.style.transition = "transform 1s ease";
+        display.style.transition = "transform 1s ease";
+      } else {
+        enter.style.transition = "none";
+        display.style.transition = "none";
+      }
+
+      enter.style.transform = 'translateX(0)';
+      display.style.transform = 'translateX(101%)';
     }
 
     public canUpdatePlayerName(name: string) {

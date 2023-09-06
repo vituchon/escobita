@@ -101,10 +101,26 @@
 }
 
 .nav-panel {
-  background-color:lightblue;
   display: flex;
-  flex-flow: column;
+  flex-flow: row;
+
+  .materialButton {
+    border-radius: 0px;
+    background-color: @mainColor;
+    color:         deepskyblue;
+    &:hover{
+      background-color: darken(@mainColor, 50%);
+      color:          yellow;
+      filter: brightness(85%);
+    }
+  }
 }
+
+.selected-button {
+  background-color: darken(@mainColor, 50%) !important;
+  color:          yellow  !important;
+}
+
 
 .ui-view-container {
   display: flex;
@@ -118,12 +134,6 @@
   flex-grow: 2;
 }
 
-.section {
-  .title {
-    font-size: 16px !important;
-  }
-}
-
 .section-separator {
   height: 20px;
   background-color: lightgray;
@@ -133,10 +143,48 @@
 
 // LOBBY SCREEN
 
-.lobby-container {
+.lobby {
 
-  .lobby-title {
-    font-size: 16px;
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+
+    strong {
+      color: deepskyblue;
+    }
+  }
+
+  .materialButton {
+    border-radius: 0px;
+    background-color: @mainColor;
+    color:         deepskyblue;
+    &:hover{
+      background-color: darken(@mainColor, 50%);
+      color:          yellow;
+      filter: brightness(85%);
+    }
+  }
+
+  .game-list-section {
+    display:flex;
+    flex-direction: column;
+
+    #game-list-interface-selector{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .game-list-header {
+      display:flex;
+      flex-direction: row;
+      align-items: center;
+    }
   }
 
   .lobby-cards {
@@ -176,50 +224,57 @@
     }
   }
 
-  .client-player-section {
-    display: flex;
-    flex-direction: column;
+  #player-registration-section {
+    display: grid;
 
-    .name-control {
+    .materialButton {
+      border-radius: 20px;
+      &:hover{
+        border-radius: 10px;
+      }
+    }
+
+    #enter-player-name-section {
       display: flex;
-      flex-direction: row;
-      min-height: 50px;
-      align-items: center;
+      flex-direction: column;
 
-      .title {
-        font-size: 16px;
-        background-color: #EFEFEFEF;
-        padding: 10px;
-        border-radius: 15px;
-        border-color: black;
-        border: 2px solid black;
+      .name-control {
+        display: flex;
+        flex-direction: row;
+        min-height: 50px;
+        align-items: center;
+
+        .title {
+          font-size: 16px;
+          background-color: #EFEFEFEF;
+          padding: 10px;
+          border-radius: 15px;
+          border-color: black;
+          border: 2px solid black;
+        }
+
+        .input {
+          display:flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-left: 10px;
+        }
+
       }
-
-      .input {
-        display:flex;
-        flex-direction: column;
-        justify-content: center;
-        margin-left: 10px;
-      }
-
     }
   }
 
-  .game-list-section {
-    display:flex;
-    flex-direction: column;
-
-    .game-list-header {
-      display:flex;
-      flex-direction: row;
-      align-items: center;
-    }
-  }
 }
 
 // ABOUT SCREEN
 
 .about {
+
+
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+  }
 
   .facts-container {
     display: flex;
@@ -390,14 +445,11 @@
   }
 }
 
-.toast-container > div {
-  width: 400px !important;
-}
+
 
 .toastr-chat-class {
   background-color: #51a351 !important;
   color: #ffffff !important;
-  width: 600px !important;
 }
 
 .toasrt-chat-tittle{
@@ -409,9 +461,6 @@
   font-size: 16px;
 }
 
-.toastr-info-action-class {
-  width: 600px !important;
-}
 
 #toast-container > .toast-info.toastr-info-action-class {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAOCAYAAADaOrdAAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TRZEWBzuIOGSoThZERTtqFYpQIdQKrTqYvPQPmjQkKS6OgmvBwZ/FqoOLs64OroIg+APi5uak6CIl3pcUWsR44fE+zrvn8N59gNCoMM3qGgc03TbTyYSYza2KPa8IIIwQ4piRmWXMSVIKvvV1T91UdzGe5d/3Z4XVvMWAgEg8ywzTJt4gnt60Dc77xBFWklXic+Ixky5I/Mh1xeM3zkWXBZ4ZMTPpeeIIsVjsYKWDWcnUiKeIo6qmU76Q9VjlvMVZq9RY6578haG8vrLMdVrDSGIRS5AgQkENZVRgI0a7ToqFNJ0nfPxDrl8il0KuMhg5FlCFBtn1g//B79lahckJLymUALpfHOdjBOjZBZp1x/k+dpzmCRB8Bq70tr/aAOKfpNfbWvQI6N8GLq7bmrIHXO4Ag0+GbMquFKQlFArA+xl9Uw4YuAX61ry5tc5x+gBkaFapG+DgEBgtUva6z7t7O+f2b09rfj/CgXLHzL801AAAAAZiS0dEAP8A/wAAjb9IHgAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB+UBDQw5FS8UQckAAAETSURBVDjLvZQ9SgRBEIW/WRZTEQMXROiKhEFkwdTIS3gBQdxlE3HvYbQamOsFvIGIifiTqKC8BtfAwMAD6Jr0QDPaM8iOPmiormrqdb0qKvPSOnAELNM8HoCtzEtXQJe/w3UrQXAP9IGdBki6rUTg2ZmNgMNfJpwAJ8Bx7Gw3LM2+M9sF8NIYGJZJXoC3YCvy30b2IjBf0+gCT4WReWkS7J4zO6j6ppdGNX26BDaBD+AUyAFaU8rTB2aAvXBfAx6DEvlPlcRyXTizbS8B3CTkunNmeVTlOMS/oV1KUDx6jfyriSo6Xpp1Zu9e6gALqXKnma454MxL58BGVa5UYMlLPeCzhmglnEr821oZlOa76QU5+AI7KFFUMj3UhAAAAABJRU5ErkJggg==") !important;
@@ -670,7 +719,7 @@ ui-view {
   &.raised{
     box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
     &:hover{
-      box-shadow: 0 4px 3px 0px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 3px 0px rgba(0,0,0,0.6);
     }
   }
   &.gray{
@@ -684,7 +733,7 @@ ui-view {
     background-color: @mainColor;
     color:          white;
     &:hover{
-      background-color: darken(@mainColor, 10%);
+      background-color: darken(@mainColor, 50%);
     }
   }
   &.white{
@@ -713,34 +762,6 @@ ui-view {
       }
     }
   }
-  &.iconButton{
-    background-color: transparent;
-    color:            @darkGray;
-    padding:          6px;
-    min-width:        0;
-    text-transform:   none;
-    font-weight:      400;
-    font-size:        24px;
-    height:           24px;
-    &:hover.close{
-      color: @red;
-    }
-    &.hidden{
-      opacity: 0;
-    }
-  }
-  &.tagButton{
-    padding:      3px;
-    margin:       2px auto 2px 10px;
-    font-size:    12px;
-    font-weight:  200;
-    height:       20px;
-    &.selected{
-      background-color: @mainColor;
-      color:          white;
-      font-weight:      600;
-    }
-  }
 }
 .textButton{
   cursor: pointer;
@@ -755,12 +776,47 @@ ui-view {
 .raised-2{
   box-shadow: 0 5px 4px 0px rgba(0,0,0,0.3);
 }
-select, input{
+
+input{
   border:           0;
   border-radius:    0;
   color:            @darkGray;
   background-color: transparent;
   padding:          2px 2px 1px;
+  border-bottom:    1px solid @midGray;
+  transition:       @defaultTransition;
+  &:focus{
+    border:        0;
+    outline:       0;
+    border-bottom: 1px solid @darkGray;
+  }
+  &::-webkit-input-placeholder {
+    color: @midGray;
+  }
+  &.white{
+    color:            white;
+    border-bottom:    1px solid #DDDDDD;
+    &:focus{
+      border-bottom: 1px solid white;
+    }
+    &::-webkit-input-placeholder {
+      color: #DDDDDD;
+    }
+  }
+}
+
+
+select {
+  background: url("data:image/svg+xml,<svg height='10px' width='10px' viewBox='0 0 16 16' fill='%23000000' xmlns='http://www.w3.org/2000/svg'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>") no-repeat;
+  background-position: calc(100% - 0.75rem) center !important;
+  -moz-appearance:none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  padding:  0.5rem 2rem 0.5rem 0.5rem !important;
+  font-size: 1.2rem;
+
+  color:            @darkGray;
+  background-color: lightgray;
   border-bottom:    1px solid @midGray;
   transition:       @defaultTransition;
   &:focus{
@@ -841,8 +897,8 @@ dialog {
 .panel {
   width: @panel-width;
   .title {
-    font-size: 24px;
-    padding: 10px 0px;
+    font-size: 20px;
+    padding: 5px 0px;
     font-weight: bold;
     color: @mainColor;
   }

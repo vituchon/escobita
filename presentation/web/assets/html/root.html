@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
   <head>
     <!-- TODO : word "presentation" in the path may be redudant, perpahs using just "assets" would be enought!-->
@@ -38,8 +39,8 @@
       <img id="vitu-logo" src="presentation/web/assets/images/logo.png"></img>
       <div class="nav-title">Bienvenido al server mundial de escobitas de 15</div>
       <div class="nav-panel">
-          <button class="materialButton colorButton" style="padding: 20px;" ui-sref="lobby" >Lobby</button>
-          <button ui-sref="about" >Acerca de</button>
+          <button class="materialButton" ng-class="{ 'selected-button': $root.$state.current.name === 'lobby' }" ui-sref="lobby" >Lobby</button>
+          <button class="materialButton" ng-class="{ 'selected-button': $root.$state.current.name === 'about' }" ui-sref="about" >Acerca de</button>
       </div>
     </div>
     <div class="ui-view-container" ui-view>

@@ -138,7 +138,7 @@ module Game {
       $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
         if (event.type === "mouseover") { // taken inspiration from https://stackoverflow.com/a/13504775/903998
           var rotateDegress = Math.random() * 10 - Math.random() * 5;
-          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.1)');
+          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.25)');
         } else {
           $((<any>(event.target)).parentElement.parentElement).css('transform', 'none');
         }
@@ -167,12 +167,23 @@ module Game {
             break;
         }
       }
-      this.$window.addEventListener("beforeunload",(event : Event) => {
-        this.gamesService.unbindWebSocket(this.game.id)
-      })
+      const onUnload = (event: any):any => {
+        //this.gamesService.unbindWebSocket(this.game.id)
+        event.preventDefault();
+        return event.returnValue = null;
+      }
+      this.$window.addEventListener("beforeunload",onUnload)
       this.$scope.$on('$destroy', () => {
         this.gamesService.unbindWebSocket(this.game.id)
+        this.$window.removeEventListener("beforeunload",onUnload)
       })
+
+      this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
+        if (this.isMatchInProgress) {
+          alert("Si te vas en plena partida, vas a cagarle la partida a los demás")
+          event.preventDefault(); // Prevent the state change for now
+        }
+      });
     }
 
     private setupPullRefresh(delay: number = 2000) {

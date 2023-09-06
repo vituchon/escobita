@@ -11,7 +11,7 @@ module App {
 
     const lobby: ng.ui.IState = {
       name: 'lobby',
-      url: 'lobby',
+      //url: 'lobby',
       templateUrl: '/presentation/web/assets/html/lobby.html',
       controller: "LobbyController",
       controllerAs: "ctr"
@@ -19,7 +19,7 @@ module App {
 
     const game: ng.ui.IState = {
       name: 'game',
-      url: 'game',
+      //url: 'game',
       templateUrl: '/presentation/web/assets/html/game.html',
       controller: "GameController",
       controllerAs: "ctr",
@@ -31,7 +31,7 @@ module App {
 
     const about: ng.ui.IState = {
       name: 'about',
-      url: 'about',
+      //url: 'about',
       templateUrl: '/presentation/web/assets/html/about.html',
       controller: "AboutController",
       controllerAs: "ctr"
@@ -45,9 +45,10 @@ module App {
   escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);
 }
 
-escobita.run(['$state', ($state: ng.ui.IStateService) => { // so on landing it goes straight to the lobby
+escobita.run(['$state', "$rootScope", ($state: ng.ui.IStateService,$rootScope: ng.IRootScopeService) => { // so on landing it goes straight to the lobby
   $state.go("lobby")
-  $("#vitu-logo").animate({height:140},2000);
+  $("#vitu-logo").animate({height:150},1000);
+  ($rootScope as any)["$state"] = $state
 }])
 
 

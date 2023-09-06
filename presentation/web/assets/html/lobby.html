@@ -1,59 +1,89 @@
-<div class="panel lobby-container">
+<div class="panel lobby">
 
-  <div class="title lobby-title">Lobby</div>
+  <h1>Lobby</h1>
 
   <loading message="Cargando..." ng-if="ctr.loading"></loading>
 
-  <div class="section client-player-section">
-    <div class="title">Datos de jugador</div>
-    <div class="name-control">
-      <span class="title">Nombre</span>
-      <div class="input" style="flex-grow: 10;">
-        <input placeholder="Escribe tu nombre" ng-model="ctr.playerName" ></input>
-        <i ng-hide="ctr.player.name">Para <strong>empezar</strong> debés introducir un nombre y apretar <strong>enter</strong> (ó bien hacer click en <strong>Guardar</strong>)</i>
+  <div id="player-registration-section" style="overflow: hidden;">
+    <div id="enter-player-name-section" class="section" style="grid-area: 1 / 1 / auto / auto;">
+      <h3>Datos de jugador</h3>
+      <div class="name-control">
+        <span class="title">Nombre</span>
+        <div class="input" style="flex-grow: 10;">
+          <input placeholder="Escribe tu nombre" ng-model="ctr.playerName"></input>
+          <i ng-hide="ctr.player.name">Para <strong>empezar</strong> debés introducir un nombre y apretar <strong>enter</strong> (ó bien hacer click en <strong>Guardar</strong>)</i>
+        </div>
+        <span style="flex-grow: 0;"></span>
+        <button class="materialButton raised colorButton" ng-disabled="!ctr.canUpdatePlayerName(ctr.playerName)" ng-click="ctr.updatePlayerName(ctr.playerName)">Guardar</button>
       </div>
-      <span style="flex-grow: 2;"></span>
-      <button class="materialButton raised colorButton" ng-disabled="!ctr.canUpdatePlayerName(ctr.playerName)" ng-click="ctr.updatePlayerName(ctr.playerName)">Guardar</button>
     </div>
-    <span style="font-size: 75%;">
-      <span>Identificador interno asignado:</span>&nbsp;<span>{{ctr.player.id}}</span>
-    </span>
+
+    <div id="display-player-name-section" class="section" style="display: flex; flex-direction: row; align-items: center; transform: translateX(101%); grid-area: 1 / 1 / auto / auto;">
+      <div>
+        <h2>Hola&nbsp;<strong>{{ ctr.playerName }}</strong>&nbsp;bienvenido!</h2>
+        <span>Abajo vas a encontrar un listado de juegos a los que te podés unir (si aún no han comenzado) o bien crear uno nuevo.</span>
+      </div>
+      <span class="flex-space-filler"></span>
+      <div>
+        <button class="materialButton raised colorButton" ng-click="ctr.showPlayerNameForm(true)">Cambiar nombre</button>
+        <p style="font-size: 75%;">
+          <span>Identificador interno asignado:</span>&nbsp;<span>{{ctr.player.id}}</span>
+        </p>
+      </div>
+    </div>
   </div>
 
-  <div class="section-separator"></div>
 
   <div class="section" ng-if="ctr.player.name">
 
-      <div class="section game-list-section">
-        <div class="title">Listado de juegos</div>
-        <div class="game-list-header">
-          <span>
-            <span>Cantidad de juegos existentes:</span>&nbsp;<strong>{{ctr.games.length}}</strong>
-          </span>
-          <span class="flex-space-filler"></span>
-          <button class="materialButton colorButton" ng-disabled="ctr.loading" ng-click="ctr.updateGameList()">Actualizar listado de juegos</button>
-        </div>
-        <div style="height: 20px;"></div>
-        <div ng-repeat="game in ctr.games">
-          <div style="display:flex; flex-direction: row;  align-items: center; margin-top: 10px;">
-            <span>{{game.name}}</span>
-            <span class="flex-space-filler"></span>
-            <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
-            <button style="background-color: yellow; color: black;"class="materialButton colorButton" disabled ng-if="!ctr.doesGameAcceptPlayers(game)">Partida en progreso</button>
+    <div class="section game-list-section">
+      <div style="display: flex; flex-direction: row; align-items: center;">
+        <h2>Juegos</h2>
+        <small>
+          (<strong>{{ctr.games.length}}</strong>)
+        </small>
+      </div>
+      <div id="game-list-interface-selector" ng-init="views = [{code: 'view-all',label: 'Ver todos'},{code: 'select',label: 'Lista Desplegable'}]; ctr.viewGamesMode = views[1]">
+        <!--
+          <label for="select-view-mode">Interfaz de búsqueda:</label>
+          <select id="select-view-mode" ng-options="viewMode.label for viewMode in views" ng-model="ctr.viewGamesMode"></select>
+        -->
+        <button class="materialButton colorButton" ng-repeat="view in views" ng-click="ctr.viewGamesMode = view" ng-class="{ 'selected-button': view.code === ctr.viewGamesMode.code}">{{view.label}}</button>
+        <span class="flex-space-filler"></span>
+        <button class="materialButton colorButton" ng-disabled="ctr.loading" ng-click="ctr.updateGameList()">Actualizar listado de juegos</button>
+      </div>
+      <div style="height: 20px;"></div>
+      <div id="game-lists">
+        <div id="game-list-view-all" ng-if="ctr.viewGamesMode.code === 'view-all'">
+          <div ng-repeat="game in ctr.games">
+            <div style="display:flex; flex-direction: row;  align-items: center; margin-top: 10px;">
+              <span>{{game.name}}</span>
+              <span class="flex-space-filler"></span>
+              <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
+              <button style="background-color: yellow; color: black;"class="materialButton colorButton" disabled ng-if="!ctr.doesGameAcceptPlayers(game)">Partida en progreso</button>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="section-separator"></div>
-
-      <div class="section">
-        <div class="title">Crear un nuevo juego</div>
-        <div style="display:flex; flex-direction: row;  align-items: center;">
-          <input placeholder="Nombre del juego" ng-model="ctr.playerGame.name"  style="flex-grow: 100;">
-          <span  style="flex-grow: 2;"></span>
-          <button class="materialButton colorButton" ng-disabled="!ctr.canCreateNewGame" ng-click="ctr.createAndResetGame(ctr.playerGame)">Crear nuevo juego</button>
+        <div id="game-list-select"  ng-if="ctr.viewGamesMode.code === 'select'" style="display: flex; flex-direction: row;">
+          <select class="custom-select" id="select-game" ng-options="game.name for game in (ctr.games|filter:ctr.doesGameAcceptPlayers) track by game.id" ng-model="ctr.selectedGame">
+            <option value="">Seleccionar juego</option>
+          </select>
+          <span class="flex-space-filler"></span>
+          <button class="materialButton colorButton" ng-disabled="!ctr.selectedGame || ctr.loading"  ng-click="ctr.joinGame(ctr.selectedGame, ctr.player)">Unirse</button>
         </div>
       </div>
+    </div>
+
+    <div class="section-separator" style="height: 5px;"></div>
+
+    <div class="section">
+      <div class="title">Crear un nuevo juego</div>
+      <div style="display:flex; flex-direction: row;  align-items: center;">
+        <input placeholder="Nombre del juego" ng-model="ctr.playerGame.name"  style="flex-grow: 100;">
+        <span class="flex-space-filler"></span>
+        <button class="materialButton colorButton" ng-disabled="!ctr.canCreateNewGame" ng-click="ctr.createAndResetGame(ctr.playerGame)">Crear nuevo juego</button>
+      </div>
+    </div>
 
   </div>
 
