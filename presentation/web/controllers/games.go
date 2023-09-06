@@ -1,11 +1,8 @@
 package controllers
 
 import (
-	/*"bufio"
-	"bytes"*/
 	"encoding/json"
 	"fmt"
-	//"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -46,7 +43,17 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, game)
 }
 
+const MAX_GAMES_PER_PLAYER = 1
+
 func CreateGame(response http.ResponseWriter, request *http.Request) {
+	playerId := getWebPlayerId(request) // will be the game's owner
+	if gamesRepository.GetGamesCreatedCount(playerId) == MAX_GAMES_PER_PLAYER {
+		msg := fmt.Sprintf("Player(id='%d') has reached the maximum game creation limit: '%v'", playerId, MAX_GAMES_PER_PLAYER)
+		response.WriteHeader(http.StatusBadRequest)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+
 	var game repositories.PersistentGame
 	err := parseJsonFromReader(request.Body, &game)
 	if err != nil {
@@ -54,14 +61,14 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	game.PlayerId = getWebPlayerId(request) // asign owner
+
+	game.PlayerId = playerId
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
 		fmt.Printf("error while creating Game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("Tenemos este game creado %+v", created)
 	WriteJsonResponse(response, http.StatusOK, created)
 }
 
@@ -89,6 +96,24 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
 		fmt.Printf("Can not parse id from '%s'", paramId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var player repositories.PersistentPlayer
+	err = parseJsonFromReader(request.Body, &player)
+	if err != nil {
+		fmt.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	game, err := gamesRepository.GetGameById(id)
+	if err != nil {
+		fmt.Printf("error while retrieving game(id=%d): '%v'", id, err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if !services.CanPlayerDeleteGame(game, player) {
+		fmt.Printf("Only game's owner(id=%d) is allowed to delete it. Requesting player(id='%d') is not the owner.", game.PlayerId, *player.Id)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}

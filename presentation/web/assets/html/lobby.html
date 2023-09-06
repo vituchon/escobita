@@ -37,13 +37,15 @@
   <div class="section" ng-if="ctr.player.name">
 
     <div class="section game-list-section">
-      <div style="display: flex; flex-direction: row; align-items: center;">
+      <div id="game-list-header" style="display: flex; flex-direction: row; align-items: center;">
         <h2>Juegos</h2>
         <small>
           (<strong>{{ctr.games.length}}</strong>)
         </small>
+        <button class="materialButton raised colorButton" style="margin-left: 1em;" ng-click="ctr.showCreateGameDialog()">Crear un nuevo juego</button>
+        <span class="flex-space-filler"></span>
       </div>
-      <div id="game-list-interface-selector" ng-init="views = [{code: 'view-all',label: 'Ver todos'},{code: 'select',label: 'Lista Desplegable'}]; ctr.viewGamesMode = views[1]">
+      <div id="game-list-interface-selector" ng-init="views = [{code: 'view-all',label: 'Ver todos'},{code: 'select',label: 'Lista Desplegable'}]; ctr.viewGamesMode = views[0]">
         <!--
           <label for="select-view-mode">Interfaz de búsqueda:</label>
           <select id="select-view-mode" ng-options="viewMode.label for viewMode in views" ng-model="ctr.viewGamesMode"></select>
@@ -59,8 +61,9 @@
             <div style="display:flex; flex-direction: row;  align-items: center; margin-top: 10px;">
               <span>{{game.name}}</span>
               <span class="flex-space-filler"></span>
-              <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
-              <button style="background-color: yellow; color: black;"class="materialButton colorButton" disabled ng-if="!ctr.doesGameAcceptPlayers(game)">Partida en progreso</button>
+              <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading" ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
+              <button class="materialButton colorButton" ng-if="ctr.canDeleteGame(game, ctr.player)" style="background-color: red; color: yellow;" ng-disabled="ctr.loading" ng-click="ctr.deleteGame(game, ctr.player)">Eliminar</button>
+              <button class="materialButton colorButton" ng-if="!ctr.doesGameAcceptPlayers(game)" style="background-color: yellow; color: black;" disabled >Partida en progreso</button>
             </div>
           </div>
         </div>
@@ -69,21 +72,21 @@
             <option value="">Seleccionar juego</option>
           </select>
           <span class="flex-space-filler"></span>
-          <button class="materialButton colorButton" ng-disabled="!ctr.selectedGame || ctr.loading"  ng-click="ctr.joinGame(ctr.selectedGame, ctr.player)">Unirse</button>
+          <button class="materialButton colorButton" ng-if="ctr.selectedGame" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(ctr.selectedGame, ctr.player)">Unirse</button>
+          <button class="materialButton colorButton"  style="background-color: red; color: yellow;" ng-if="ctr.selectedGame && ctr.canDeleteGame(ctr.selectedGame, ctr.player)" ng-disabled="ctr.loading" ng-click="ctr.deleteGame(ctr.selectedGame, ctr.player)">Eliminar</button>
         </div>
       </div>
     </div>
 
-    <div class="section-separator" style="height: 5px;"></div>
-
-    <div class="section">
-      <div class="title">Crear un nuevo juego</div>
-      <div style="display:flex; flex-direction: row;  align-items: center;">
-        <input placeholder="Nombre del juego" ng-model="ctr.playerGame.name"  style="flex-grow: 100;">
-        <span class="flex-space-filler"></span>
-        <button class="materialButton colorButton" ng-disabled="!ctr.canCreateNewGame" ng-click="ctr.createAndResetGame(ctr.playerGame)">Crear nuevo juego</button>
+    <dialog id="create-game-dialog">
+      <div class="section">
+        <div style="display:flex; flex-direction: row;  align-items: center;">
+          <input placeholder="Nombre del juego" ng-model="ctr.playerGame.name"  style="flex-grow: 100;">
+          <span class="flex-space-filler"></span>
+          <button class="materialButton raised colorButton" ng-disabled="!ctr.canCreateNewGame" ng-click="ctr.hideCreateGameDialog(); ctr.createAndResetGame(ctr.playerGame);">Crear nuevo juego</button>
+        </div>
       </div>
-    </div>
+    </dialog>
 
   </div>
 

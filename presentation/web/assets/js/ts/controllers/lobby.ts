@@ -38,8 +38,16 @@ module Lobby {
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
             $timeout(() => {
-              if (!_.isUndefined(this.playerName)) {
-                this.updatePlayerName(this.playerName)
+              const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
+              if (dialog.open) {
+                if (!_.isEmpty(this.playerGame?.name)) {
+                  this.hideCreateGameDialog();
+                  this.createAndResetGame(this.playerGame)
+                }
+              } else {
+                if (!_.isEmpty(this.playerName)) {
+                  this.updatePlayerName(this.playerName)
+                }
               }
             });
             event.preventDefault();
@@ -66,8 +74,13 @@ module Lobby {
     private createGame(game: Api.Game) {
       this.loading = true;
       return this.gamesService.createGame(game).then((createdGame) => {
+        Toastr.success("Juego creado")
         this.games.push(createdGame)
         return createdGame;
+      }).catch((err) => {
+        if ( (err?.data as string).includes("has reached the maximum game creation limit")) {
+          Toastr.warn("No podés crear más juegos. Borra el que creaste anteriormente y luego crea uno nuevo.")
+        }
       }).finally(() => {
         this.loading = false;
       })
@@ -94,8 +107,11 @@ module Lobby {
 
     public updatePlayerName(name: string) {
       this.loading = true
+      const isCreation = _.isEmpty(this.player?.name)
       this.player.name = name;
       this.playersService.updatePlayer(this.player).then((player) => {
+        const msg = "Nombre de jugador " + ((isCreation) ? "registrado" : "actualizado")
+        Toastr.success(msg)
         this.player = player;
       }).then(() => {
         this.showCards = true;
@@ -146,12 +162,16 @@ module Lobby {
     }
 
     public doesGameAcceptPlayers(game: Games.Game) {
-      return !Games.hasMatchInProgress(game)
+      return !Games.isStarted(game)
     }
 
     public joinGame(game: Games.Game, player: Players.Player) {
       this.loading = true
       this.gamesService.getGameById(game.id).then((game) => {
+        if (Games.isStarted(game)) {
+          Toastr.warn("La partida esta en progreso, no te podés unir.")
+          return
+        }
         Games.addPlayer(game, player)
         this.gamesService.updateGame(game).then(() => {
           this.$state.go("game", {
@@ -162,6 +182,31 @@ module Lobby {
       }).finally(() => {
         this.loading = false
       })
+    }
+
+    public deleteGame(game: Games.Game, player: Players.Player) {
+      this.loading = true
+      this.gamesService.deleteGame(game, player).then(() => {
+        Toastr.success("Juego eliminado")
+        this.games = this.games.filter((g) => g.id !== game.id)
+        return game;
+      }).finally(() => {
+        this.loading = false
+      })
+    }
+
+    public canDeleteGame(game: Games.Game, player: Players.Player) {
+      return Games.canDeleteGame(game,player)
+    }
+
+    public showCreateGameDialog() {
+      const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
+      dialog.showModal()
+    }
+
+    public hideCreateGameDialog() {
+      const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
+      dialog.close()
     }
   }
 
