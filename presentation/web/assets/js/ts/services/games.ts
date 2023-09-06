@@ -9,6 +9,14 @@ namespace Games {
     return !_.isUndefined(game.currentMatch)
   }
 
+  /*export function isStarted(game: Game): boolean {
+    return _.size(game.matchs) > 0 || hasMatchInProgress(game)
+  }*/
+
+  export function canDeleteGame(game :Game, player: Players.Player) {
+    return isPlayerOwner(game,player)
+  }
+
   export function addPlayer(game :Game, player: Players.Player) {
     if (_.isEmpty(game.players)) {
       game.players = [player]
@@ -22,13 +30,9 @@ namespace Games {
     }
   }
 
-  export function isPlayerOwner(player: Players.Player, game :Game) {
-    if (_.isUndefined(game.playerId)) {
-      console.warn("suspicious things, programmer must check something...")
-    }
+  export function isPlayerOwner(game :Game, player: Players.Player) {
     return player.id === game.playerId
   }
-
 
   export namespace Periods {
     const dayInSeconds = 24 * 60 * 60;
@@ -84,8 +88,11 @@ namespace Games {
       })
     }
 
-    deleteGame(game: Game): ng.IPromise<any> {
-      return this.$http.delete<any>(`/api/v1/games/${game.id}`).then((_) => {
+    deleteGame(game: Game, player: Players.Player): ng.IPromise<any> {
+      const config: ng.IRequestShortcutConfig = {
+        data: player
+      };
+      return this.$http.delete<any>(`/api/v1/games/${game.id}`, config).then((_) => {
         return null;
       })
     }

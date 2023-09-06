@@ -70,7 +70,7 @@ module Game {
       private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
       this.game = $state.params["game"]
       this.player = $state.params["player"]
-      this.isPlayerGameOwner = Games.isPlayerOwner(this.player,this.game)
+      this.isPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
       this.playerMessage = Messages.newMessage(this.game.id,this.player.id,"");
 
       this.$scope.$watch(() => {

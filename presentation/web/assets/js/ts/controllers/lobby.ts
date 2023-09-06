@@ -69,6 +69,7 @@ module Lobby {
         this.games.push(createdGame)
         return createdGame;
       }).finally(() => {
+        Toastr.success("Juego creado")
         this.loading = false;
       })
     }
@@ -94,6 +95,7 @@ module Lobby {
 
     public updatePlayerName(name: string) {
       this.loading = true
+      const isUpdate = Util.isDefined(this.player?.name)
       this.player.name = name;
       this.playersService.updatePlayer(this.player).then((player) => {
         this.player = player;
@@ -101,6 +103,8 @@ module Lobby {
         this.showCards = true;
         this.showPlayerNameStatic(true);
       }).finally(() => {
+        const msg = "Nombre " + ((isUpdate) ? " actualizado" : " registrado")
+        Toastr.success(msg)
         this.loading = false
       })
     }
@@ -162,6 +166,21 @@ module Lobby {
       }).finally(() => {
         this.loading = false
       })
+    }
+
+    public deleteGame(game: Games.Game, player: Players.Player) {
+      this.loading = true
+      this.gamesService.deleteGame(game, player).then(() => {
+        this.games = this.games.filter((g) => g.id !== game.id)
+        return game;
+      }).finally(() => {
+        Toastr.success("Juego eliminado")
+        this.loading = false
+      })
+    }
+
+    public canDeleteGame(game: Games.Game, player: Players.Player) {
+      return Games.canDeleteGame(game,player)
     }
   }
 

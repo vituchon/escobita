@@ -59,8 +59,9 @@
             <div style="display:flex; flex-direction: row;  align-items: center; margin-top: 10px;">
               <span>{{game.name}}</span>
               <span class="flex-space-filler"></span>
-              <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
-              <button style="background-color: yellow; color: black;"class="materialButton colorButton" disabled ng-if="!ctr.doesGameAcceptPlayers(game)">Partida en progreso</button>
+              <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading" ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
+              <button class="materialButton colorButton" ng-if="ctr.canDeleteGame(game, ctr.player)" style="background-color: red; color: yellow;" ng-disabled="ctr.loading" ng-click="ctr.deleteGame(game, ctr.player)">Eliminar</button>
+              <button class="materialButton colorButton" ng-if="!ctr.doesGameAcceptPlayers(game)" style="background-color: yellow; color: black;" disabled >Partida en progreso</button>
             </div>
           </div>
         </div>
@@ -69,7 +70,8 @@
             <option value="">Seleccionar juego</option>
           </select>
           <span class="flex-space-filler"></span>
-          <button class="materialButton colorButton" ng-disabled="!ctr.selectedGame || ctr.loading"  ng-click="ctr.joinGame(ctr.selectedGame, ctr.player)">Unirse</button>
+          <button class="materialButton colorButton" ng-if="ctr.selectedGame" ng-disabled="ctr.loading"  ng-click="ctr.joinGame(ctr.selectedGame, ctr.player)">Unirse</button>
+          <button class="materialButton colorButton"  style="background-color: red; color: yellow;" ng-if="ctr.selectedGame && ctr.canDeleteGame(ctr.selectedGame, ctr.player)" ng-disabled="ctr.loading" ng-click="ctr.deleteGame(ctr.selectedGame, ctr.player)">Eliminar</button>
         </div>
       </div>
     </div>

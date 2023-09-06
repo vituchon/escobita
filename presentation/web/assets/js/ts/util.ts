@@ -2,6 +2,10 @@
 
 namespace Util {
 
+  export function isDefined(value:any):boolean {
+    return (!_.isNull(value) && !_.isUndefined(value) );
+  }
+
   export function isNumeric(s: any): boolean {
     return !isNaN(parseFloat(s)) && isFinite(s); // based from: http://stackoverflow.com/a/6449623
   }
