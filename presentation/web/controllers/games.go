@@ -1,11 +1,8 @@
 package controllers
 
 import (
-	/*"bufio"
-	"bytes"*/
 	"encoding/json"
 	"fmt"
-	//"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -61,7 +58,6 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("Tenemos este game creado %+v", created)
 	WriteJsonResponse(response, http.StatusOK, created)
 }
 
@@ -89,6 +85,24 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
 		fmt.Printf("Can not parse id from '%s'", paramId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var player repositories.PersistentPlayer
+	err = parseJsonFromReader(request.Body, &player)
+	if err != nil {
+		fmt.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	game, err := gamesRepository.GetGameById(id)
+	if err != nil {
+		fmt.Printf("error while retrieving game(id=%d): '%v'", id, err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if !services.CanPlayerDeleteGame(game, player) {
+		fmt.Printf("Only game's owner(id=%d) is allowed to delete it. Requesting player(id='%d') is not the owner.", game.PlayerId, *player.Id)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}

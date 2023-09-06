@@ -39,6 +39,10 @@ func CalculatePlayedMatchStats(game repositories.PersistentGame, index int) mode
 	return scoreSummaryByPlayer
 }
 
+func CanPlayerDeleteGame(game *repositories.PersistentGame, player repositories.PersistentPlayer) bool {
+	return game.PlayerId == *player.Id
+}
+
 // advances the game into his next state, that is, a new match or a new round or ends
 func advanceGame(game repositories.PersistentGame) *repositories.PersistentGame {
 	if game.HasMatchInProgress() {
