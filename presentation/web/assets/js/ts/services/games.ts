@@ -9,9 +9,9 @@ namespace Games {
     return !_.isUndefined(game.currentMatch)
   }
 
-  /*export function isStarted(game: Game): boolean {
+  export function isStarted(game: Game): boolean {
     return _.size(game.matchs) > 0 || hasMatchInProgress(game)
-  }*/
+  }
 
   export function canDeleteGame(game :Game, player: Players.Player) {
     return isPlayerOwner(game,player)

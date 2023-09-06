@@ -66,10 +66,14 @@ module Lobby {
     private createGame(game: Api.Game) {
       this.loading = true;
       return this.gamesService.createGame(game).then((createdGame) => {
+        Toastr.success("Juego creado")
         this.games.push(createdGame)
         return createdGame;
+      }).catch((err) => {
+        if ( (err?.data as string).includes("has reached the maximum game creation limit")) {
+          Toastr.warn("No podés crear más juegos. Borra el que creaste anteriormente y luego crea uno nuevo.")
+        }
       }).finally(() => {
-        Toastr.success("Juego creado")
         this.loading = false;
       })
     }
@@ -95,16 +99,16 @@ module Lobby {
 
     public updatePlayerName(name: string) {
       this.loading = true
-      const isUpdate = Util.isDefined(this.player?.name)
+      const isCreation = _.isEmpty(this.player?.name)
       this.player.name = name;
       this.playersService.updatePlayer(this.player).then((player) => {
+        const msg = "Nombre de jugador " + ((isCreation) ? "registrado" : "actualizado")
+        Toastr.success(msg)
         this.player = player;
       }).then(() => {
         this.showCards = true;
         this.showPlayerNameStatic(true);
       }).finally(() => {
-        const msg = "Nombre " + ((isUpdate) ? " actualizado" : " registrado")
-        Toastr.success(msg)
         this.loading = false
       })
     }
@@ -150,12 +154,16 @@ module Lobby {
     }
 
     public doesGameAcceptPlayers(game: Games.Game) {
-      return !Games.hasMatchInProgress(game)
+      return !Games.isStarted(game)
     }
 
     public joinGame(game: Games.Game, player: Players.Player) {
       this.loading = true
       this.gamesService.getGameById(game.id).then((game) => {
+        if (Games.isStarted(game)) {
+          Toastr.warn("La partida esta en progreso, no te podés unir.")
+          return
+        }
         Games.addPlayer(game, player)
         this.gamesService.updateGame(game).then(() => {
           this.$state.go("game", {
@@ -171,10 +179,10 @@ module Lobby {
     public deleteGame(game: Games.Game, player: Players.Player) {
       this.loading = true
       this.gamesService.deleteGame(game, player).then(() => {
+        Toastr.success("Juego eliminado")
         this.games = this.games.filter((g) => g.id !== game.id)
         return game;
       }).finally(() => {
-        Toastr.success("Juego eliminado")
         this.loading = false
       })
     }
