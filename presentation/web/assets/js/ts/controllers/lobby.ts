@@ -38,8 +38,16 @@ module Lobby {
       $rootElement.bind("keydown keypress", (event) => {
         if(event.which === 13) {
             $timeout(() => {
-              if (!_.isUndefined(this.playerName)) {
-                this.updatePlayerName(this.playerName)
+              const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
+              if (dialog.open) {
+                if (!_.isEmpty(this.playerGame?.name)) {
+                  this.hideCreateGameDialog();
+                  this.createAndResetGame(this.playerGame)
+                }
+              } else {
+                if (!_.isEmpty(this.playerName)) {
+                  this.updatePlayerName(this.playerName)
+                }
               }
             });
             event.preventDefault();
@@ -189,6 +197,16 @@ module Lobby {
 
     public canDeleteGame(game: Games.Game, player: Players.Player) {
       return Games.canDeleteGame(game,player)
+    }
+
+    public showCreateGameDialog() {
+      const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
+      dialog.showModal()
+    }
+
+    public hideCreateGameDialog() {
+      const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
+      dialog.close()
     }
   }
 
