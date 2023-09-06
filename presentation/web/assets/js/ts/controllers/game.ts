@@ -65,7 +65,7 @@ module Game {
 
     private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
 
-    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService,
+    constructor($rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService,
       private gamesService: Games.Service, private playersService: Players.Service,  private messagesService: Messages.Service, private webSocketsService: WebSockets.Service,
       private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
       this.game = $state.params["game"]
