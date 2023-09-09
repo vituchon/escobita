@@ -129,3 +129,40 @@ namespace Toastr {
     })
   }
 }
+
+
+// motivation from (not STOLEN :P):
+// http://www.webdeveasy.com/interceptors-in-angularjs-and-useful-examples/ && https://github.com/chieffancypants/angular-loading-bar
+escobita.factory('progressLineInterceptor', ['$q', function ($q: ng.IQService) {
+  let progressLine: any;
+  var counter = 0;
+  const progressLineInterceptor = {
+    request: function (config: ng.IRequestConfig) {
+      progressLine = $("#progress-line");
+      progressLine.css('display', 'flex');
+      counter++;
+      return config;
+    },
+    response: function (response: ng.IHttpPromiseCallbackArg<any>) {
+      progressLine = $("#progress-line");
+      counter--;
+      if (counter === 0) {
+        progressLine.css('display', 'none');
+      }
+      return response;
+    },
+    responseError: function (rejection: ng.IHttpPromiseCallbackArg<any>) {
+      progressLine = $("#progress-line");
+      counter--;
+      if (counter === 0) {
+        progressLine.css('display', 'none');
+      }
+      return $q.reject(rejection);
+    }
+  };
+  return progressLineInterceptor;
+}]);
+
+escobita.config(['$httpProvider', function ($httpProvider: ng.IHttpProvider) {
+  $httpProvider.interceptors.push('progressLineInterceptor');
+}]);
