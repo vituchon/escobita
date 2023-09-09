@@ -8,6 +8,7 @@
 * [probably setup your router for allowing outside traffic... if you wanna the server be](https://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router)
   * You can use [ngrok](https://ngrok.com/) services as well!
 * `tsc --project presentation/web/tsconfig.json`
+  * Yes, you need typescript compiler! [sorray 🦖](https://www.typescriptlang.org/download)
 * `go run .`
 * invite friends :D!!
  
