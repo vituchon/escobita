@@ -44,6 +44,41 @@
   font-weight: 900;
   font-style: normal;
 }
+@font-face {
+  font-family: 'Grinched';
+  src:  url('../../fonts/GrinchedRegular.otf') format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+* {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+h1 {
+  margin: 0.25em 0em;
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+
+h2 {
+  margin: 0.25em 0em;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+h3 {
+  margin: 0.25em 0em;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+h4 {
+  margin: 0.25em 0em;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
 
 
 // LOADER
@@ -87,22 +122,18 @@
 
 // ROOT SCREEN ("SCREEN CONTAINER")
 
-.nav-container {
+#long-header, #short-header {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
 }
 
-.nav-title {
-  font-size: 200%;
-  font-weight: bold;
-  padding: 10px;
-}
-
-.nav-panel {
+#nav-panel {
   display: flex;
-  flex-flow: row;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
 
   .materialButton {
     border-radius: 0px;
@@ -116,9 +147,114 @@
   }
 }
 
+
+#logo-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.square {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  left: 50px;
+  top: 50px;
+  background-color: black;
+  animation-duration: 1.5s;
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  border-radius: 7px;
+}
+
+.up {
+  animation-name: moveUp;
+}
+
+.left {
+  animation-name: moveLeft;
+}
+
+.down {
+  animation-name: moveDown;
+}
+
+.right {
+  animation-name: moveRight;
+}
+
+.explosion {
+  animation-name: explote;
+}
+
+@keyframes moveUp {
+    0% { }
+    100% {
+      transform: translateY(45px);
+      background-color: #51ca51;
+    }
+}
+
+@keyframes moveLeft {
+    0% { }
+    100% {
+      transform: translateX(45px);
+      background-color: #5151ca;
+    }
+}
+
+@keyframes moveDown {
+  0% { }
+  100% {
+    transform: translateY(-45px);
+    background-color: #ca5151;
+  }
+}
+
+@keyframes moveRight {
+  0% { }
+  100% {
+    transform: translateX(-45px);
+    background-color: #caca51;
+  }
+}
+
+@keyframes explote {
+  0% {}
+  100% {
+    width: 0px;
+    height: 0px;
+    left: 75px;
+    top: 75px;
+    border-radius: 100px;
+    background-color: white;
+  }
+}
+
+.hidden {
+  opacity: 0;
+  height: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, height 1s ease, visibility 0s 1s;
+}
+
+.not-visible {
+  opacity: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.visible {
+  opacity: 1;
+  height: auto;
+  visibility: visible;
+  transition: opacity 1s ease, height 1s ease, visibility 0s;
+}
+
 .selected-button {
   background-color: darken(@mainColor, 50%) !important;
   color:          yellow  !important;
+  font-weight: 800 !important;
 }
 
 
@@ -145,15 +281,7 @@
 
 .lobby {
 
-  h1 {
-    font-size: 32px;
-    font-weight: 800;
-  }
-
-  h2 {
-    font-size: 28px;
-    font-weight: 700;
-
+  #display-player-name-section {
     strong {
       color: deepskyblue;
     }
@@ -182,7 +310,7 @@
     }
   }
 
-  .game-list-section {
+  #game-list-section {
     display:flex;
     flex-direction: column;
 
@@ -201,13 +329,8 @@
   }
 
   .lobby-cards {
-    margin-top: 20px;
     display: flex;
     flex-direction: column;
-
-    // animation
-    opacity: 0;
-    transition: opacity 0.5s linear;
 
     .title {
       font-size: 14px;
@@ -286,10 +409,10 @@
 
 .about {
 
-
-  h1 {
-    font-size: 32px;
-    font-weight: 800;
+  #credits {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   .facts-container {
@@ -728,9 +851,11 @@ ui-view {
   border:         none;
 
   &[disabled] {
-    background-color: lighten(#AAAAAA, 30%);
     opacity: 0.5;
     cursor: default !important;
+    &:hover{
+      background-color: white !important;
+    }
   }
   &.raised{
     box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
@@ -918,4 +1043,25 @@ dialog {
     font-weight: bold;
     color: @mainColor;
   }
+}
+
+@keyframes smooth-appear {
+  from {
+    opacity:0;
+  }
+  to{
+    bottom: 0px;
+    opacity:1;
+  }
+}
+
+.box-container {
+  overflow: hidden;
+}
+
+.box {
+  position: relative;
+  bottom: -200px;
+  opacity: 0;
+  animation: smooth-appear 1s ease forwards;
 }

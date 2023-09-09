@@ -46,8 +46,7 @@ module App {
 }
 
 escobita.run(['$state', "$rootScope", ($state: ng.ui.IStateService,$rootScope: ng.IRootScopeService) => { // so on landing it goes straight to the lobby
-  $state.go("lobby")
-  $("#vitu-logo").animate({height:150},1000);
+  $state.go("lobby");
   ($rootScope as any)["$state"] = $state
 }])
 

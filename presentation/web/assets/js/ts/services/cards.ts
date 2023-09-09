@@ -62,6 +62,10 @@ namespace Players {
   export interface Player extends Api.Player {
   }
 
+  export function isPlayerRegistered(player: Players.Player) {
+    return !_.isEmpty(player?.name)
+  }
+
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }

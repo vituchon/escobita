@@ -2,6 +2,11 @@
 /// <reference path='../services/_services.d.ts' />
 
 module Lobby {
+  interface ViewGamesMode {
+      code: string;
+      label: string;
+  }
+
   class Controller {
 
     public games: Games.Game[];
@@ -11,12 +16,12 @@ module Lobby {
     public playerName: string = ""; // for entering a player name
 
     public loading: boolean = false;
-    public showCards: boolean = false;
 
     public playerGame: Games.Game; // dataholder for a current user's new game
     public canCreateNewGame: boolean;
 
-    public viewGamesMode: string;
+    public viewGamesMode: ViewGamesMode;
+    public viewGamesModes: ViewGamesMode[] = [{code: 'view-all',label: 'Ver todos'},{code: 'select',label: 'Lista Desplegable'}];
 
     constructor($rootElement: ng.IRootElementService, $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
@@ -30,6 +35,7 @@ module Lobby {
       })
       const getGamesPromise = this.gamesService.getGames().then((games) => {
         this.games = games
+        this.viewGamesMode = _.size(games) <= 10 ? this.viewGamesModes[0] : this.viewGamesModes[1];
       })
       this.$q.all([getClientPlayerPromise,getGamesPromise]).finally(() => {
         this.loading = false;
@@ -39,7 +45,7 @@ module Lobby {
         if(event.which === 13) {
             $timeout(() => {
               const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
-              if (dialog.open) {
+              if (dialog?.open) {
                 if (!_.isEmpty(this.playerGame?.name)) {
                   this.hideCreateGameDialog();
                   this.createAndResetGame(this.playerGame)
@@ -64,11 +70,17 @@ module Lobby {
       })
 
       getClientPlayerPromise.then((player) => {
-        if (!_.isEmpty(player.name)) {
-          this.showCards = true;
+        if (Players.isPlayerRegistered(player)) {
           this.showPlayerNameStatic(false);
+          this.rearrangeUIAfterRegistration(false);
+        } else {
+          this.rearrangeUIBeforeRegistration();
         }
       })
+    }
+
+    public isPlayerRegistered(player: Players.Player) {
+      return Players.isPlayerRegistered(player)
     }
 
     private createGame(game: Api.Game) {
@@ -114,8 +126,8 @@ module Lobby {
         Toastr.success(msg)
         this.player = player;
       }).then(() => {
-        this.showCards = true;
         this.showPlayerNameStatic(true);
+        this.rearrangeUIAfterRegistration(true);
       }).finally(() => {
         this.loading = false
       })
@@ -149,6 +161,28 @@ module Lobby {
 
       enter.style.transform = 'translateX(0)';
       display.style.transform = 'translateX(101%)';
+    }
+
+    public rearrangeUIAfterRegistration(animate: boolean) {
+      const navPanel = document.getElementById("nav-panel")
+      if (animate) {
+        navPanel.style.transition = "opacity 1s ease";
+      } else {
+        navPanel.style.transition = "none";
+      }
+      navPanel.classList.remove('hidden');
+      navPanel.classList.add('visible');
+
+      const longHeader = document.getElementById("long-header")
+      longHeader.style.display = "none"
+
+      const shortHeader = document.getElementById("short-header")
+      shortHeader.style.display = "flex"
+    }
+
+    public rearrangeUIBeforeRegistration() {
+      const longHeader = document.getElementById("long-header")
+      longHeader.style.display = "flex"
     }
 
     public canUpdatePlayerName(name: string) {
