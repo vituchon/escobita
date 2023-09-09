@@ -4,7 +4,7 @@
 
   <loading message="Cargando..." ng-if="ctr.loading"></loading>
 
-  <div id="player-registration-section" style="overflow: hidden;">
+  <div id="player-registration-section">
     <div id="enter-player-name-section" class="section" style="grid-area: 1 / 1 / auto / auto;">
       <div class="name-control">
         <span class="title">Nombre</span>
@@ -24,7 +24,7 @@
       </div>
       <span class="flex-space-filler"></span>
       <div>
-        <button class="materialButton raised colorButton" ng-click="ctr.showPlayerNameForm(true)">Cambiar nombre</button>
+        <button class="materialButton raised colorButton" ng-click="ctr.showEnterPlayerName('transform 1s ease')">Cambiar nombre</button>
         <p style="font-size: 75%;">
           <span>Identificador interno asignado:</span>&nbsp;<span>{{ctr.player.id}}</span>
         </p>

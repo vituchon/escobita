@@ -168,26 +168,26 @@ h4 {
 }
 
 .up {
-  animation-name: moveUp;
+  animation-name: move-up;
 }
 
 .left {
-  animation-name: moveLeft;
+  animation-name: move-left;
 }
 
 .down {
-  animation-name: moveDown;
+  animation-name: move-down;
 }
 
 .right {
-  animation-name: moveRight;
+  animation-name: move-right;
 }
 
-.explosion {
-  animation-name: explote;
+.implotion {
+  animation-name: implotion;
 }
 
-@keyframes moveUp {
+@keyframes move-up {
     0% { }
     100% {
       transform: translateY(45px);
@@ -195,7 +195,7 @@ h4 {
     }
 }
 
-@keyframes moveLeft {
+@keyframes move-left {
     0% { }
     100% {
       transform: translateX(45px);
@@ -203,7 +203,7 @@ h4 {
     }
 }
 
-@keyframes moveDown {
+@keyframes move-down {
   0% { }
   100% {
     transform: translateY(-45px);
@@ -211,7 +211,7 @@ h4 {
   }
 }
 
-@keyframes moveRight {
+@keyframes move-right {
   0% { }
   100% {
     transform: translateX(-45px);
@@ -219,7 +219,7 @@ h4 {
   }
 }
 
-@keyframes explote {
+@keyframes implotion {
   0% {}
   100% {
     width: 0px;
@@ -229,13 +229,6 @@ h4 {
     border-radius: 100px;
     background-color: white;
   }
-}
-
-.hidden {
-  opacity: 0;
-  height: 0;
-  visibility: hidden;
-  transition: opacity 1s ease, height 1s ease, visibility 0s 1s;
 }
 
 .not-visible {
@@ -281,9 +274,50 @@ h4 {
 
 .lobby {
 
-  #display-player-name-section {
-    strong {
-      color: deepskyblue;
+  #player-registration-section {
+    display: grid;
+    overflow: hidden;
+
+    .materialButton {
+      border-radius: 20px;
+      &:hover{
+        border-radius: 10px;
+      }
+    }
+
+    #enter-player-name-section {
+      display: flex;
+      flex-direction: column;
+
+      .name-control {
+        display: flex;
+        flex-direction: row;
+        min-height: 50px;
+        align-items: center;
+
+        .title {
+          font-size: 16px;
+          background-color: #EFEFEFEF;
+          padding: 10px;
+          border-radius: 15px;
+          border-color: black;
+          border: 2px solid black;
+        }
+
+        .input {
+          display:flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-left: 10px;
+        }
+
+      }
+    }
+
+    #display-player-name-section {
+      strong {
+        color: deepskyblue;
+      }
     }
   }
 
@@ -357,46 +391,6 @@ h4 {
             -moz-transition: all 2s ease-in-out; /** Firefox **/
             -o-transition: all 2s ease-in-out; /** Opera **/
         }
-    }
-  }
-
-  #player-registration-section {
-    display: grid;
-
-    .materialButton {
-      border-radius: 20px;
-      &:hover{
-        border-radius: 10px;
-      }
-    }
-
-    #enter-player-name-section {
-      display: flex;
-      flex-direction: column;
-
-      .name-control {
-        display: flex;
-        flex-direction: row;
-        min-height: 50px;
-        align-items: center;
-
-        .title {
-          font-size: 16px;
-          background-color: #EFEFEFEF;
-          padding: 10px;
-          border-radius: 15px;
-          border-color: black;
-          border: 2px solid black;
-        }
-
-        .input {
-          display:flex;
-          flex-direction: column;
-          justify-content: center;
-          margin-left: 10px;
-        }
-
-      }
     }
   }
 

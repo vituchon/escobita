@@ -71,10 +71,10 @@ module Lobby {
 
       getClientPlayerPromise.then((player) => {
         if (Players.isPlayerRegistered(player)) {
-          this.showPlayerNameStatic(false);
-          this.rearrangeUIAfterRegistration(false);
+          this.showDisplayPlayerName("none");
+          this.rearrangeHeaderAfterRegistration("none");
         } else {
-          this.rearrangeUIBeforeRegistration();
+          this.rearrangeHeaderBeforeRegistration();
         }
       })
     }
@@ -126,52 +126,41 @@ module Lobby {
         Toastr.success(msg)
         this.player = player;
       }).then(() => {
-        this.showPlayerNameStatic(true);
-        this.rearrangeUIAfterRegistration(true);
+        this.showDisplayPlayerName("transform 1s ease");
+        this.rearrangeHeaderAfterRegistration("opacity 1s ease");
       }).finally(() => {
         this.loading = false
       })
     }
 
-    public showPlayerNameStatic(animate: boolean) {
+    private setCssTransition(transtion: string, ...elements: HTMLElement[]) {
+      _.forEach(elements, (element) => {
+        element.style.transition = transtion
+      })
+    }
+
+    public showDisplayPlayerName(transition: string) {
       const enter = document.getElementById('enter-player-name-section');
       const display = document.getElementById('display-player-name-section');
-      if (animate) {
-        enter.style.transition = "transform 1s ease";
-        display.style.transition = "transform 1s ease";
-      } else {
-        enter.style.transition = "none";
-        display.style.transition = "none";
-      }
 
+      this.setCssTransition(transition, enter, display)
       enter.style.transform = 'translateX(-101%)';
       display.style.transform = 'translateX(0%)';
     }
 
-    public showPlayerNameForm(animate: boolean) {
+    public showEnterPlayerName(transition: string) {
       const enter = document.getElementById('enter-player-name-section');
       const display = document.getElementById('display-player-name-section');
-      if (animate) {
-        enter.style.transition = "transform 1s ease";
-        display.style.transition = "transform 1s ease";
-      } else {
-        enter.style.transition = "none";
-        display.style.transition = "none";
-      }
 
+      this.setCssTransition(transition, enter, display)
       enter.style.transform = 'translateX(0)';
       display.style.transform = 'translateX(101%)';
     }
 
-    public rearrangeUIAfterRegistration(animate: boolean) {
+    public rearrangeHeaderAfterRegistration(transition: string) {
       const navPanel = document.getElementById("nav-panel")
-      if (animate) {
-        navPanel.style.transition = "opacity 1s ease";
-      } else {
-        navPanel.style.transition = "none";
-      }
-      navPanel.classList.remove('hidden');
-      navPanel.classList.add('visible');
+      this.setCssTransition(transition, navPanel)
+      navPanel.className = 'visible'
 
       const longHeader = document.getElementById("long-header")
       longHeader.style.display = "none"
@@ -180,7 +169,7 @@ module Lobby {
       shortHeader.style.display = "flex"
     }
 
-    public rearrangeUIBeforeRegistration() {
+    public rearrangeHeaderBeforeRegistration() {
       const longHeader = document.getElementById("long-header")
       longHeader.style.display = "flex"
     }
