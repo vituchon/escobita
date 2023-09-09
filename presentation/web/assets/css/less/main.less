@@ -365,6 +365,10 @@ h4 {
     }
 
     #display-player-name-section {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+
       strong {
         color: deepskyblue;
       }
@@ -394,6 +398,50 @@ h4 {
     }
   }
 
+  #games-and-cards-outer-container {
+    overflow: hidden;
+  }
+
+  #games-and-cards-inner-container {
+    position: relative;
+    bottom: -200px;
+    opacity: 0;
+    animation: smooth-appear 1s ease forwards;
+
+
+    .lobby-cards {
+      display: flex;
+      flex-direction: column;
+
+      .title {
+        font-size: 14px;
+        text-align: center;
+        font-weight: normal !important;
+      }
+
+      .items {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+
+          .card:hover {
+            transform: rotate(-360deg);
+            -webkit-transform:  rotate(-360deg); /** Chrome & Safari **/
+            -o-transform: rotate(-360deg); /** Opera **/
+            -moz-transform: rotate(-360deg); /** Firefox **/
+          }
+
+          .card {
+              position: absolute;
+              transition: all 2s ease-in-out;
+              -webkit-transition: all 2s ease-in-out; /** Chrome & Safari **/
+              -moz-transition: all 2s ease-in-out; /** Firefox **/
+              -o-transition: all 2s ease-in-out; /** Opera **/
+          }
+      }
+    }
+  }
+
   #game-list-section {
     display:flex;
     flex-direction: column;
@@ -409,38 +457,6 @@ h4 {
       display:flex;
       flex-direction: row;
       align-items: center;
-    }
-  }
-
-  .lobby-cards {
-    display: flex;
-    flex-direction: column;
-
-    .title {
-      font-size: 14px;
-      text-align: center;
-      font-weight: normal !important;
-    }
-
-    .items {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-
-        .card:hover {
-          transform: rotate(-360deg);
-          -webkit-transform:  rotate(-360deg); /** Chrome & Safari **/
-          -o-transform: rotate(-360deg); /** Opera **/
-          -moz-transform: rotate(-360deg); /** Firefox **/
-        }
-
-        .card {
-            position: absolute;
-            transition: all 2s ease-in-out;
-            -webkit-transition: all 2s ease-in-out; /** Chrome & Safari **/
-            -moz-transition: all 2s ease-in-out; /** Firefox **/
-            -o-transition: all 2s ease-in-out; /** Opera **/
-        }
     }
   }
 
@@ -1097,15 +1113,4 @@ dialog {
     bottom: 0px;
     opacity:1;
   }
-}
-
-.box-container {
-  overflow: hidden;
-}
-
-.box {
-  position: relative;
-  bottom: -200px;
-  opacity: 0;
-  animation: smooth-appear 1s ease forwards;
 }

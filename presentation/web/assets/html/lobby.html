@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div id="display-player-name-section" class="section" style="display: flex; flex-direction: row; align-items: center; transform: translateX(101%); grid-area: 1 / 1 / auto / auto;">
+    <div id="display-player-name-section" class="section" style="transform: translateX(101%); grid-area: 1 / 1 / auto / auto;">
       <div>
         <h3>Hola&nbsp;<strong>{{ ctr.player.name }}</strong>&nbsp;bienvenido!</h3>
         <span>Abajo vas a encontrar un listado de juegos a los que te podés unir (si aún no han comenzado) o bien crear uno nuevo.</span>
@@ -34,10 +34,8 @@
 
 
 
-  <div class="section box-container" ng-if="ctr.isPlayerRegistered(ctr.player)">
-
-    <div class="box">
-
+  <div id="games-and-cards-outer-container" class="section" ng-if="ctr.isPlayerRegistered(ctr.player)">
+    <div id="games-and-cards-inner-container">
       <div id="game-list-section" class="section" >
         <div id="game-list-header" style="display: flex; flex-direction: row; align-items: center;">
           <h2>Juegos</h2>

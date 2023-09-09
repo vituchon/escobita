@@ -119,10 +119,10 @@ module Lobby {
 
     public updatePlayerName(name: string) {
       this.loading = true
-      const isCreation = _.isEmpty(this.player?.name)
+      const playerIsRegistered = Players.isPlayerRegistered(this.player)
       this.player.name = name;
       this.playersService.updatePlayer(this.player).then((player) => {
-        const msg = "Nombre de jugador " + ((isCreation) ? "registrado" : "actualizado")
+        const msg = "Nombre de jugador " + ((playerIsRegistered) ? "actualizado" : "registrado")
         Toastr.success(msg)
         this.player = player;
       }).then(() => {
