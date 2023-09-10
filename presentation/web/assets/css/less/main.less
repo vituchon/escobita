@@ -1,58 +1,55 @@
-
-
 @font-face {
-  font-family: 'Material Icons';
+  font-family: "Material Icons";
   font-style: normal;
   font-weight: 400;
-  src: local('Material Icons'),
-       local('MaterialIcons-Regular'),
-       url('../../fonts/MaterialIcons-Regular.woff') format('woff');
+  src: local("Material Icons"), local("MaterialIcons-Regular"),
+    url("../../fonts/MaterialIcons-Regular.woff") format("woff");
 }
 @font-face {
-  font-family: 'Roboto';
-  src:  url('../../fonts/Roboto-Thin.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("../../fonts/Roboto-Thin.ttf") format("truetype");
   font-weight: 100;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Roboto';
-  src:  url('../../fonts/Roboto-Light.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("../../fonts/Roboto-Light.ttf") format("truetype");
   font-weight: 200;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Roboto';
-  src:  url('../../fonts/Roboto-Regular.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("../../fonts/Roboto-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Roboto';
-  src:  url('../../fonts/Roboto-Medium.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("../../fonts/Roboto-Medium.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Roboto';
-  src:  url('../../fonts/Roboto-Bold.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("../../fonts/Roboto-Bold.ttf") format("truetype");
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Roboto';
-  src:  url('../../fonts/Roboto-Black.ttf') format('truetype');
+  font-family: "Roboto";
+  src: url("../../fonts/Roboto-Black.ttf") format("truetype");
   font-weight: 900;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Grinched';
-  src:  url('../../fonts/GrinchedRegular.otf') format("opentype");
+  font-family: "Grinched";
+  src: url("../../fonts/GrinchedRegular.otf") format("opentype");
   font-weight: 900;
   font-style: normal;
 }
 
 * {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: "Roboto", sans-serif !important;
 }
 
 h1 {
@@ -60,7 +57,6 @@ h1 {
   font-size: 2.5rem;
   font-weight: 800;
 }
-
 
 h2 {
   margin: 0.25em 0em;
@@ -93,7 +89,7 @@ h4 {
 
   &:before {
     background-color: deepskyblue;
-    content: '';
+    content: "";
     -webkit-animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     animation: running-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     height: 3px;
@@ -102,34 +98,65 @@ h4 {
   }
 }
 
-
 @-webkit-keyframes running-progress {
-  0% { margin-left: 0px; margin-right: 100%; }
-  50% { margin-left: 25%; margin-right: 0%; }
-  100% { margin-left: 100%; margin-right: 0; }
+  0% {
+    margin-left: 0px;
+    margin-right: 100%;
+  }
+  50% {
+    margin-left: 25%;
+    margin-right: 0%;
+  }
+  100% {
+    margin-left: 100%;
+    margin-right: 0;
+  }
 }
 
 @keyframes running-progress {
-  0% { margin-left: 0px; margin-right: 100%;  }
-  50% { margin-left: 25%; margin-right: 0%; }
-  100% { margin-left: 100%; margin-right: 0;  }
+  0% {
+    margin-left: 0px;
+    margin-right: 100%;
+  }
+  50% {
+    margin-left: 25%;
+    margin-right: 0%;
+  }
+  100% {
+    margin-left: 100%;
+    margin-right: 0;
+  }
 }
 
-
-
 @-webkit-keyframes running-progress {
-  0% { margin-left: 0px; margin-right: 100%; }
-  50% { margin-left: 25%; margin-right: 0%; }
-  100% { margin-left: 100%; margin-right: 0; }
+  0% {
+    margin-left: 0px;
+    margin-right: 100%;
+  }
+  50% {
+    margin-left: 25%;
+    margin-right: 0%;
+  }
+  100% {
+    margin-left: 100%;
+    margin-right: 0;
+  }
 }
 
 @keyframes running-progress {
-  0% { margin-left: 0px; margin-right: 100%;  }
-  50% { margin-left: 25%; margin-right: 0%; }
-  100% { margin-left: 100%; margin-right: 0;  }
+  0% {
+    margin-left: 0px;
+    margin-right: 100%;
+  }
+  50% {
+    margin-left: 25%;
+    margin-right: 0%;
+  }
+  100% {
+    margin-left: 100%;
+    margin-right: 0;
+  }
 }
-
-
 
 // LOADER
 
@@ -157,22 +184,32 @@ h4 {
   animation-delay: -0.16s;
 }
 @-webkit-keyframes sk-bouncedelay {
-  0%, 80%, 100% { -webkit-transform: scale(0) }
-  40% { -webkit-transform: scale(1.0) }
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
 }
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 40% {
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
   }
 }
 
 // ROOT SCREEN ("SCREEN CONTAINER")
 
-#long-header, #short-header {
+#long-header,
+#short-header {
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -188,15 +225,14 @@ h4 {
   .materialButton {
     border-radius: 0px;
     background-color: @mainColor;
-    color:         deepskyblue;
-    &:hover{
+    color: deepskyblue;
+    &:hover {
       background-color: darken(@mainColor, 50%);
-      color:          yellow;
+      color: yellow;
       filter: brightness(85%);
     }
   }
 }
-
 
 #logo-container {
   position: relative;
@@ -238,23 +274,26 @@ h4 {
 }
 
 @keyframes move-up {
-    0% { }
-    100% {
-      transform: translateY(45px);
-      background-color: #51ca51;
-    }
+  0% {
+  }
+  100% {
+    transform: translateY(45px);
+    background-color: #51ca51;
+  }
 }
 
 @keyframes move-left {
-    0% { }
-    100% {
-      transform: translateX(45px);
-      background-color: #5151ca;
-    }
+  0% {
+  }
+  100% {
+    transform: translateX(45px);
+    background-color: #5151ca;
+  }
 }
 
 @keyframes move-down {
-  0% { }
+  0% {
+  }
   100% {
     transform: translateY(-45px);
     background-color: #ca5151;
@@ -262,7 +301,8 @@ h4 {
 }
 
 @keyframes move-right {
-  0% { }
+  0% {
+  }
   100% {
     transform: translateX(-45px);
     background-color: #caca51;
@@ -270,7 +310,8 @@ h4 {
 }
 
 @keyframes implotion {
-  0% {}
+  0% {
+  }
   100% {
     width: 0px;
     height: 0px;
@@ -296,10 +337,9 @@ h4 {
 
 .selected-button {
   background-color: darken(@mainColor, 50%) !important;
-  color:          yellow  !important;
+  color: yellow !important;
   font-weight: 800 !important;
 }
-
 
 .ui-view-container {
   display: flex;
@@ -323,14 +363,13 @@ h4 {
 // LOBBY SCREEN
 
 .lobby {
-
   #player-registration-section {
     display: grid;
     overflow: hidden;
 
     .materialButton {
       border-radius: 20px;
-      &:hover{
+      &:hover {
         border-radius: 10px;
       }
     }
@@ -347,7 +386,7 @@ h4 {
 
         .title {
           font-size: 16px;
-          background-color: #EFEFEFEF;
+          background-color: #efefefef;
           padding: 10px;
           border-radius: 15px;
           border-color: black;
@@ -355,12 +394,11 @@ h4 {
         }
 
         .input {
-          display:flex;
+          display: flex;
           flex-direction: column;
           justify-content: center;
           margin-left: 10px;
         }
-
       }
     }
 
@@ -378,10 +416,10 @@ h4 {
   .materialButton {
     border-radius: 0px;
     background-color: @mainColor;
-    color:         deepskyblue;
-    &:hover{
+    color: deepskyblue;
+    &:hover {
       background-color: darken(@mainColor, 50%);
-      color:          yellow;
+      color: yellow;
       filter: brightness(85%);
     }
   }
@@ -392,7 +430,7 @@ h4 {
       padding: 0.5em;
       font-size: 0.8em;
 
-      &:hover{
+      &:hover {
         border-radius: 10px;
       }
     }
@@ -407,7 +445,6 @@ h4 {
     bottom: -200px;
     opacity: 0;
     animation: smooth-appear 1s ease forwards;
-
 
     .lobby-cards {
       display: flex;
@@ -424,37 +461,36 @@ h4 {
         flex-direction: row;
         justify-content: space-around;
 
-          .card:hover {
-            transform: rotate(-360deg);
-            -webkit-transform:  rotate(-360deg); /** Chrome & Safari **/
-            -o-transform: rotate(-360deg); /** Opera **/
-            -moz-transform: rotate(-360deg); /** Firefox **/
-          }
+        .card:hover {
+          transform: rotate(-360deg);
+          -webkit-transform: rotate(-360deg); /** Chrome & Safari **/
+          -o-transform: rotate(-360deg); /** Opera **/
+          -moz-transform: rotate(-360deg); /** Firefox **/
+        }
 
-          .card {
-              position: absolute;
-              transition: all 2s ease-in-out;
-              -webkit-transition: all 2s ease-in-out; /** Chrome & Safari **/
-              -moz-transition: all 2s ease-in-out; /** Firefox **/
-              -o-transition: all 2s ease-in-out; /** Opera **/
-          }
+        .card {
+          position: absolute;
+          transition: all 2s ease-in-out;
+          -webkit-transition: all 2s ease-in-out; /** Chrome & Safari **/
+          -moz-transition: all 2s ease-in-out; /** Firefox **/
+          -o-transition: all 2s ease-in-out; /** Opera **/
+        }
       }
     }
   }
 
   #game-list-section {
-    display:flex;
+    display: flex;
     flex-direction: column;
 
-
-    #game-list-interface-selector{
+    #game-list-interface-selector {
       display: flex;
       flex-direction: row;
       align-items: center;
     }
 
     .game-list-header {
-      display:flex;
+      display: flex;
       flex-direction: row;
       align-items: center;
     }
@@ -468,7 +504,6 @@ h4 {
 // ABOUT SCREEN
 
 .about {
-
   #credits {
     display: flex;
     flex-direction: row;
@@ -478,7 +513,7 @@ h4 {
   .facts-container {
     display: flex;
     flex-direction: column;
-    background-color: #FAFAFA;
+    background-color: #fafafa;
     border-radius: 5px;
     padding: 10px;
     margin: 5px;
@@ -502,11 +537,10 @@ h4 {
         font-size: 12px;
       }
     }
-
   }
 }
 
-@button-background-color: #3333BB;
+@button-background-color: #3333bb;
 @button-text-color: yellow;
 
 // GAME SCREEN
@@ -515,7 +549,7 @@ h4 {
   width: 700px;
 
   .header {
-    display:flex;
+    display: flex;
     flex-direction: column;
 
     .title {
@@ -531,7 +565,7 @@ h4 {
         background-color: @button-background-color;
         color: @button-text-color;
         font-weight: bold;
-        &:hover{
+        &:hover {
           background-color: darken(@button-background-color, 10%);
         }
       }
@@ -541,16 +575,16 @@ h4 {
 
 .game-match-section {
   margin: 20px;
-  display:flex;
+  display: flex;
   flex-direction: column;
 }
 
 .interactive-section {
-  display:flex;
+  display: flex;
   flex-direction: column;
 
   .play-section {
-    display:flex;
+    display: flex;
     flex-direction: row;
 
     .title {
@@ -567,7 +601,7 @@ h4 {
     .deck-section {
       display: flex;
       flex-direction: column;
-      background-color: #EAEAEA;
+      background-color: #eaeaea;
       border-radius: 20px;
       padding: 20;
 
@@ -585,7 +619,7 @@ h4 {
     .hand-section {
       display: flex;
       flex-direction: column;
-      background-color: #EAEAEA;
+      background-color: #eaeaea;
       border-radius: 20px;
       padding: 20;
       margin-left: 10px;
@@ -593,7 +627,6 @@ h4 {
     }
 
     .game-chat-controls {
-
       .controls-section {
         display: flex;
         flex-direction: column;
@@ -604,11 +637,10 @@ h4 {
           background-color: @button-background-color;
           color: @button-text-color;
           font-weight: bold;
-          &:hover{
+          &:hover {
             background-color: darken(@button-background-color, 10%);
           }
         }
-
       }
 
       .chat-container {
@@ -636,42 +668,31 @@ h4 {
             color: blue;
           }
         }
-
       }
-
     }
-
   }
 }
-
-
 
 .toastr-chat-class {
   background-color: #51a351 !important;
   color: #ffffff !important;
 }
 
-.toasrt-chat-tittle{
+.toasrt-chat-tittle {
   font-size: 24px;
   font-weight: bold;
 }
 
-.toasrt-chat-message{
+.toasrt-chat-message {
   font-size: 16px;
 }
-
 
 #toast-container > .toast-info.toastr-info-action-class {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAOCAYAAADaOrdAAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TRZEWBzuIOGSoThZERTtqFYpQIdQKrTqYvPQPmjQkKS6OgmvBwZ/FqoOLs64OroIg+APi5uak6CIl3pcUWsR44fE+zrvn8N59gNCoMM3qGgc03TbTyYSYza2KPa8IIIwQ4piRmWXMSVIKvvV1T91UdzGe5d/3Z4XVvMWAgEg8ywzTJt4gnt60Dc77xBFWklXic+Ixky5I/Mh1xeM3zkWXBZ4ZMTPpeeIIsVjsYKWDWcnUiKeIo6qmU76Q9VjlvMVZq9RY6578haG8vrLMdVrDSGIRS5AgQkENZVRgI0a7ToqFNJ0nfPxDrl8il0KuMhg5FlCFBtn1g//B79lahckJLymUALpfHOdjBOjZBZp1x/k+dpzmCRB8Bq70tr/aAOKfpNfbWvQI6N8GLq7bmrIHXO4Ag0+GbMquFKQlFArA+xl9Uw4YuAX61ry5tc5x+gBkaFapG+DgEBgtUva6z7t7O+f2b09rfj/CgXLHzL801AAAAAZiS0dEAP8A/wAAjb9IHgAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB+UBDQw5FS8UQckAAAETSURBVDjLvZQ9SgRBEIW/WRZTEQMXROiKhEFkwdTIS3gBQdxlE3HvYbQamOsFvIGIifiTqKC8BtfAwMAD6Jr0QDPaM8iOPmiormrqdb0qKvPSOnAELNM8HoCtzEtXQJe/w3UrQXAP9IGdBki6rUTg2ZmNgMNfJpwAJ8Bx7Gw3LM2+M9sF8NIYGJZJXoC3YCvy30b2IjBf0+gCT4WReWkS7J4zO6j6ppdGNX26BDaBD+AUyAFaU8rTB2aAvXBfAx6DEvlPlcRyXTizbS8B3CTkunNmeVTlOMS/oV1KUDx6jfyriSo6Xpp1Zu9e6gALqXKnma454MxL58BGVa5UYMlLPeCzhmglnEr821oZlOa76QU5+AI7KFFUMj3UhAAAAABJRU5ErkJggg==") !important;
 }
 
-
-
-
-
-
 .game-player-list-section {
-  display:flex;
+  display: flex;
   flex-direction: column;
 
   .title {
@@ -681,7 +702,7 @@ h4 {
 }
 
 .taken-cards-container {
-  display:flex;
+  display: flex;
   flex-direction: column;
   margin-top: 30px;
 
@@ -695,11 +716,10 @@ h4 {
   }
 
   .taken-cards-section {
-    display:flex;
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
-
 
     .card {
       display: flex;
@@ -715,7 +735,6 @@ h4 {
 }
 
 .game-player-header {
-
   margin-left: 10px;
   display: flex;
   align-items: center;
@@ -741,7 +760,7 @@ h4 {
 }
 
 .player-actions-container {
-  display:flex;
+  display: flex;
   flex-direction: column;
   margin-top: 10px;
 
@@ -751,11 +770,10 @@ h4 {
   }
 
   .player-actions-section {
-    display:flex;
+    display: flex;
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;
-
 
     .player-action {
       background-color: lightblue;
@@ -767,7 +785,7 @@ h4 {
 }
 
 .stats-section {
-  display:flex;
+  display: flex;
   flex-direction: column;
   font-size: 12px;
   margin-top: 10px;
@@ -778,16 +796,14 @@ h4 {
   }
 
   .player-stats-container {
-    display:flex;
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin-top: 10px;
 
-
-    .player-stats-item{
-
+    .player-stats-item {
       .player-name {
-        color:darkgrey;
+        color: darkgrey;
         font-weight: bold;
         font-size: x-large;
       }
@@ -853,189 +869,188 @@ h4 {
   }
 }
 
-body{
-  height:           100vh;
-  margin:           0;
+body {
+  height: 100vh;
+  margin: 0;
   background-color: white;
-  font-family:      'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 ui-view {
-  height:              100%;
-  background-size:     cover;
+  height: 100%;
+  background-size: cover;
   background-position: center;
 }
 
-
 .materialIcon {
-  font-family:            'Material Icons';
-  font-weight:            normal;
-  font-style:             normal;
-  font-size:              24px;  /* Preferred icon size */
-  display:                inline-block;
-  line-height:            1;
-  text-transform:         none;
-  letter-spacing:         normal;
-  word-wrap:              normal;
-  white-space:            nowrap;
-  direction:              ltr;
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px; /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
   -webkit-font-smoothing: antialiased; /* Support for all WebKit browsers. */
-  text-rendering:         optimizeLegibility; /* Support for Safari and Chrome. */
-  &.mi12{
+  text-rendering: optimizeLegibility; /* Support for Safari and Chrome. */
+  &.mi12 {
     font-size: 12px;
   }
-  &.mi14{
+  &.mi14 {
     font-size: 14px;
   }
-  &.mi18{
+  &.mi18 {
     font-size: 18px;
   }
-  &.mi28{
+  &.mi28 {
     font-size: 28px;
   }
 }
 
-.materialButton{
-  align-items:    center;
+.materialButton {
+  align-items: center;
   justify-content: center;
-  display:        flex;
+  display: flex;
   flex-direction: row;
-  border-radius:  2px;
-  padding:        0 16px;
-  height:         36px;
-  min-width:      66px;
-  transition:     @defaultTransition;
-  cursor:         pointer;
-  font-weight:    700;
-  font-size:      14px;
-  border:         none;
+  border-radius: 2px;
+  padding: 0 16px;
+  height: 36px;
+  min-width: 66px;
+  transition: @defaultTransition;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
 
   &[disabled] {
     opacity: 0.5;
     cursor: default !important;
-    &:hover{
+    &:hover {
       background-color: white !important;
     }
   }
-  &.raised{
-    box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
-    &:hover{
-      box-shadow: 0 4px 3px 0px rgba(0,0,0,0.6);
+  &.raised {
+    box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
+    &:hover {
+      box-shadow: 0 4px 3px 0px rgba(0, 0, 0, 0.6);
     }
   }
-  &.gray{
-    background-color: #F8F8F8;
-    border:             1px solid #BCBCBC;
-    &:hover{
-      background-color: darken(#F8F8F8, 5%);
+  &.gray {
+    background-color: #f8f8f8;
+    border: 1px solid #bcbcbc;
+    &:hover {
+      background-color: darken(#f8f8f8, 5%);
     }
   }
-  &.colorButton{
+  &.colorButton {
     background-color: @mainColor;
-    color:          white;
-    &:hover{
+    color: white;
+    &:hover {
       background-color: darken(@mainColor, 50%);
     }
   }
-  &.white{
+  &.white {
     background-color: white;
-    color:          @darkGray;
-    &:hover{
+    color: @darkGray;
+    &:hover {
       background-color: darken(white, 5%);
     }
   }
-  &.transparentButton{
+  &.transparentButton {
     background-color: transparent;
-    color:            @darkGray;
-    &:hover{
-        background-color: fade(@darkGray, 20%);
-      }
-      &:active{
-        background-color: fade(@darkGray, 40%);
-      }
-    &.white{
+    color: @darkGray;
+    &:hover {
+      background-color: fade(@darkGray, 20%);
+    }
+    &:active {
+      background-color: fade(@darkGray, 40%);
+    }
+    &.white {
       color: white;
-      &:hover{
+      &:hover {
         background-color: fade(white, 20%);
       }
-      &:active{
+      &:active {
         background-color: fade(white, 40%);
       }
     }
   }
 }
-.textButton{
+.textButton {
   cursor: pointer;
-  color:  @darkGray;
-  &:hover{
+  color: @darkGray;
+  &:hover {
     color: @mainColor;
   }
 }
-.raised{
-  box-shadow: 0 2px 2px 0px rgba(0,0,0,0.3);
+.raised {
+  box-shadow: 0 2px 2px 0px rgba(0, 0, 0, 0.3);
 }
-.raised-2{
-  box-shadow: 0 5px 4px 0px rgba(0,0,0,0.3);
+.raised-2 {
+  box-shadow: 0 5px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
-input{
-  border:           0;
-  border-radius:    0;
-  color:            @darkGray;
+input {
+  border: 0;
+  border-radius: 0;
+  color: @darkGray;
   background-color: transparent;
-  padding:          2px 2px 1px;
-  border-bottom:    1px solid @midGray;
-  transition:       @defaultTransition;
-  &:focus{
-    border:        0;
-    outline:       0;
+  padding: 2px 2px 1px;
+  border-bottom: 1px solid @midGray;
+  transition: @defaultTransition;
+  &:focus {
+    border: 0;
+    outline: 0;
     border-bottom: 1px solid @darkGray;
   }
   &::-webkit-input-placeholder {
     color: @midGray;
   }
-  &.white{
-    color:            white;
-    border-bottom:    1px solid #DDDDDD;
-    &:focus{
+  &.white {
+    color: white;
+    border-bottom: 1px solid #dddddd;
+    &:focus {
       border-bottom: 1px solid white;
     }
     &::-webkit-input-placeholder {
-      color: #DDDDDD;
+      color: #dddddd;
     }
   }
 }
-
 
 select {
-  background: url("data:image/svg+xml,<svg height='10px' width='10px' viewBox='0 0 16 16' fill='%23000000' xmlns='http://www.w3.org/2000/svg'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>") no-repeat;
+  background: url("data:image/svg+xml,<svg height='10px' width='10px' viewBox='0 0 16 16' fill='%23000000' xmlns='http://www.w3.org/2000/svg'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>")
+    no-repeat;
   background-position: calc(100% - 0.75rem) center !important;
-  -moz-appearance:none !important;
+  -moz-appearance: none !important;
   -webkit-appearance: none !important;
   appearance: none !important;
-  padding:  0.5rem 2rem 0.5rem 0.5rem !important;
+  padding: 0.5rem 2rem 0.5rem 0.5rem !important;
   font-size: 1.2rem;
 
-  color:            @darkGray;
+  color: @darkGray;
   background-color: lightgray;
-  border-bottom:    1px solid @midGray;
-  transition:       @defaultTransition;
-  &:focus{
-    border:        0;
-    outline:       0;
+  border-bottom: 1px solid @midGray;
+  transition: @defaultTransition;
+  &:focus {
+    border: 0;
+    outline: 0;
     border-bottom: 1px solid @darkGray;
   }
   &::-webkit-input-placeholder {
     color: @midGray;
   }
-  &.white{
-    color:            white;
-    border-bottom:    1px solid #DDDDDD;
-    &:focus{
+  &.white {
+    color: white;
+    border-bottom: 1px solid #dddddd;
+    &:focus {
       border-bottom: 1px solid white;
     }
     &::-webkit-input-placeholder {
-      color: #DDDDDD;
+      color: #dddddd;
     }
   }
 }
@@ -1043,10 +1058,10 @@ select {
 .disabled-button {
   opacity: 0.5;
   background-color: transparent;
-  cursor:           default !important;
+  cursor: default !important;
 }
 
-.fab{
+.fab {
   position: fixed;
   bottom: 30px;
   right: 30px;
@@ -1058,14 +1073,14 @@ select {
 }
 
 dialog {
-  background: #FFF;
+  background: #fff;
   padding: 0;
   margin: auto;
   top: 0;
   bottom: 0;
   border: 0;
   border-radius: 3px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   &::backdrop {
     position: fixed;
     top: 0;
@@ -1074,24 +1089,23 @@ dialog {
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
   }
-  & .dialogHeader{
-    color: #2A323F;
+  & .dialogHeader {
+    color: #2a323f;
     margin: 15px 15px 0;
     font-size: 18px;
   }
-  & .dialogContent{
+  & .dialogContent {
     padding: 20px;
   }
 }
 
-
 // COMMON STYLES
 
 @mainColor: #333333;
-@lightGray: #FAFAFA;
-@midGray: #A4A4A4;
+@lightGray: #fafafa;
+@midGray: #a4a4a4;
 @darkGray: #404041;
-@red: #D32F2F;
+@red: #d32f2f;
 @defaultTransition: all 0.2s linear;
 
 @panel-width: 75%;
@@ -1107,10 +1121,10 @@ dialog {
 
 @keyframes smooth-appear {
   from {
-    opacity:0;
+    opacity: 0;
   }
-  to{
+  to {
     bottom: 0px;
-    opacity:1;
+    opacity: 1;
   }
 }
