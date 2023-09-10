@@ -20,7 +20,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 
-	embed "embed"
+	//embed "embed"
 )
 
 // TODO : nice implement something like this
@@ -54,8 +54,8 @@ func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
 	return
 }
 
-//go:embed assets/*
-var assets embed.FS
+////go:embed assets/*
+//var assets embed.FS
 
 func StartServer() {
 	//file, err := assets.Open("assets/html/root.html")
@@ -91,12 +91,12 @@ func buildRouter() *mux.Router {
 	root := mux.NewRouter()
 	// TODO : word "presentation" in the path may be redudant, perpahs using just "assets" would be enought!
 	// BEFORE go:embed
-	/*fileServer := http.FileServer(http.Dir("./"))
-	root.PathPrefix("/presentation/web/assets").Handler(fileServer)*/
+	fileServer := http.FileServer(http.Dir("./"))
+	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
 
 	// AFTER go:embed
-	fileServer := http.FileServer(http.FS(assets))
-	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))
+	/*fileServer := http.FileServer(http.FS(assets))
+	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))*/
 
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
 	//root.Use(SslRedirect, AccessLogMiddleware, OrgAwareMiddleware)
@@ -104,7 +104,7 @@ func buildRouter() *mux.Router {
 
 	Get := BuildSetHandleFunc(root, "GET")
 	//Post := BuildSetHandleFunc(root, "POST")
-	Get("/", serveRoot)
+	Get("/", serveLanding)
 	Get("/healthcheck", controllers.Healthcheck)
 	Get("/version", controllers.Version)
 
@@ -199,8 +199,9 @@ func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 }
 
 // Dev notes: the request context has the organization due to the ContextAwareMiddle, so there will be always a valid portal's client session when invoking this function
-func serveRoot(response http.ResponseWriter, request *http.Request) {
-	t, err := template.ParseFS(assets, "assets/html/root.html")
+func serveLanding(response http.ResponseWriter, request *http.Request) {
+	//t, err := template.ParseFS(assets, "assets/html/root.html")
+	t, err := template.ParseFiles("presentation/web/assets/html/landing.html")
 	if err != nil {
 		fmt.Printf("Error while parsing template : %v", err)
 		response.WriteHeader(http.StatusInternalServerError)

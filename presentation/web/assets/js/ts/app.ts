@@ -9,7 +9,17 @@ module App {
     $location.html5Mode({ enabled: true, requireBase: false });
     $urlRouterProvider.otherwise('/');
 
+    const root: ng.ui.IState = {
+      name: "root",
+      abstract: true,
+      //url: '/',
+      templateUrl: '/presentation/web/assets/html/root.html',
+      controller: "RootController",
+      controllerAs: "ctr"
+    }
+
     const lobby: ng.ui.IState = {
+      parent: root,
       name: 'lobby',
       //url: 'lobby',
       templateUrl: '/presentation/web/assets/html/lobby.html',
@@ -18,6 +28,7 @@ module App {
     };
 
     const game: ng.ui.IState = {
+      parent: root,
       name: 'game',
       //url: 'game',
       templateUrl: '/presentation/web/assets/html/game.html',
@@ -30,6 +41,7 @@ module App {
     };
 
     const about: ng.ui.IState = {
+      parent: root,
       name: 'about',
       //url: 'about',
       templateUrl: '/presentation/web/assets/html/about.html',
@@ -37,6 +49,7 @@ module App {
       controllerAs: "ctr"
     };
 
+    $state.state(root);
     $state.state(lobby);
     $state.state(about);
     $state.state(game);
