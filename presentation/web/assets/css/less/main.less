@@ -49,7 +49,7 @@
 }
 
 * {
-  font-family: "Roboto", sans-serif !important;
+  font-family: "Roboto", sans-serif;
 }
 
 h1 {
@@ -415,8 +415,6 @@ h4 {
 
   .materialButton {
     border-radius: 0px;
-    background-color: @mainColor;
-    color: deepskyblue;
     &:hover {
       background-color: darken(@mainColor, 50%);
       color: yellow;
@@ -548,128 +546,214 @@ h4 {
 .game-container {
   width: 700px;
 
+  .player-name {
+    font-family: 'Grinched', "Roboto", sans-serif !important;
+    font-size: 1.5rem;
+  }
   .header {
     display: flex;
     flex-direction: column;
 
-    .title {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
     .config {
       display: flex;
       flex-direction: row;
+    }
+  }
 
-      .colorButton {
-        background-color: @button-background-color;
-        color: @button-text-color;
-        font-weight: bold;
-        &:hover {
-          background-color: darken(@button-background-color, 10%);
+  #chat-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .materialButton {
+      border-radius: 20px;
+      &:hover {
+        border-radius: 10px;
+        background-color: darken(@mainColor, 50%);
+        color: yellow;
+        filter: brightness(85%);
+      }
+    }
+    .colorButton {
+      background-color: yellow;
+      color: black;
+    }
+
+    .send-message-control {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+
+      .text {
+        flex-grow: 2;
+      }
+    }
+
+    .messages-section {
+      overflow: auto;
+      height: 300px;
+      border: 1px black solid;
+      background-color:#409fbf;
+      border-radius: 5px;
+
+      .message {
+        color: white;
+      }
+    }
+  }
+
+
+  .player-list-section {
+    display: flex;
+    flex-direction: column;
+
+    .game-player-header {
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+
+      .current-turn-player {
+        &:after {
+          content: " 👈🏿";
+        }
+      }
+      .see-player-button {
+        border-radius: 10px;
+        height: fit-content;
+        width: fit-content;
+        min-width: unset;
+      }
+
+      .player-action {
+        background-color: lightblue;
+        border-radius: 10px;
+        padding: 5px;
+        margin: 5px;
+
+        .ng-player-action-container {
+          align-items: center;
         }
       }
     }
   }
-}
 
-.game-match-section {
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.interactive-section {
-  display: flex;
-  flex-direction: column;
-
-  .play-section {
+  .game-match-section {
+    margin: 20px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
-    .title {
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-    }
-
-    .ng-card-container.card-image {
-      transition: transform 0.25s linear;
-    }
-
-    .deck-section {
+    #interactive-section {
       display: flex;
       flex-direction: column;
-      background-color: #eaeaea;
-      border-radius: 20px;
-      padding: 20;
 
-      .cards {
+      input[type=checkbox],input[type=radio] {
+        width: 0.5rem;
+      }
+
+      .colorButton {
+        background-color: yellow;
+        color: black;
+      }
+
+      .play-section {
         display: flex;
-        flex-wrap: wrap;
         flex-direction: row;
 
-        .card {
-          flex-basis: 33%;
-        }
-      }
-    }
-
-    .hand-section {
-      display: flex;
-      flex-direction: column;
-      background-color: #eaeaea;
-      border-radius: 20px;
-      padding: 20;
-      margin-left: 10px;
-      margin-right: 10px;
-    }
-
-    .game-chat-controls {
-      .controls-section {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        height: 100px;
-
-        .colorButton {
-          background-color: @button-background-color;
-          color: @button-text-color;
-          font-weight: bold;
-          &:hover {
-            background-color: darken(@button-background-color, 10%);
-          }
-        }
-      }
-
-      .chat-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        .send-message-control {
+        .deck-section {
           display: flex;
-          flex-direction: row;
-          align-items: baseline;
+          flex-direction: column;
+          background-color: #ebebeb;
+          border-radius: 2rem;
+          padding: 1rem 0rem 1rem 1rem;
 
-          .text {
-            flex-grow: 2;
+          .cards {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+
+            .card {
+              flex-basis: 33%;
+            }
+
+            .card:has(> input[type=checkbox]:checked) { // using wise advice from https://stackoverflow.com/a/1014958/903998
+              filter: drop-shadow(0.1rem 0.1rem 0.2rem black);
+            }
           }
         }
 
-        .messages-section {
-          overflow: auto;
-          height: 300px;
-          border: 2px black solid;
-          background-color: yellow;
+        .hand-section {
+          display: flex;
+          flex-direction: column;
+          background-color: #ebebeb;
+          border-radius: 2rem;
+          padding: 1rem 2rem 1rem 1rem;
+          margin-left: 1rem;
+          margin-right: 1rem;
 
-          .message {
-            color: blue;
+          .cards {
+            .card:has(> input[type=radio]:checked) {
+              filter: drop-shadow(0.1rem 0.1rem 0.2rem black);
+            }
           }
+        }
+
+        #game-controls {
+
+          .materialButton {
+            border-radius: 20px;
+            &:hover {
+              border-radius: 10px;
+              background-color: darken(@mainColor, 50%);
+              color: yellow;
+              filter: brightness(85%);
+            }
+          }
+
+          .controls-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            height: 100px;
+          }
+
         }
       }
+
     }
+
+  .taken-cards-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+
+    div {
+      align-self: flex-start;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .taken-cards-section {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      flex-wrap: wrap;
+
+      .card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: lightgrey;
+        border-radius: 10px;
+        padding: 0 5px;
+        margin: 5px;
+        font-size: 14px;
+      }
+    }
+  }
   }
 }
 
@@ -691,134 +775,6 @@ h4 {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAOCAYAAADaOrdAAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TRZEWBzuIOGSoThZERTtqFYpQIdQKrTqYvPQPmjQkKS6OgmvBwZ/FqoOLs64OroIg+APi5uak6CIl3pcUWsR44fE+zrvn8N59gNCoMM3qGgc03TbTyYSYza2KPa8IIIwQ4piRmWXMSVIKvvV1T91UdzGe5d/3Z4XVvMWAgEg8ywzTJt4gnt60Dc77xBFWklXic+Ixky5I/Mh1xeM3zkWXBZ4ZMTPpeeIIsVjsYKWDWcnUiKeIo6qmU76Q9VjlvMVZq9RY6578haG8vrLMdVrDSGIRS5AgQkENZVRgI0a7ToqFNJ0nfPxDrl8il0KuMhg5FlCFBtn1g//B79lahckJLymUALpfHOdjBOjZBZp1x/k+dpzmCRB8Bq70tr/aAOKfpNfbWvQI6N8GLq7bmrIHXO4Ag0+GbMquFKQlFArA+xl9Uw4YuAX61ry5tc5x+gBkaFapG+DgEBgtUva6z7t7O+f2b09rfj/CgXLHzL801AAAAAZiS0dEAP8A/wAAjb9IHgAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB+UBDQw5FS8UQckAAAETSURBVDjLvZQ9SgRBEIW/WRZTEQMXROiKhEFkwdTIS3gBQdxlE3HvYbQamOsFvIGIifiTqKC8BtfAwMAD6Jr0QDPaM8iOPmiormrqdb0qKvPSOnAELNM8HoCtzEtXQJe/w3UrQXAP9IGdBki6rUTg2ZmNgMNfJpwAJ8Bx7Gw3LM2+M9sF8NIYGJZJXoC3YCvy30b2IjBf0+gCT4WReWkS7J4zO6j6ppdGNX26BDaBD+AUyAFaU8rTB2aAvXBfAx6DEvlPlcRyXTizbS8B3CTkunNmeVTlOMS/oV1KUDx6jfyriSo6Xpp1Zu9e6gALqXKnma454MxL58BGVa5UYMlLPeCzhmglnEr821oZlOa76QU5+AI7KFFUMj3UhAAAAABJRU5ErkJggg==") !important;
 }
 
-.game-player-list-section {
-  display: flex;
-  flex-direction: column;
-
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-  }
-}
-
-.taken-cards-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 30px;
-
-  div {
-    align-self: flex-start;
-  }
-
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .taken-cards-section {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-
-    .card {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      background-color: lightgrey;
-      border-radius: 10px;
-      padding: 0 5px;
-      margin: 5px;
-      font-size: 14px;
-    }
-  }
-}
-
-.game-player-header {
-  margin-left: 10px;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-
-  .see-player-button {
-    border-radius: 10px;
-    height: fit-content;
-    width: fit-content;
-    min-width: unset;
-  }
-
-  .player-action {
-    background-color: lightblue;
-    border-radius: 10px;
-    padding: 5px;
-    margin: 5px;
-
-    .ng-player-action-container {
-      align-items: center;
-    }
-  }
-}
-
-.player-actions-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .player-actions-section {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-
-    .player-action {
-      background-color: lightblue;
-      border-radius: 10px;
-      padding: 5px;
-      margin: 5px;
-    }
-  }
-}
-
-.stats-section {
-  display: flex;
-  flex-direction: column;
-  font-size: 12px;
-  margin-top: 10px;
-
-  .title {
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .player-stats-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: 10px;
-
-    .player-stats-item {
-      .player-name {
-        color: darkgrey;
-        font-weight: bold;
-        font-size: x-large;
-      }
-
-      .stats-name {
-        font-weight: normal;
-      }
-
-      .stats-value {
-        font-weight: bold;
-        color: darkgreen;
-      }
-    }
-  }
-}
 
 // Card container directive
 

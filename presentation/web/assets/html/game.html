@@ -1,23 +1,42 @@
 <div class="panel game-container">
 
   <div class="header">
-    <div class="title">Juego <i>{{ctr.game.name}}</i></div>
+    <h2>Juego <i>{{ctr.game.name}}</i></h2>
     <div class="config">
-      <div class="materialButton raised colorButton" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
+      <div class="materialButton colorButton" ng-class="{ 'selected-button': ctr.isChatEnabled}" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
       <span>&nbsp;&nbsp;</span>
-      <div class="materialButton raised colorButton" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Cambiar visualización cartas a modo {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}} chat</div>
+      <div class="materialButton colorButton" ng-class="{ 'selected-button': !ctr.displayCardsAsSprites}" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Cambiar visualización cartas a modo {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}}</div>
       <div ng-show="ctr.isMatchInProgress" style="display: flex;flex-direction: row;">
         <span>&nbsp;&nbsp;</span>
-        <div class="materialButton raised colorButton" ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div>
+        <div class="materialButton colorButton" ng-class="{ 'selected-button': showPlayerActions}"  ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div>
         <span>&nbsp;&nbsp;</span>
-        <div class="materialButton raised colorButton" ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div>
+        <div class="materialButton colorButton" ng-class="{ 'selected-button': showTakenCards}"   ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div>
       </div>
     </div>
   </div>
 
-  <div class="section-separator"></div>
+  <!-- CHAT -->
+  <div id="chat-container" class="section">
+    <div class="flex"></div>
+    <div ng-if="ctr.isChatEnabled">
+      <div class="send-message-control">
+        <input class="text" placeholder="Escribe un mensaje" ng-model="ctr.playerMessage.text" >
+        <button class="materialButton raised colorButton" style="display: flex; flex-direction: column;; margin-left: 1em;" ng-disabled="!ctr.canSendMessage(ctr.playerMessage)" title="Podés apretar enter para enviar" ng-click="ctr.sendAndCleanMessage(ctr.playerMessage);">
+          <span>Enviar</span>
+          <span id="chat-press-enter-hint" style="font-size: xx-small">(ó enter)</span>
+        </button>
+      </div>
+      <!-- <div class="messages-section">
+        <div class="message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'" ng-style="{'font-size': ctr.getFontSize(ctr.playersById[message.playerId])}">
+          <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
+          <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
+          <span>{{message.text}}</span>
+        </div>
+      </div> -->
+    </div>
+  </div>
 
-  <div class="section game-player-list-section">
+  <div class="section player-list-section">
     <div ng-show="ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
       <strong >Eres el administrador</strong>&nbsp;
       <span>Solo vos podés comenzar la partida, una vez comenzada se cierran las puertas!</span><br/>
@@ -29,14 +48,13 @@
       <span>Se puede usar el chat para charlar mientras tanto, apreta el botón <strong>activar chat</strong></span>
     </div>
 
-
-    <div class="title">Jugadores presentes</div>
+    <h3>Jugadores</h3>
     <!-- the check performed at Games.addPlayer at joining a game ensures that won't be two players with the same name, but they could share it and they will actually share the player -->
     <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.name">
-      <span>{{$index+1}}. {{player.name}}</span> <!-- recall game players doesn't have id -->
+      <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : ctr.currentTurnPlayer.name === player.name}">{{player.name}}</span></span> <!-- recall game players doesn't have id -->
       <span style="width: 10px;"></span>
       <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
-      <div ng-show="ctr.player.name !== player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
+      <div ng-show="ctr.player.name == player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
        <img ng-show="!peekPlayer" src="/presentation/web/assets/images/eyes_open.png" height="20px">
        <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
       </div>
@@ -47,11 +65,11 @@
       </div>
     </div>
 
-    <div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
+    <!--<div ng-show="ctr.isMatchInProgress" style="margin-top: 10px;">
      <span style="color: blue; background-color: yellow;font-size: larger;">Turno de:</span>&nbsp;<span>{{ctr.currentTurnPlayer.name}}</span>
      <br/>
      <strong ng-show="ctr.isPlayerTurn" style="color: red; background-color: yellow;font-size: larger;">Es tu turno! Juega!</strong>
-    </div>
+    </div>-->
 
   </div>
 
@@ -62,7 +80,7 @@
     <!-- <loading message="Cargando..." ng-if="ctr.loading"></loading>-->
 
     <!-- PLAYING CARDS -->
-    <div class="interactive-section">
+    <div id="interactive-section">
 
       <div class="play-section">
 
@@ -88,34 +106,11 @@
           </div>
         </div>
 
-        <!-- CONTROLS -->
-        <div class="game-chat-controls" >
-
-          <!-- GAME -->
+        <!-- GAME CONTROLS -->
+        <div id="game-controls" >
           <div class="controls-section" ng-if="ctr.isPlayerTurn">
-            <button class="materialButton raised colorButton" ng-disabled="ctr.loading" ng-show="ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</button>
-            <button class="materialButton raised colorButton" ng-disabled="ctr.loading" ng-show="ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</button>
-          </div>
-
-          <!-- CHAT -->
-          <div class="section chat-container">
-            <div class="flex"></div>
-            <div ng-if="ctr.isChatEnabled">
-              <div class="send-message-control">
-                <input class="text" placeholder="Escribe un mensaje" ng-model="ctr.playerMessage.text" >
-                <button class="materialButton colorButton" ng-disabled="!ctr.canSendMessage(ctr.playerMessage)" title="Podés apretar enter para enviar" ng-click="ctr.sendAndCleanMessage(ctr.playerMessage);" style="display: flex; flex-direction: column;">
-                  <span>Enviar</span>
-                  <span id="chat-press-enter-hint" style="font-size: xx-small">(ó enter)</span>
-                </button>
-              </div>
-              <div class="messages-section">
-                <div class="message horizontal" ng-repeat="message in ctr.messages | orderBy: 'created'" ng-style="{'font-size': ctr.getFontSize(ctr.playersById[message.playerId])}">
-                  <span>[{{ctr.formatUnixTimestamp(message.created)}}]</span>&nbsp;
-                  <span>{{ctr.playersById[message.playerId].name}}:</span>&nbsp;
-                  <span>{{message.text}}</span>
-                </div>
-              </div>
-            </div>
+            <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</button>
+            <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</button>
           </div>
         </div>
       </div>
