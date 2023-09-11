@@ -14,7 +14,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var gamesRepository repositories.Games = repositories.NewGamesMemoryStorage()
+var gamesRepository repositories.Games = repositories.NewGamesMemoryRepository()
 
 func GetGames(response http.ResponseWriter, request *http.Request) {
 	games, err := gamesRepository.GetGames()

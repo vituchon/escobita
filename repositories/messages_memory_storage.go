@@ -13,26 +13,26 @@ type PersistentMessage struct {
 	Created  int64  `json:"created"`
 }
 
-type MessagesMemoryStorage struct {
+type MessagesMemoryRepository struct {
 	messagesById map[int]PersistentMessage
 	mutex        sync.Mutex
 	idSequence   int
 }
 
-func NewMessagesMemoryStorage() *MessagesMemoryStorage {
-	return &MessagesMemoryStorage{messagesById: make(map[int]PersistentMessage)}
+func NewMessagesMemoryRepository() *MessagesMemoryRepository {
+	return &MessagesMemoryRepository{messagesById: make(map[int]PersistentMessage)}
 }
 
-func (repo *MessagesMemoryStorage) GetMessages() ([]PersistentMessage, error) {
+func (repo *MessagesMemoryRepository) GetMessages() ([]PersistentMessage, error) {
 	return repo.doGetMessages(MessageFilterByNone)
 }
 
-func (repo *MessagesMemoryStorage) GetMessagesByGame(gameId int) ([]PersistentMessage, error) {
+func (repo *MessagesMemoryRepository) GetMessagesByGame(gameId int) ([]PersistentMessage, error) {
 	filter := MessageFilterByGameId{gameId}
 	return repo.doGetMessages(filter.fulfill)
 }
 
-func (repo *MessagesMemoryStorage) GetMessagesByGameAndTime(gameId int, since int64) ([]PersistentMessage, error) {
+func (repo *MessagesMemoryRepository) GetMessagesByGameAndTime(gameId int, since int64) ([]PersistentMessage, error) {
 	filterByGame := MessageFilterByGameId{gameId}
 	filterByTime := MessageFilterByTime{since}
 	filterByBoth := func(message PersistentMessage) bool {
@@ -41,7 +41,7 @@ func (repo *MessagesMemoryStorage) GetMessagesByGameAndTime(gameId int, since in
 	return repo.doGetMessages(filterByBoth)
 }
 
-func (repo *MessagesMemoryStorage) doGetMessages(filterFunc MessageFilterFunc) ([]PersistentMessage, error) {
+func (repo *MessagesMemoryRepository) doGetMessages(filterFunc MessageFilterFunc) ([]PersistentMessage, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	messages := make([]PersistentMessage, 0, len(repo.messagesById))
@@ -53,7 +53,7 @@ func (repo *MessagesMemoryStorage) doGetMessages(filterFunc MessageFilterFunc) (
 	return messages, nil
 }
 
-func (repo *MessagesMemoryStorage) GetMessageById(id int) (*PersistentMessage, error) {
+func (repo *MessagesMemoryRepository) GetMessageById(id int) (*PersistentMessage, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	message, exists := repo.messagesById[id]
@@ -63,7 +63,7 @@ func (repo *MessagesMemoryStorage) GetMessageById(id int) (*PersistentMessage, e
 	return &message, nil
 }
 
-func (repo *MessagesMemoryStorage) CreateMessage(message PersistentMessage) (created *PersistentMessage, err error) {
+func (repo *MessagesMemoryRepository) CreateMessage(message PersistentMessage) (created *PersistentMessage, err error) {
 	if message.Id != nil {
 		return nil, InvalidEntityStateErr
 	}
@@ -79,7 +79,7 @@ func (repo *MessagesMemoryStorage) CreateMessage(message PersistentMessage) (cre
 	return &message, nil
 }
 
-func (repo *MessagesMemoryStorage) UpdateMessage(message PersistentMessage) (updated *PersistentMessage, err error) {
+func (repo *MessagesMemoryRepository) UpdateMessage(message PersistentMessage) (updated *PersistentMessage, err error) {
 	if message.Id == nil {
 		return nil, InvalidEntityStateErr
 	}
@@ -89,7 +89,7 @@ func (repo *MessagesMemoryStorage) UpdateMessage(message PersistentMessage) (upd
 	return &message, nil
 }
 
-func (repo *MessagesMemoryStorage) DeleteMessage(id int) error {
+func (repo *MessagesMemoryRepository) DeleteMessage(id int) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	delete(repo.messagesById, id)

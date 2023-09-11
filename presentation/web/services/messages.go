@@ -9,7 +9,7 @@ type WebMessage = repositories.PersistentMessage
 var messagesRepository repositories.Messages
 
 func init() {
-	messagesRepository = repositories.NewMessagesMemoryStorage()
+	messagesRepository = repositories.NewMessagesMemoryRepository()
 }
 
 func GetMessages() ([]WebMessage, error) {

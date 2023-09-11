@@ -39,16 +39,16 @@ func (pp *PersistentPlayer) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type PlayersMemoryStorage struct {
+type PlayersMemoryRepository struct {
 	playersById map[int]PersistentPlayer
 	mutex       sync.Mutex
 }
 
-func NewPlayersMemoryStorage() *PlayersMemoryStorage {
-	return &PlayersMemoryStorage{playersById: make(map[int]PersistentPlayer)}
+func NewPlayersMemoryRepository() *PlayersMemoryRepository {
+	return &PlayersMemoryRepository{playersById: make(map[int]PersistentPlayer)}
 }
 
-func (repo *PlayersMemoryStorage) GetPlayers() ([]PersistentPlayer, error) {
+func (repo *PlayersMemoryRepository) GetPlayers() ([]PersistentPlayer, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	players := make([]PersistentPlayer, 0, len(repo.playersById))
@@ -58,7 +58,7 @@ func (repo *PlayersMemoryStorage) GetPlayers() ([]PersistentPlayer, error) {
 	return players, nil
 }
 
-func (repo *PlayersMemoryStorage) GetPlayerById(id int) (*PersistentPlayer, error) {
+func (repo *PlayersMemoryRepository) GetPlayerById(id int) (*PersistentPlayer, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	player, exists := repo.playersById[id]
@@ -68,7 +68,7 @@ func (repo *PlayersMemoryStorage) GetPlayerById(id int) (*PersistentPlayer, erro
 	return &player, nil
 }
 
-func (repo *PlayersMemoryStorage) CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error) {
+func (repo *PlayersMemoryRepository) CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	if player.Id == nil {
@@ -78,7 +78,7 @@ func (repo *PlayersMemoryStorage) CreatePlayer(player PersistentPlayer) (created
 	return &player, nil
 }
 
-func (repo *PlayersMemoryStorage) UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error) {
+func (repo *PlayersMemoryRepository) UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	if player.Id == nil {
@@ -88,7 +88,7 @@ func (repo *PlayersMemoryStorage) UpdatePlayer(player PersistentPlayer) (updated
 	return &player, nil
 }
 
-func (repo *PlayersMemoryStorage) DeletePlayer(id int) error {
+func (repo *PlayersMemoryRepository) DeletePlayer(id int) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	delete(repo.playersById, id)
