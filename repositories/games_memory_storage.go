@@ -25,7 +25,7 @@ func NewGamesMemoryStorage() *GamesMemoryStorage {
 	return &GamesMemoryStorage{gamesById: make(map[int]PersistentGame), gamesCreatedByPlayerId: make(map[int]int), idSequence: 0}
 }
 
-func (repo GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
+func (repo *GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	games := make([]PersistentGame, 0, len(repo.gamesById))
@@ -35,7 +35,7 @@ func (repo GamesMemoryStorage) GetGames() ([]PersistentGame, error) {
 	return games, nil
 }
 
-func (repo GamesMemoryStorage) GetGameById(id int) (*PersistentGame, error) {
+func (repo *GamesMemoryStorage) GetGameById(id int) (*PersistentGame, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	game, exists := repo.gamesById[id]
