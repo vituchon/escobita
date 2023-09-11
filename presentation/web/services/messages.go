@@ -1,108 +1,41 @@
 package services
 
 import (
-	"sync"
-	"time"
+	"github.com/vituchon/escobita/repositories"
 )
 
-type WebMessage struct {
-	Id       *int   `json:"id,omitempty"`
-	PlayerId int    `json:"playerId"`
-	GameId   int    `json:"gameId"`
-	Text     string `json:"text"`
-	Created  int64  `json:"created"`
-}
+type WebMessage = repositories.PersistentMessage
 
-var messagesById map[int]WebMessage = make(map[int]WebMessage)
+var messagesRepository repositories.Messages
 
-type MessageFilterFunc = func(message WebMessage) bool
-
-func MessageFilterByNone(message WebMessage) bool {
-	return true
-}
-
-type MessageFilterByGameId struct {
-	GameId int
-}
-
-func (f MessageFilterByGameId) fulfill(message WebMessage) bool {
-	return message.GameId == f.GameId
-}
-
-type MessageFilterByTime struct {
-	Since int64
-}
-
-func (f MessageFilterByTime) fulfill(message WebMessage) bool {
-	return message.Created >= f.Since
-}
-
-func doGetMessages(filterFunc MessageFilterFunc) ([]WebMessage, error) {
-	messages := make([]WebMessage, 0, len(messagesById))
-	for _, message := range messagesById {
-		if filterFunc(message) {
-			messages = append(messages, message)
-		}
-	}
-	return messages, nil
+func init() {
+	messagesRepository = repositories.NewMessagesMemoryStorage()
 }
 
 func GetMessages() ([]WebMessage, error) {
-	return doGetMessages(MessageFilterByNone)
+	return messagesRepository.GetMessages()
 }
 
-// the game would serve as the "room"
 func GetMessagesByGame(gameId int) ([]WebMessage, error) {
-	filter := MessageFilterByGameId{gameId}
-	return doGetMessages(filter.fulfill)
+	return messagesRepository.GetMessagesByGame(gameId)
 }
 
 func GetMessagesByGameAndTime(gameId int, since int64) ([]WebMessage, error) {
-	filterByGame := MessageFilterByGameId{gameId}
-	filterByTime := MessageFilterByTime{since}
-	filterByBoth := func(message WebMessage) bool {
-		return filterByGame.fulfill(message) && filterByTime.fulfill(message)
-	}
-	return doGetMessages(filterByBoth)
+	return messagesRepository.GetMessagesByGameAndTime(gameId, since)
 }
 
 func GetMessageById(id int) (*WebMessage, error) {
-	message, exists := messagesById[id]
-	if !exists {
-		return nil, EntityNotExistsErr
-	}
-	return &message, nil
+	return messagesRepository.GetMessageById(id)
 }
 
-var idMessageSequence int = 0
-var mutex = &sync.Mutex{}
-
 func CreateMessage(message WebMessage) (created *WebMessage, err error) {
-	if message.Id != nil {
-		return nil, InvalidEntityStateErr
-	}
-
-	mutex.Lock()
-	nextId := idMessageSequence + 1
-	message.Id = &nextId
-	messagesById[nextId] = message
-	idMessageSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
-	mutex.Unlock()
-
-	message.Created = time.Now().Unix()
-	messagesById[*message.Id] = message
-	return &message, nil
+	return messagesRepository.CreateMessage(message)
 }
 
 func UpdateMessage(message WebMessage) (updated *WebMessage, err error) {
-	if message.Id == nil {
-		return nil, InvalidEntityStateErr
-	}
-	messagesById[*message.Id] = message
-	return &message, nil
+	return messagesRepository.UpdateMessage(message)
 }
 
 func DeleteMessage(id int) error {
-	delete(messagesById, id)
-	return nil
+	return messagesRepository.DeleteMessage(id)
 }

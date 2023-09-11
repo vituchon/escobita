@@ -24,3 +24,13 @@ type Players interface { // aplica misma idea que con Games por eso no agrego el
 	UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error)
 	DeletePlayer(id int) error
 }
+
+type Messages interface {
+	GetMessages() ([]PersistentMessage, error)
+	GetMessagesByGame(gameId int) ([]PersistentMessage, error)
+	GetMessagesByGameAndTime(gameId int, since int64) ([]PersistentMessage, error)
+	GetMessageById(id int) (*PersistentMessage, error)
+	CreateMessage(message PersistentMessage) (created *PersistentMessage, err error)
+	UpdateMessage(message PersistentMessage) (updated *PersistentMessage, err error)
+	DeleteMessage(id int) error
+}
