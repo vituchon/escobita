@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"log"
-	"net"
 	"net/http"
 	"strconv"
 	"sync"
@@ -16,7 +15,7 @@ type ClientIdResolverFunc func(r *http.Request) int
 
 type WebSocketsHandler struct {
 	upgrader             websocket.Upgrader
-	connsByClientId      map[int]*websocket.Conn
+	connByClientId       map[int]*websocket.Conn
 	mutex                sync.Mutex
 	clientIdResolverFunc ClientIdResolverFunc
 }
@@ -30,17 +29,17 @@ func NewWebSocketsHandler(clientIdResolverFunc ClientIdResolverFunc) WebSocketsH
 	connsByClientId := make(map[int]*websocket.Conn)
 	return WebSocketsHandler{
 		upgrader:             upgrader,
-		connsByClientId:      connsByClientId,
+		connByClientId:       connsByClientId,
 		mutex:                sync.Mutex{},
 		clientIdResolverFunc: clientIdResolverFunc,
 	}
 }
 
 func (h *WebSocketsHandler) AdquireOrRetrieve(w http.ResponseWriter, r *http.Request) (*websocket.Conn, bool, error) {
-	clientId := h.clientIdResolverFunc(r)
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
-	conn, exists := h.connsByClientId[clientId]
+	clientId := h.clientIdResolverFunc(r)
+	conn, exists := h.connByClientId[clientId]
 	if !exists { // server rules: at most one connection per http client (thus it is no multi tab compliant!)
 		conn, err := h.upgrader.Upgrade(w, r, http.Header(map[string][]string{
 			"created": []string{strconv.Itoa(int(time.Now().Unix()))},
@@ -48,38 +47,31 @@ func (h *WebSocketsHandler) AdquireOrRetrieve(w http.ResponseWriter, r *http.Req
 		if err != nil {
 			return nil, false, err
 		}
-		h.connsByClientId[clientId] = conn
+		h.connByClientId[clientId] = conn
 		return conn, true, nil // adquired (is new)
 	}
 	return conn, false, nil // retrieved (is not new)
 }
 
-func (h *WebSocketsHandler) Release(w http.ResponseWriter, r *http.Request) error {
-	clientId := h.clientIdResolverFunc(r)
+func (h *WebSocketsHandler) Retrieve(r *http.Request) *websocket.Conn {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
-	conn, exists := h.connsByClientId[clientId]
+	clientId := h.clientIdResolverFunc(r)
+	return h.connByClientId[clientId]
+}
+
+func (h *WebSocketsHandler) Release(r *http.Request) error {
+	h.mutex.Lock()
+	defer h.mutex.Unlock()
+	clientId := h.clientIdResolverFunc(r)
+	conn, exists := h.connByClientId[clientId]
 	if !exists {
 		return ConnectionDoesntExistErr
 	}
-	delete(h.connsByClientId, clientId)
-	unbindSocketSocketFromJoinedGame(conn, r)
+	delete(h.connByClientId, clientId)
 	_1000 := []byte{3, 232} // 1000, honouring https://tools.ietf.org/html/rfc6455#page-36
 	conn.WriteMessage(websocket.CloseMessage, _1000)
 	return conn.Close()
-}
-
-// for the sake of doing some sweep of possible binded websocket to a given game whose connection is about to be closed
-func unbindSocketSocketFromJoinedGame(conn *websocket.Conn, request *http.Request) {
-	for gameId, wss := range wsByGameId {
-		for _, ws := range wss {
-			if ws == conn {
-				log.Println("ws is binded to a game, procedding to unbind...")
-				UnbindConn(conn, gameId, request)
-				return
-			}
-		}
-	}
 }
 
 var (
@@ -87,38 +79,47 @@ var (
 	webSocketsHandler        = NewWebSocketsHandler(getWebPlayerId)
 )
 
-func AdquireWebSocket(w http.ResponseWriter, r *http.Request) {
-	_, isNew, err := webSocketsHandler.AdquireOrRetrieve(w, r)
+// WEB SOCKET DEDICATED END POINTS
+
+func AdquireOrRetrieveWebSocket(w http.ResponseWriter, r *http.Request) {
+	conn, isNew, err := webSocketsHandler.AdquireOrRetrieve(w, r)
 	if err != nil {
-		log.Printf("Error getting web socket: %v\n", err)
+		log.Printf("Error adquiring or retrieving web socket: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	if !isNew {
 		log.Printf("Web socket already adquired for client(id='%d')\n", getWebPlayerId(r))
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
-		log.Printf("Web socket adquired OK (connection \"upgraded\") for client(id='%d')\n", getWebPlayerId(r))
+		log.Printf("Web socket(RemoteAddr='%s') adquired OK (connection \"upgraded\") for client(id='%d')\n", conn.RemoteAddr().String(), getWebPlayerId(r))
 	}
 }
 
 func ReleaseWebSocket(w http.ResponseWriter, r *http.Request) {
-	err := webSocketsHandler.Release(w, r)
-	if err != nil {
-		log.Printf("Error releasing web socket: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
+	conn := webSocketsHandler.Retrieve(r)
+	if conn != nil {
+		gameWebSockets.UnbindClientWebSocketInGame(conn, r) // just in case the ws is associated with a game, then delete the association
+		err := webSocketsHandler.Release(r)
+		if err != nil {
+			log.Printf("Error releasingWeb socket(RemoteAddr='%s') for client(id='%d')\n: %v\n", conn.RemoteAddr().String(), getWebPlayerId(r), err)
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			log.Printf("Web socket(RemoteAddr='%s') released OK for client(id='%d')\n", conn.RemoteAddr().String(), getWebPlayerId(r))
+		}
 	} else {
-		log.Printf("Web socket released OK for client(id='%d')\n", getWebPlayerId(r))
+		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", getWebPlayerId(r))
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 
 func DebugWebSockets(w http.ResponseWriter, r *http.Request) {
-	conns := webSocketsHandler.connsByClientId
+	conns := webSocketsHandler.connByClientId
 	type item struct {
-		RemoteAddr net.Addr `json:"remoteAddr"`
+		RemoteAddr string `json:"remoteAddr"`
 	}
 	items := []item{}
 	for _, conn := range conns {
-		items = append(items, item{RemoteAddr: conn.RemoteAddr()})
+		items = append(items, item{RemoteAddr: conn.RemoteAddr().String()})
 	}
 	WriteJsonResponse(w, http.StatusOK, items)
 }

@@ -19,8 +19,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
-
-	embed "embed"
+	//	embed "embed"
 )
 
 // TODO : nice implement something like this
@@ -54,8 +53,9 @@ func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
 	return
 }
 
+/*
 //go:embed assets/*
-var assets embed.FS
+var assets embed.FS*/
 
 func StartServer() {
 	//file, err := assets.Open("assets/html/root.html")
@@ -91,12 +91,12 @@ func buildRouter() *mux.Router {
 	root := mux.NewRouter()
 	// TODO : word "presentation" in the path may be redudant, perpahs using just "assets" would be enought!
 	// BEFORE go:embed
-	/*fileServer := http.FileServer(http.Dir("./"))
-	root.PathPrefix("/presentation/web/assets").Handler(fileServer)*/
+	fileServer := http.FileServer(http.Dir("./"))
+	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
 
 	// AFTER go:embed
-	fileServer := http.FileServer(http.FS(assets))
-	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))
+	/*fileServer := http.FileServer(http.FS(assets))
+	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))*/
 
 	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
 	//root.Use(SslRedirect, AccessLogMiddleware, OrgAwareMiddleware)
@@ -108,7 +108,7 @@ func buildRouter() *mux.Router {
 	Get("/healthcheck", controllers.Healthcheck)
 	Get("/version", controllers.Version)
 
-	Get("/adquire-ws", controllers.AdquireWebSocket)
+	Get("/adquire-ws", controllers.AdquireOrRetrieveWebSocket)
 	Get("/release-ws", controllers.ReleaseWebSocket)
 	Get("/debug-ws", controllers.DebugWebSockets)
 
@@ -127,6 +127,7 @@ func buildRouter() *mux.Router {
 	apiGet("/games", controllers.GetGames)
 	apiGet("/games/{id:[0-9]+}", controllers.GetGameById)
 	apiPost("/games", controllers.CreateGame)
+	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
 	apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
 	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
 	apiPost("/games/{id:[0-9]+}/resume", controllers.ResumeGame)
@@ -135,9 +136,10 @@ func buildRouter() *mux.Router {
 	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)
 
 	apiGet("/games/{id:[0-9]+}/bind-ws", controllers.BindClientWebSocketToGame)
-	apiGet("/games/{id:[0-9]+}/unbind-ws", controllers.UnbindClientWebSocketToGame)
+	apiGet("/games/{id:[0-9]+}/unbind-ws", controllers.UnbindClientWebSocketInGame)
 
 	apiGet("/players", controllers.GetPlayers)
+	apiGet("/players-by-game", controllers.GetPlayersByGame) // TODO: Implement if necessary...
 	apiGet("/player", controllers.GetClientPlayer)
 	apiGet("/players/{id:[0-9]+}", controllers.GetPlayerById)
 	apiPost("/players", controllers.CreatePlayer)
@@ -200,7 +202,8 @@ func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 
 // Dev notes: the request context has the organization due to the ContextAwareMiddle, so there will be always a valid portal's client session when invoking this function
 func serveRoot(response http.ResponseWriter, request *http.Request) {
-	t, err := template.ParseFS(assets, "assets/html/root.html")
+	//t, err := template.ParseFS(assets, "assets/html/root.html")
+	t, err := template.ParseFiles("presentation/web/assets/html/root.html")
 	if err != nil {
 		fmt.Printf("Error while parsing template : %v", err)
 		response.WriteHeader(http.StatusInternalServerError)
