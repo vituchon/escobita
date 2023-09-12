@@ -86,7 +86,7 @@ func UpdateGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	msgPayload := WebSockectOutgoingMsgPayload{updated, nil}
+	msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
 	notifyBindedWebSockets(*game.Id, "updated", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
@@ -165,12 +165,12 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	msgPayload := WebSockectOutgoingMsgPayload{updated, nil}
+	msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
 	notifyBindedWebSockets(*game.Id, "resume", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
-type WebSockectOutgoingMsgPayload struct {
+type WebSockectOutgoingActionMsgPayload struct {
 	Game   *repositories.PersistentGame `json:"game"`
 	Action *model.PlayerAction          `json:"action,omitempty"`
 }
@@ -206,7 +206,7 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	msgPayload := WebSockectOutgoingMsgPayload{game, &action}
+	msgPayload := WebSockectOutgoingActionMsgPayload{game, &action}
 	notifyBindedWebSockets(*game.Id, "take", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
@@ -241,7 +241,7 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	msgPayload := WebSockectOutgoingMsgPayload{game, &action}
+	msgPayload := WebSockectOutgoingActionMsgPayload{game, &action}
 	notifyBindedWebSockets(*game.Id, "drop", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
@@ -289,7 +289,33 @@ func CalculateGameStats(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, stats)
 }
 
-var wsByGameId map[int][]*websocket.Conn = make(map[int][]*websocket.Conn) // TODO : Access may be has to be monitored by sync locks!
+type WebSockectOutgoingChatMsgPayload struct {
+	Message services.VolatileWebMessage `json:"message"`
+}
+
+func SendMessage(response http.ResponseWriter, request *http.Request) {
+	var message services.VolatileWebMessage
+	err := parseJsonFromReader(request.Body, &message)
+	if err != nil {
+		fmt.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	paramId := RouteParam(request, "id")
+	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		fmt.Printf("Can not parse id from '%s'", paramId)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	msgPayload := WebSockectOutgoingChatMsgPayload{message}
+	notifyBindedWebSockets(id, "game-chat", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, struct{}{})
+}
+
+var wsByGameId map[int][]*websocket.Conn = make(map[int][]*websocket.Conn) // TODO : Access SHOULD be monitored by sync locks! upgrade to "full struct"!!
 
 func notifyBindedWebSockets(gameId int, kind string, data interface{}) {
 	type Notification struct {
