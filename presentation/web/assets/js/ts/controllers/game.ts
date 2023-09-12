@@ -307,25 +307,17 @@ module Game {
     private sendingMessage: boolean = false;
     private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = true;
-    private lastChatUpdateUnixTimestamp: number = 0;
     private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
     private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
 
     public isMatchInProgress: boolean = false;
     public currentMatchStats: Api.ScoreSummaryByPlayerName;
 
-    public players: Players.Player[]; // not sure if it will be use somewhere!
-    public playersById: Util.EntityById<Players.Player>;
-
-    private lastUpdateUnixTimestamp: number = undefined;
-
     public formatUnixTimestamp = Util.unixToReadableClock
     public translateSuit = Cards.Suits.translate
 
     public loading: boolean = false;
     public displayCardsAsSprites: boolean = true;
-
-    private updaterInterval: ng.IPromise<any>; // "handler" to the one interval that updates the UI according to the controller's state
 
     constructor($rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService,
       private gamesService: Games.Service, private playersService: Players.Service,  private messagesService: Messages.Service, private webSocketsService: WebSockets.Service,
@@ -355,7 +347,6 @@ module Game {
         }
       })
 
-      //this.setupPullRefresh(2000) // experimenting see // (*)
       this.webSocketsService.retrieve().then((ws) => {
         this.gamesService.bindWebSocket(this.game.id).then(() => {
           this.setupPushRefresh(ws)
@@ -422,7 +413,7 @@ module Game {
           data: {
             game: Api.Game,
             action?: Api.PlayerAction
-            message?: Api.Message
+            message?: Games.VolatileMessage
           };
         } = JSON.parse(event.data)
         console.log("llega una notificación", notification);
@@ -464,44 +455,8 @@ module Game {
       });
     }
 
-    private setupPullRefresh(delay: number = 2000) {
-      this.$scope.$on('$destroy', () => {
-        this.$interval.cancel(this.updaterInterval)
-      });
-
-      this.updaterInterval = this.$interval(() => {
-        const mustRefreshGame = (!this.isMatchInProgress) || (this.isMatchInProgress && !this.isPlayerTurn) // ~p v (p y q~) == ~p v ~q
-        var refreshGamePromise = this.$q.when(this.game)
-        /*if (mustRefreshGame) { // (*) intenttionally commented so push notifications update the game but pull notification the chat
-          refreshGamePromise = this.refreshGame()
-        }*/
-        var updateChatPromise = this.$q.when(this.messages)
-        if (this.isChatEnabled) {
-          updateChatPromise = this.updateChat();
-        }
-
-        return this.$q.all([refreshGamePromise,updateChatPromise]).then((response) => {
-          if (!_.isUndefined(this.lastUpdateUnixTimestamp)) {
-            const nowUnixTimestamp = moment().unix()
-            const seconds = nowUnixTimestamp - this.lastUpdateUnixTimestamp
-            //console.log("demora aproximada ",seconds)
-            if (seconds > 5) {
-              Toastr.warn("Puede que haya algunos problemas de conexión!")
-            }
-          }
-          this.lastUpdateUnixTimestamp = 	moment().unix()
-          return response
-        })
-      }, delay)
-    }
-
-    private displayMessage(message: Api.Message | Games.VolatileMessage) {
-      var player: Api.Player
-      if (Games.isVolatile(message)) {
-        player = message.player
-      } else {
-        player = this.playersById[message.playerId]
-      }
+    private displayMessage(message: Games.VolatileMessage) {
+      const player = message.player
       const $elem = Toastr.chat(player.name,message.text)
       const fontSize = this.getFontSize(player)
       $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px")
@@ -539,22 +494,6 @@ module Game {
       return `${card.rank} de ${Cards.Suits.translate(card.suit)}`
     }
 
-    public updateChat() {
-      return this.playersService.getPlayers().then((players) => {
-        this.players = players
-        this.playersById = Util.toMapById(this.players);
-        return this.players
-      }).then((players) => {
-        return this.messagesService.getMessagesByGame(this.game.id, this.lastChatUpdateUnixTimestamp).then((incomingMessages) => {
-          this.lastChatUpdateUnixTimestamp = moment().unix();
-          _.forEach(incomingMessages,(incomingMessage) => {
-            this.displayMessage(incomingMessage)
-          })
-          this.messages.push(...incomingMessages)
-          return undefined; // it is the default return value, see https://plnkr.co/edit/ZdXQymjYFON0VIcD
-        })
-      })
-    }
 
     public sendAndCleanMessage(msg: Api.Message | Games.VolatileMessage) {
       this.sendingMessage = true;
