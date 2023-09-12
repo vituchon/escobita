@@ -319,9 +319,9 @@ module Game {
     public loading: boolean = false;
     public displayCardsAsSprites: boolean = true;
 
-    constructor($rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, private $state: ng.ui.IStateService,
-      private gamesService: Games.Service, private playersService: Players.Service,  private messagesService: Messages.Service, private webSocketsService: WebSockets.Service,
-      private $interval: ng.IIntervalService, private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
+    constructor($rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, $state: ng.ui.IStateService,
+      private gamesService: Games.Service, private webSocketsService: WebSockets.Service,
+      private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
       this.game = $state.params["game"]// || onGoingGame
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
@@ -631,6 +631,5 @@ module Game {
 
   }
 
-  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'PlayersService',
-    'MessagesService', 'WebSocketsService', '$interval', '$timeout', '$q','$window', Controller]);
+  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', Controller]);
 }
