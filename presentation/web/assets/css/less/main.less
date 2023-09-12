@@ -660,12 +660,16 @@ h4 {
         display: flex;
         flex-direction: row;
 
+        .ng-card-container.card-image {
+          transition: transform 0.25s linear;
+        }
+
         .deck-section {
           display: flex;
           flex-direction: column;
           background-color: #ebebeb;
           border-radius: 2rem;
-          padding: 1rem 0rem 1rem 1rem;
+          padding: 1rem 1rem 1rem 1rem;
 
           .cards {
             display: flex;
@@ -722,38 +726,74 @@ h4 {
 
     }
 
-  .taken-cards-container {
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-
-    div {
-      align-self: flex-start;
-    }
-
-    .title {
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .taken-cards-section {
+    .taken-cards-container {
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      flex-wrap: wrap;
+      flex-direction: column;
+      margin-top: 30px;
 
-      .card {
+      div {
+        align-self: flex-start;
+      }
+
+      .title {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .taken-cards-section {
         display: flex;
         flex-direction: row;
-        align-items: center;
-        background-color: lightgrey;
-        border-radius: 10px;
-        padding: 0 5px;
-        margin: 5px;
-        font-size: 14px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        .card {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          background-color: lightgrey;
+          border-radius: 10px;
+          padding: 0 5px;
+          margin: 5px;
+          font-size: 14px;
+        }
+      }
+
+      .stats-section {
+        display: flex;
+        flex-direction: column;
+        font-size: 12px;
+        margin-top: 10px;
+
+        .title {
+          font-size: 14px;
+          font-weight: bold;
+        }
+
+        .player-stats-container {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          margin-top: 10px;
+
+          .player-stats-item {
+            .player-name {
+              color: darkgrey;
+              font-weight: bold;
+              font-size: x-large;
+            }
+
+            .stats-name {
+              font-weight: normal;
+            }
+
+            .stats-value {
+              font-weight: bold;
+              color: darkgreen;
+            }
+          }
+        }
       }
     }
-  }
   }
 }
 
