@@ -60,6 +60,24 @@ namespace Games {
     action: Api.PlayerTakeAction;
   }
 
+
+  export interface VolatileMessage {
+    gameId: number;
+    player: Api.Player;
+    text: string;
+  }
+
+  export function isVolatile(message: any): message is VolatileMessage {
+    return Util.isDefined(message.player)
+  }
+
+  export function newMessage(gameId: number, player: Api.Player, text: string): VolatileMessage {
+    return {
+      gameId: gameId,
+      player: player,
+      text: text,
+    }
+  }
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
@@ -138,7 +156,11 @@ namespace Games {
       });
     }
 
-
+    sendMessage(msg: VolatileMessage) {
+      return this.$http.post<Game>(`/api/v1/games/${msg.gameId}/message`, msg).then((response) => {
+        return response.data
+      })
+    }
   }
 
   escobita.service('GamesService', ['$http', '$q', Service]);

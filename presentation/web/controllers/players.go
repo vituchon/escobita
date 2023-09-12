@@ -81,6 +81,10 @@ func GetPlayerById(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, player)
 }
 
+func GetPlayersByGame(response http.ResponseWriter, request *http.Request) {
+	WriteJsonResponse(response, http.StatusOK, "not implemeted yet")
+}
+
 func CreatePlayer(response http.ResponseWriter, request *http.Request) {
 	var player repositories.PersistentPlayer
 	err := parseJsonFromReader(request.Body, &player)
