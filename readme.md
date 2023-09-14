@@ -1,5 +1,6 @@
 # Escobita de 15
-![example workflow](https://github.com/vituchon/escobita/actions/workflows/go.yml/badge.svg)
+[![Go](https://github.com/vituchon/escobita/actions/workflows/go.yml/badge.svg)](https://github.com/vituchon/escobita/actions/workflows/go.yml)
+[![Makefile CI](https://github.com/vituchon/escobita/actions/workflows/makefile.yml/badge.svg)](https://github.com/vituchon/escobita/actions/workflows/makefile.yml)
 
 * `cd $GOPATH`
 * `mkdir --parents src/github.com/vituchon`
