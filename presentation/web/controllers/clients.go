@@ -23,10 +23,10 @@ func GetOrCreateClientSession(request *http.Request) (*sessions.Session, error) 
 	}
 	if clientSession.IsNew {
 		mutex.Lock()
+		defer mutex.Unlock()
 		nextId := clientSequenceId + 1
 		clientSession.Values["clientId"] = nextId
 		clientSequenceId++
-		mutex.Unlock()
 	}
 	return clientSession, nil
 }
