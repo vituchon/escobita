@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -17,22 +16,19 @@ func NewSessionStore(key []byte) {
 var clientSequenceId int = 0
 var mutex sync.Mutex
 
-func GetOrCreateClientSession(request *http.Request) *sessions.Session {
+func GetOrCreateClientSession(request *http.Request) (*sessions.Session, error) {
 	clientSession, err := clientSessions.Get(request, "client_session")
 	if err != nil {
-		fmt.Printf("error while retrieving 'client_session' from session store: %+v\n", err)
+		return nil, err
 	}
 	if clientSession.IsNew {
-		fmt.Printf("creating new session\n")
 		mutex.Lock()
 		nextId := clientSequenceId + 1
 		clientSession.Values["clientId"] = nextId
 		clientSequenceId++
 		mutex.Unlock()
-	} else {
-		fmt.Printf("using existing session, clientId = %v\n", clientSession.Values["clientId"])
 	}
-	return clientSession
+	return clientSession, nil
 }
 
 func SaveClientSession(request *http.Request, response http.ResponseWriter, clientSession *sessions.Session) error {

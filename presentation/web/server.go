@@ -188,8 +188,13 @@ func AccessLogMiddleware(h http.Handler) http.Handler {
 
 func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		clientSession := controllers.GetOrCreateClientSession(request)
-		err := controllers.SaveClientSession(request, response, clientSession)
+		clientSession, err := controllers.GetOrCreateClientSession(request)
+		if err != nil {
+			fmt.Printf("error while getting client session: %v", err)
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		err = controllers.SaveClientSession(request, response, clientSession)
 		if err != nil {
 			fmt.Printf("error while saving client session: %v", err)
 			response.WriteHeader(http.StatusInternalServerError)
