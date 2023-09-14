@@ -13,7 +13,7 @@
               </div>
             <ul>
               <li><div class="materialButton colorButton" ng-class="{ 'selected-button': ctr.isChatEnabled}" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div></li>
-              <li><div class="materialButton colorButton" ng-class="{ 'selected-button': !ctr.displayCardsAsSprites}" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Ver cartas como {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}}</div></li>
+              <li ng-show="ctr.isMatchInProgress"><div class="materialButton colorButton" ng-class="{ 'selected-button': !ctr.displayCardsAsSprites}" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Ver cartas como {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}}</div></li>
               <li ng-show="ctr.isMatchInProgress"><div class="materialButton colorButton" ng-class="{ 'selected-button': showPlayerActions}"  ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div></li>
               <li ng-show="ctr.isMatchInProgress"><div class="materialButton colorButton" ng-class="{ 'selected-button': showTakenCards}"   ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div></li>
             </ul>
