@@ -124,6 +124,7 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	gameWebSockets.UnbindAllWebSocketsInGame(id, request)
 	response.WriteHeader(http.StatusOK)
 }
 
@@ -365,6 +366,14 @@ func (gws *GameWebSockets) BindClientWebSocketToGame(response http.ResponseWrite
 	}
 	gws.mutex.Lock()
 	defer gws.mutex.Unlock()
+
+	for _, exstingConn := range gws.connsByGameId[gameId] {
+		if exstingConn == conn {
+			log.Printf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
+			return
+		}
+	}
+
 	gws.connsByGameId[gameId] = append(gws.connsByGameId[gameId], conn)
 	log.Printf("Binded web socket(remoteAddr='%s') from client(id=%d) in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
 }
@@ -378,6 +387,19 @@ func UnbindClientWebSocketInGame(response http.ResponseWriter, request *http.Req
 		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", getWebPlayerId(request))
 		response.WriteHeader(http.StatusBadRequest)
 	}
+}
+
+func (gws *GameWebSockets) UnbindAllWebSocketsInGame(gameId int, request *http.Request) {
+	gws.mutex.Lock()
+	defer gws.mutex.Unlock()
+	log.Printf("Unbinding all web sockets from possible joined game id='%d'...\n", gameId)
+
+	for _, conn := range gws.connsByGameId[gameId] {
+		gws.doUnbindClientWebSocketInGame(conn, gameId, request)
+	}
+	delete(gws.connsByGameId, gameId)
+
+	log.Printf("Unbinded all web sockets from possible joined game id='%d'\n", gameId)
 }
 
 func (gws *GameWebSockets) UnbindClientWebSocketInGame(conn *websocket.Conn, request *http.Request) {
@@ -409,5 +431,5 @@ func (gws *GameWebSockets) doUnbindClientWebSocketInGame(givenConn *websocket.Co
 	}
 	*connsPtr = chopped
 	gws.connsByGameId[gameId] = *connsPtr
-	log.Printf("Unbined Web socket(remoteAddr='%s') in game id='%d'\n", givenConn.RemoteAddr().String(), gameId)
+	log.Printf("Unbinded Web socket(remoteAddr='%s') in game id='%d'\n", givenConn.RemoteAddr().String(), gameId)
 }
