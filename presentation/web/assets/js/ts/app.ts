@@ -45,9 +45,8 @@ module App {
   escobita.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', setup]);
 }
 
-escobita.run(['$state', "$rootScope", ($state: ng.ui.IStateService,$rootScope: ng.IRootScopeService) => { // so on landing it goes straight to the lobby
-  $state.go("lobby");
-  ($rootScope as any)["$state"] = $state
+escobita.run(['$state', ($state: ng.ui.IStateService) => {
+  $state.go("lobby"); // so on landing it goes straight to the lobby
 }])
 
 
