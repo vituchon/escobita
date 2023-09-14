@@ -62,7 +62,7 @@
                 <span>{{$index+1}}. {{game.name}}</span>
                 <span class="flex-space-filler"></span>
                 <button class="materialButton colorButton" ng-if="ctr.doesGameAcceptPlayers(game)" ng-disabled="ctr.loading" ng-click="ctr.joinGame(game, ctr.player)">Unirse</button>
-                <button class="materialButton colorButton" ng-if="ctr.canDeleteGame(game, ctr.player)" style="background-color: red;" ng-disabled="ctr.loading" ng-click="ctr.deleteGame(game, ctr.player)">Eliminar</button>
+                <button class="materialButton colorButton" ng-if="ctr.canDeleteGame(game, ctr.player)" style="background-color: firebrick;" ng-disabled="ctr.loading" ng-click="ctr.deleteGame(game, ctr.player)">Eliminar</button>
                 <button class="materialButton colorButton" ng-if="!ctr.doesGameAcceptPlayers(game)" style="background-color: yellow; color: black;" disabled >Partida en progreso</button>
               </div>
             </div>
@@ -82,8 +82,10 @@
         <span class="title"><i>The <b>cards</b> of the <b>house</b></i></span>
         <div class="items" style="height: 130px;">
           <div ng-repeat="suit in [0,1,2,3]">
-            <div ng-repeat="rank in [1,2,3,4,5,6,7,8,9,10,11,12]" ng-init="model = {suit: suit, rank: rank}">
-              <card class="card" ng-model="model"></card>
+            <div ng-repeat="rank in [1,2,3,4,5,6,7,8,9,10,11,12]" ng-init="model = {suit: suit, rank: rank};">
+              <!--<div ng-init="myStyle={'position':'relative', 'left': ($index)+'px'}" ng-style="myStyle">-->
+                <card class="card" ng-model="model"></card>
+              <!--</div>-->
             </div>
           </div>
         </div>

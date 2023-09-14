@@ -322,6 +322,11 @@ h4 {
   }
 }
 
+.promote-chat-usage {
+  transition: all 1s ease;
+  display: block;
+}
+
 .not-visible {
   opacity: 0;
   height: 0;
@@ -449,9 +454,11 @@ h4 {
       flex-direction: column;
 
       .title {
-        font-size: 14px;
         text-align: center;
-        font-weight: normal !important;
+
+        b {
+          font-weight: 900;
+        }
       }
 
       .items {
@@ -550,13 +557,63 @@ h4 {
     font-family: 'Grinched', "Roboto", sans-serif !important;
     font-size: 1.5rem;
   }
+
   .header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 
     .config {
       display: flex;
       flex-direction: row;
+
+
+      .materialButton {
+        &:hover {
+          background-color: darken(@mainColor, 50%);
+          color: yellow;
+          filter: brightness(85%);
+        }
+      }
+
+      // VERTICAL MENU, taken (and adapted) from https://stackoverflow.com/a/8141783/903998
+
+      div.vertical{
+        position:relative;
+
+        ul {
+          list-style: none;
+          ul {
+            position:absolute;
+            display: flex;
+            flex-direction: row;
+            left:0%;
+            top:0;
+            visibility:hidden;
+            opacity:0;
+            transition: all 1s ease;
+            transform: translateX(100px);
+          }
+        }
+
+        li {
+          position:relative;
+
+          div {
+            width: max-content;
+            font-size: 0.9rem;
+          }
+        }
+      }
+
+      div.vertical li:hover > ul, div.vertical li.hover > ul{
+        display: flex;
+        flex-direction: row;
+        padding: 0px;
+        left:100%;
+        visibility:visible;
+        opacity:1;
+        transform: translateX(0px);
+      }
     }
   }
 
@@ -586,6 +643,10 @@ h4 {
 
       .text {
         flex-grow: 2;
+      }
+
+      #chat-press-enter-hint {
+        font-size: xx-small
       }
     }
 
@@ -643,12 +704,22 @@ h4 {
     display: flex;
     flex-direction: column;
 
+    .materialButton {
+      border-radius: 20px;
+      &:hover {
+        border-radius: 10px;
+        background-color: darken(@mainColor, 50%);
+        color: yellow;
+        filter: brightness(85%);
+      }
+    }
+
     #interactive-section {
       display: flex;
       flex-direction: column;
 
       input[type=checkbox],input[type=radio] {
-        width: 0.5rem;
+        width: 1rem;
       }
 
       .colorButton {
@@ -704,16 +775,6 @@ h4 {
 
         #game-controls {
 
-          .materialButton {
-            border-radius: 20px;
-            &:hover {
-              border-radius: 10px;
-              background-color: darken(@mainColor, 50%);
-              color: yellow;
-              filter: brightness(85%);
-            }
-          }
-
           .controls-section {
             display: flex;
             flex-direction: column;
@@ -735,10 +796,6 @@ h4 {
         align-self: flex-start;
       }
 
-      .title {
-        font-size: 14px;
-        font-weight: bold;
-      }
 
       .taken-cards-section {
         display: flex;
@@ -763,11 +820,6 @@ h4 {
         flex-direction: column;
         font-size: 12px;
         margin-top: 10px;
-
-        .title {
-          font-size: 14px;
-          font-weight: bold;
-        }
 
         .player-stats-container {
           display: flex;

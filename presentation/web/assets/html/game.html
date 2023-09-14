@@ -3,51 +3,60 @@
   <div class="header">
     <h2>Juego <i>{{ctr.game.name}}</i></h2>
     <div class="config">
-      <div class="materialButton colorButton" ng-class="{ 'selected-button': ctr.isChatEnabled}" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div>
-      <span>&nbsp;&nbsp;</span>
-      <div class="materialButton colorButton" ng-class="{ 'selected-button': !ctr.displayCardsAsSprites}" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Cambiar visualización cartas a modo {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}}</div>
-      <div ng-show="ctr.isMatchInProgress" style="display: flex;flex-direction: row;">
-        <span>&nbsp;&nbsp;</span>
-        <div class="materialButton colorButton" ng-class="{ 'selected-button': showPlayerActions}"  ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div>
-        <span>&nbsp;&nbsp;</span>
-        <div class="materialButton colorButton" ng-class="{ 'selected-button': showTakenCards}"   ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div>
+      <div class="vertical">
+        <ul>
+          <li ng-init="leaveOpen=false" ng-click="leaveOpen=!leaveOpen" ng-class="{'hover':leaveOpen}">
+              <div ng-class="{'selected-button': leaveOpen}"class="materialButton colorButton">
+                💅🏻&nbsp;Ajustes&nbsp;
+                <img ng-show="leaveOpen" src="/presentation/web/assets/images/eyes_open.png" height="20px"/>
+                <img ng-show="!leaveOpen" src="/presentation/web/assets/images/eyes_closed.png" height="20px"/>
+              </div>
+            <ul>
+              <li><div class="materialButton colorButton" ng-class="{ 'selected-button': ctr.isChatEnabled}" ng-click="ctr.isChatEnabled = !ctr.isChatEnabled">{{ctr.isChatEnabled ? 'Desactivar' : 'Activar'}} chat</div></li>
+              <li><div class="materialButton colorButton" ng-class="{ 'selected-button': !ctr.displayCardsAsSprites}" ng-click="ctr.displayCardsAsSprites = !ctr.displayCardsAsSprites">Ver cartas como {{ctr.displayCardsAsSprites ? 'texto' : 'imagen'}}</div></li>
+              <li ng-show="ctr.isMatchInProgress"><div class="materialButton colorButton" ng-class="{ 'selected-button': showPlayerActions}"  ng-click="showPlayerActions = !showPlayerActions">{{showPlayerActions ? 'Ocultar' : 'Mostrar'}} acciones</div></li>
+              <li ng-show="ctr.isMatchInProgress"><div class="materialButton colorButton" ng-class="{ 'selected-button': showTakenCards}"   ng-click="showTakenCards = !showTakenCards">{{showTakenCards ? 'Ocultar' : 'Mostrar'}} cartas tomadas</div></li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 
   <!-- CHAT -->
   <div id="chat-container" class="section">
+
+    <div ng-show="ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
+      <strong >Sos el administrador</strong>&nbsp;
+      <span>Solo vos podés comenzar la partida, una vez comenzada se cierran las puertas</span>
+      <span class="promote-chat-usage">Podés usar el chat mientras tanto</span>
+    </div>
+
+    <div ng-show="!ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
+      <span>El administrador esta configurando la partida para el gusto de todos, una vez comenzada las puertas se cerrarán</span>
+      <span class="promote-chat-usage">Podés usar el chat mientras tanto</span>
+    </div>
+
     <div class="flex"></div>
     <div ng-if="ctr.isChatEnabled">
       <div class="send-message-control">
         <input class="text" placeholder="Escribe un mensaje" ng-model="ctr.playerMessage.text" >
         <button class="materialButton raised colorButton" style="display: flex; flex-direction: column;; margin-left: 1em;" ng-disabled="!ctr.canSendMessage(ctr.playerMessage)" title="Podés apretar enter para enviar" ng-click="ctr.sendAndCleanMessage(ctr.playerMessage);">
           <span>Enviar</span>
-          <span id="chat-press-enter-hint" style="font-size: xx-small">(ó enter)</span>
+          <span id="chat-press-enter-hint">(ó enter)</span>
         </button>
       </div>
     </div>
   </div>
 
   <div class="section player-list-section">
-    <div ng-show="ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
-      <strong >Eres el administrador</strong>&nbsp;
-      <span>Solo vos podés comenzar la partida, una vez comenzada se cierran las puertas!</span><br/>
-      <span>Se puede usar el chat para charlar mientras tanto, apreta el botón <strong>activar chat</strong></span>
-    </div>
-
-    <div ng-show="!ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
-      <span>El administrador esta configurando la partida para el gusto de todos.</span><br/>
-      <span>Se puede usar el chat para charlar mientras tanto, apreta el botón <strong>activar chat</strong></span>
-    </div>
-
     <h3>Jugadores</h3>
     <!-- the check performed at Games.addPlayer at joining a game ensures that won't be two players with the same name, but they could share it and they will actually share the player -->
     <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.name">
       <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : ctr.currentTurnPlayer.name === player.name}">{{player.name}}</span></span> <!-- recall game players doesn't have id -->
       <span style="width: 10px;"></span>
       <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
-      <div ng-show="ctr.player.name == player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
+      <div ng-show="ctr.player.name != player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
        <img ng-show="!peekPlayer" src="/presentation/web/assets/images/eyes_open.png" height="20px">
        <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
       </div>
@@ -110,7 +119,7 @@
 
       <!-- TAKEN CARDS -->
       <div class="taken-cards-container" ng-show="ctr.isMatchInProgress" ng-if="showTakenCards">
-        <div class="title">Cartas tomadas</div>
+        <h3>Cartas tomadas</h3>
         <div class="taken-cards-section">
           <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].taken">
             <card ng-model="card"></card>
@@ -120,7 +129,7 @@
 
       <!-- ACTIONS PERFORMED -->
       <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
-        <div class="title">Acciones</div>
+        <h3>Acciones</h3>
         <div class="player-actions-section">
           <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerName[ctr.player.name]">
             <player-action order="$index" ng-model="playerAction"></player-action>
@@ -131,8 +140,8 @@
     </div>
 
     <!-- MATCH STATS -->
-    <div class="stats-section">
-      <div class="title">Estadísticas del partido actual</div>
+    <div class="stats-section" ng-show="ctr.isMatchInProgress">
+      <h3>Estadísticas del partido actual</h3>
       <div class="player-stats-container">
         <div ng-repeat="(playerName,stats) in ctr.currentMatchStats" class="player-stats-item">
           <div>

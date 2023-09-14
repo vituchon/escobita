@@ -404,6 +404,11 @@ module Game {
           $((<any>(event.target)).parentElement.parentElement).css('transform', 'none');
         }
       })
+
+      // UI/UX fine tune of vertical-menu: stop click event propagation so the parents doesn't get the event
+      $("div.header ul li ul li").click(function(e) {
+        e.stopPropagation();
+     });
     }
 
     private setupPushRefresh(webSocket: WebSocket) {
@@ -494,8 +499,18 @@ module Game {
       return `${card.rank} de ${Cards.Suits.translate(card.suit)}`
     }
 
-
+    private currentSendAndCleanMessage: (msg: Api.Message | Games.VolatileMessage) => void = this.hidePromoteChatUsageElementAndSendAndCleanMessage.bind(this)
     public sendAndCleanMessage(msg: Api.Message | Games.VolatileMessage) {
+      this.currentSendAndCleanMessage(msg)
+    }
+
+    private hidePromoteChatUsageElementAndSendAndCleanMessage(msg: Api.Message | Games.VolatileMessage): void {
+      $(".promote-chat-usage").toggleClass("not-visible");
+      this.doSendAndCleanMessage(msg);
+      this.currentSendAndCleanMessage = this.doSendAndCleanMessage
+    }
+
+    private doSendAndCleanMessage(msg: Api.Message | Games.VolatileMessage): void {
       this.sendingMessage = true;
       this.gamesService.sendMessage(msg as Games.VolatileMessage).then(() => {
         this.cleanMessage(msg);
