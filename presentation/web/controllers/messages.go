@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -11,7 +11,7 @@ import (
 func GetMessages(response http.ResponseWriter, request *http.Request) {
 	messages, err := services.GetMessages()
 	if err != nil {
-		fmt.Printf("error while retrieving messages : '%v'", err)
+		log.Printf("error while retrieving messages : '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -22,13 +22,13 @@ func GetMessageById(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		fmt.Printf("Can not parse id from '%s'", paramId)
+		log.Printf("Can not parse id from '%s'", paramId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	message, err := services.GetMessageById(id)
 	if err != nil {
-		fmt.Printf("error while retrieving message(id=%d): '%v'", id, err)
+		log.Printf("error while retrieving message(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -39,7 +39,7 @@ func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		fmt.Printf("Can not parse id from '%s'", paramId)
+		log.Printf("Can not parse id from '%s'", paramId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -49,14 +49,14 @@ func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
 			var zero = 0
 			since = &zero
 		} else {
-			fmt.Printf("error parsing url param 'since': '%v'", err)
+			log.Printf("error parsing url param 'since': '%v'", err)
 			response.WriteHeader(http.StatusBadRequest)
 			return
 		}
 	}
 	messages, err := services.GetMessagesByGameAndTime(id, int64(*since))
 	if err != nil {
-		fmt.Printf("error while retrieving messages for game(id=%d): '%v'", id, err)
+		log.Printf("error while retrieving messages for game(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,13 +67,13 @@ func CreateMessage(response http.ResponseWriter, request *http.Request) {
 	var message services.PersistentWebMessage
 	err := parseJsonFromReader(request.Body, &message)
 	if err != nil {
-		fmt.Printf("error reading request body: '%v'", err)
+		log.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	created, err := services.CreateMessage(message)
 	if err != nil {
-		fmt.Printf("error while creating Message: '%v'", err)
+		log.Printf("error while creating Message: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -84,13 +84,13 @@ func UpdateMessage(response http.ResponseWriter, request *http.Request) {
 	var message services.PersistentWebMessage
 	err := parseJsonFromReader(request.Body, &message)
 	if err != nil {
-		fmt.Printf("error reading request body: '%v'", err)
+		log.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	updated, err := services.UpdateMessage(message)
 	if err != nil {
-		fmt.Printf("error while updating Message: '%v'", err)
+		log.Printf("error while updating Message: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -101,13 +101,13 @@ func DeleteMessage(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		fmt.Printf("Can not parse id from '%s'", paramId)
+		log.Printf("Can not parse id from '%s'", paramId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = services.DeleteMessage(id)
 	if err != nil {
-		fmt.Printf("error while deleting message(id=%d): '%v'", id, err)
+		log.Printf("error while deleting message(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}

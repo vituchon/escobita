@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -31,7 +31,7 @@ func ensurePlayerHasId(request *http.Request, player *repositories.PersistentPla
 func GetPlayers(response http.ResponseWriter, request *http.Request) {
 	players, err := playersRepository.GetPlayers()
 	if err != nil {
-		fmt.Printf("error while retrieving players : '%v'", err)
+		log.Printf("error while retrieving players : '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -51,15 +51,15 @@ func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
 				Id: &id,
 			}
 			player, err = playersRepository.CreatePlayer(*player)
-			fmt.Printf("Creating new player %+v \n", player)
+			log.Printf("Creating new player %+v \n", player)
 		}
 		if err != nil {
-			fmt.Printf("error while getting client player : '%v'", err)
+			log.Printf("error while getting client player : '%v'", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	} else {
-		fmt.Printf("Using existing player %+v \n", player)
+		log.Printf("Using existing player %+v \n", player)
 	}
 	WriteJsonResponse(response, http.StatusOK, player)
 }
@@ -68,13 +68,13 @@ func GetPlayerById(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		fmt.Printf("Can not parse id from '%s'", paramId)
+		log.Printf("Can not parse id from '%s'", paramId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
-		fmt.Printf("error while retrieving player(id=%d): '%v'\n", id, err)
+		log.Printf("error while retrieving player(id=%d): '%v'\n", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -89,17 +89,17 @@ func CreatePlayer(response http.ResponseWriter, request *http.Request) {
 	var player repositories.PersistentPlayer
 	err := parseJsonFromReader(request.Body, &player)
 	if err != nil {
-		fmt.Printf("error reading request body: '%v'", err)
+		log.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
+	log.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
 	ensurePlayerHasId(request, &player)
-	fmt.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
+	log.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
 
 	created, err := playersRepository.CreatePlayer(player)
 	if err != nil {
-		fmt.Printf("error while creating Player: '%v'", err)
+		log.Printf("error while creating Player: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -110,16 +110,16 @@ func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 	var player repositories.PersistentPlayer
 	err := parseJsonFromReader(request.Body, &player)
 	if err != nil {
-		fmt.Printf("error reading request body: '%v'", err)
+		log.Printf("error reading request body: '%v'", err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
+	log.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
 	ensurePlayerHasId(request, &player)
-	fmt.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
+	log.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
 	updated, err := playersRepository.UpdatePlayer(player)
 	if err != nil {
-		fmt.Printf("error while updating Player: '%v'", err)
+		log.Printf("error while updating Player: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -130,13 +130,13 @@ func DeletePlayer(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		fmt.Printf("Can not parse id from '%s'", paramId)
+		log.Printf("Can not parse id from '%s'", paramId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = playersRepository.DeletePlayer(id)
 	if err != nil {
-		fmt.Printf("error while deleting player(id=%d): '%v'", id, err)
+		log.Printf("error while deleting player(id=%d): '%v'", id, err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
