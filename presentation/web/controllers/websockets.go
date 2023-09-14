@@ -113,13 +113,31 @@ func ReleaseWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func DebugWebSockets(w http.ResponseWriter, r *http.Request) {
-	conns := webSocketsHandler.connByClientId
-	type item struct {
+	type websocket struct {
+		ClientId   int    `json:"clientId"`
 		RemoteAddr string `json:"remoteAddr"`
 	}
-	items := []item{}
-	for _, conn := range conns {
-		items = append(items, item{RemoteAddr: conn.RemoteAddr().String()})
+	websockets := []websocket{}
+	for clientId, conn := range webSocketsHandler.connByClientId {
+		websockets = append(websockets, websocket{ClientId: clientId, RemoteAddr: conn.RemoteAddr().String()})
 	}
-	WriteJsonResponse(w, http.StatusOK, items)
+
+	type gameWebsockets struct {
+		GameId      int      `json:"gameId"`
+		RemoteAddrs []string `json:"RemoteAddrs"`
+	}
+	gamesWebsockets := []gameWebsockets{}
+	for gameId, conns := range gameWebSockets.connsByGameId {
+		var remoteAddrs []string
+		for _, conn := range conns {
+			remoteAddrs = append(remoteAddrs, conn.RemoteAddr().String())
+		}
+		gamesWebsockets = append(gamesWebsockets, gameWebsockets{GameId: gameId, RemoteAddrs: remoteAddrs})
+	}
+
+	type response struct {
+		Websockets      []websocket      `json:"websockets"`
+		GamesWebsockets []gameWebsockets `json:"gamesWebsockets"`
+	}
+	WriteJsonResponse(w, http.StatusOK, response{Websockets: websockets, GamesWebsockets: gamesWebsockets})
 }
