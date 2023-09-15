@@ -3,3 +3,4 @@
 /// <reference path='./matchs.ts' />
 /// <reference path='./messages.ts' />
 /// <reference path='./websockets.ts' />
+/// <reference path='./app-state.ts' />
