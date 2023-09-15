@@ -113,7 +113,7 @@
           <div class="controls-section" ng-if="ctr.isPlayerTurn">
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</button>
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</button>
-            <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.canRequestTakeActionsSuggestion()" ng-click="ctr.updateSuggestedTakeActions(); ctr.openSuggestedTakeActionsDialog();">Pedir sugerencia <span style="font-size: x-small;">({{ctr.calculateRemainderTakeActionSuggestions()}})</span></button>
+            <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.canRequestTakeActionsSuggestion()" ng-click="ctr.requestTakeActionsSuggestion(); ctr.openSuggestedTakeActionsDialog();">Pedir sugerencia <span style="font-size: x-small;">({{ctr.calculateRemainderTakeActionSuggestions()}})</span></button>
           </div>
         </div>
       </div>
@@ -121,7 +121,7 @@
 
       <!-- SUGGESTED ACTIONS -->
       <dialog id="suggested-take-actions-dialog" ng-click="ctr.closeSuggestedTakeActionsDialog();" style="border-radius: 0.5rem; border: inset; background-color: beige;">
-        <div class="player-actions-container" ng-show="ctr.isMatchInProgress && ctr.suggestedTakeActions">
+        <div class="player-actions-container" ng-show="ctr.suggestedTakeActions">
           <h3 style="display: flex;align-items: center;">Acciones sugeridas por el&nbsp;<span style="color:deepskyblue; font-weight: bold;">escoba master</span><img style="margin-left: 1rem; width: 100px;" src="/presentation/web/assets/images/escoba master.png"/></h3>
           <span><i>Apreta ESC o hace click en cualquier lado para cerrar esta ventanita</i></span>
           <div class="player-actions-section">
@@ -130,7 +130,7 @@
             </div>
           </div>
         </div>
-        <span></span>
+        <span ng-show="ctr.suggestedTakeActions.length === 0">No hay mucho para hacer... solo podés descartar</span>
       </dialog>
 
       <!-- TAKEN CARDS -->
