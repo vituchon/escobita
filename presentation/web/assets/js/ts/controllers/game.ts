@@ -511,16 +511,20 @@ module Game {
     }
 
     private doSendAndCleanMessage(msg: Api.Message | Games.VolatileMessage): void {
-      this.sendingMessage = true;
-      this.gamesService.sendMessage(msg as Games.VolatileMessage).then(() => {
+      this.doSendMessage(msg).then(() => {
         this.cleanMessage(msg);
-      }).finally(() => {
-        this.sendingMessage = false;
       })
       this.allowSendMessage = false;
       this.$timeout(() => {
         this.allowSendMessage = true;
       }, 2000)
+    }
+
+    private doSendMessage(msg: Api.Message | Games.VolatileMessage) {
+      this.sendingMessage = true;
+      return this.gamesService.sendMessage(msg as Games.VolatileMessage).finally(() => {
+        this.sendingMessage = false;
+      })
     }
 
     public canSendMessage(msg: Api.Message | Games.VolatileMessage) {
@@ -656,19 +660,23 @@ module Game {
 
     public suggestedTakeActions: Api.PlayerTakeAction[];
     public updateSuggestedTakeActions() {
-      this.suggestionRequestCount++
       this.loading = true;
+      this.suggestionRequestCount++
       const boardCards = this.game.currentMatch.matchCards.board
       const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
       this.suggestedTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
-      this.loading = false;
+
+      this.playerMessage.text = "Me 💩 y estoy pidiendo sugerencias al escoba master";
+      this.doSendMessage(this.playerMessage).finally(() => {
+        this.loading = false;
+      })
     }
 
     public openSuggestedTakeActionsDialog() {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.showModal()
     }
-1
+
     public closeSuggestedTakeActionsDialog() {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.close();
