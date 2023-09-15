@@ -510,21 +510,19 @@ module Game {
       this.currentSendAndCleanMessage = this.doSendAndCleanMessage
     }
 
-    private doSendAndCleanMessage(msg: Api.Message | Games.VolatileMessage): void {
-      this.doSendMessage(msg).then(() => {
+
+    private doSendAndCleanMessage(msg: Api.Message | Games.VolatileMessage) {
+      this.sendingMessage = true;
+      const sendMessagePromise = this.gamesService.sendMessage(msg as Games.VolatileMessage).then(() => {
         this.cleanMessage(msg);
+      }).finally(() => {
+        this.sendingMessage = false;
       })
       this.allowSendMessage = false;
       this.$timeout(() => {
         this.allowSendMessage = true;
       }, 2000)
-    }
-
-    private doSendMessage(msg: Api.Message | Games.VolatileMessage) {
-      this.sendingMessage = true;
-      return this.gamesService.sendMessage(msg as Games.VolatileMessage).finally(() => {
-        this.sendingMessage = false;
-      })
+      return sendMessagePromise
     }
 
     public canSendMessage(msg: Api.Message | Games.VolatileMessage) {
@@ -659,15 +657,22 @@ module Game {
     }
 
     public suggestedTakeActions: Api.PlayerTakeAction[];
-    public updateSuggestedTakeActions() {
+    public requestTakeActionsSuggestion() {
+      const boardCards = this.game.currentMatch.matchCards.board
+      if (_.size(boardCards) > 8) {
+        this.suggestedTakeActions = []
+        Toastr.warn("Hay muchas cartas en mesa a analizar y todavía no se ha optimizado el algoritmo que sugiere acciones posibles!")
+        Toastr.info("Probá nuevamente cuando haya a lo sumo 8 cartas en mesa")
+        return
+      }
+
       this.loading = true;
       this.suggestionRequestCount++
-      const boardCards = this.game.currentMatch.matchCards.board
       const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
       this.suggestedTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
 
       this.playerMessage.text = "Me 💩 y estoy pidiendo sugerencias al escoba master";
-      this.doSendMessage(this.playerMessage).finally(() => {
+      this.doSendAndCleanMessage(this.playerMessage).finally(() => {
         this.loading = false;
       })
     }
