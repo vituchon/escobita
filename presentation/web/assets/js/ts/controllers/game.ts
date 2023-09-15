@@ -339,11 +339,11 @@ module Game {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
         if (isMatchInProgress && !wasMatchInProgress) {
+          this.suggestionRequestCount = 0; // reset "take action" suggestions request counter
           Toastr.info("¡La partida ha comenzado!")
         }
         if (!isMatchInProgress && wasMatchInProgress) {
           Toastr.success("¡La partida ha terminado!")
-          //this.displayCurrentMatchStatsCopy = true
         }
       })
 
@@ -644,8 +644,19 @@ module Game {
       }
     }
 
+    private suggestionRequestCount: number = 0;
+    public static maxSuggestionRequestCount = 3;
+    public canRequestTakeActionsSuggestion() {
+      return this.calculateRemainderTakeActionSuggestions() > 0
+    }
+
+    public calculateRemainderTakeActionSuggestions() {
+      return Controller.maxSuggestionRequestCount - this.suggestionRequestCount
+    }
+
     public suggestedTakeActions: Api.PlayerTakeAction[];
     public updateSuggestedTakeActions() {
+      this.suggestionRequestCount++
       this.loading = true;
       const boardCards = this.game.currentMatch.matchCards.board
       const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
@@ -657,7 +668,7 @@ module Game {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.showModal()
     }
-
+1
     public closeSuggestedTakeActionsDialog() {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.close();

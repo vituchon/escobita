@@ -113,7 +113,7 @@
           <div class="controls-section" ng-if="ctr.isPlayerTurn">
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</button>
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</button>
-            <button class="materialButton raised colorButton" ng-disabled="ctr.loading" ng-click="ctr.updateSuggestedTakeActions(); ctr.openSuggestedTakeActionsDialog();">Pedir sugerencia</button>
+            <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.canRequestTakeActionsSuggestion()" ng-click="ctr.updateSuggestedTakeActions(); ctr.openSuggestedTakeActionsDialog();">Pedir sugerencia <span style="font-size: x-small;">({{ctr.calculateRemainderTakeActionSuggestions()}})</span></button>
           </div>
         </div>
       </div>
