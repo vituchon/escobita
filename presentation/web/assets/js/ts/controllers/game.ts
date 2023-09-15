@@ -644,6 +644,25 @@ module Game {
       }
     }
 
+    public suggestedTakeActions: Api.PlayerTakeAction[];
+    public updateSuggestedTakeActions() {
+      this.loading = true;
+      const boardCards = this.game.currentMatch.matchCards.board
+      const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
+      this.suggestedTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
+      this.loading = false;
+    }
+
+    public openSuggestedTakeActionsDialog() {
+      const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
+      dialog.showModal()
+    }
+
+    public closeSuggestedTakeActionsDialog() {
+      const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
+      dialog.close();
+    }
+
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', Controller]);

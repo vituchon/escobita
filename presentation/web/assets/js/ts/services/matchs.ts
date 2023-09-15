@@ -17,6 +17,7 @@ namespace Matchs {
       }
     }
     // Determines if a valid take action can be performed
+    // TODO: rename to isValidTakeAction
     export function canTakeCards(handCard: Api.Card, boardCards: Api.Card[]) {
       return sumValues(boardCards.concat(handCard)) == 15
     }
@@ -62,6 +63,49 @@ namespace Matchs {
     return {
       player: player,
       handCard: handCard,
+    }
+  }
+
+  export namespace Engine {
+
+    export const BotPlayer: Api.Player = {
+      id: 0,
+      name: "Botty 🤖",
+    }
+
+    export function calculatePossibleTakeActions(boardCards: Api.Card[], handCards: Api.Card[], player: Api.Player = BotPlayer): Api.PlayerTakeAction[] {
+      if (_.size(boardCards) == 0) {
+        return []
+      }
+      const boardCombinations = Arrays.combine(boardCards)
+      const takeActions: Api.PlayerTakeAction[]  = [];
+      _.forEach(handCards,(handCard) => {
+        _.forEach(boardCombinations,(boardCombination) => {
+          const cardsCount = _.size(boardCombination)
+          for (var i = 1; i <= cardsCount; i++) {
+            const boardSubcombination = boardCombination.slice(0,i)
+            const isFeasible = Rules.canTakeCards(handCard,boardSubcombination)
+            if (isFeasible) {
+              const takeAction = Matchs.createTakeAction(player,boardSubcombination, handCard)
+              takeActions.push(takeAction)
+            }
+          }
+        })
+      })
+
+      var withoutDups: Api.PlayerTakeAction[] = []
+      takeActions.forEach(takeAction => {
+        const isNotContained = !_.find(withoutDups,(tk) => {
+          const hasSameBoardCards = Arrays.hasSameValues(takeAction.boardCards,tk.boardCards, (c1,c2) => c1.id === c2.id)
+          const hasSameHandCard = takeAction.handCard.id === tk.handCard.id
+          return hasSameBoardCards && hasSameHandCard
+        })
+        if (isNotContained) {
+          withoutDups.push(takeAction)
+        }
+      });
+
+      return withoutDups
     }
   }
 
