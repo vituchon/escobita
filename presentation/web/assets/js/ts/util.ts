@@ -57,3 +57,95 @@ namespace Util {
     }, {});
   }
 }
+
+namespace Arrays {
+
+    /** Determines if two arrays has the same values regardless their order and duplicates.
+        Dev notes: It doesn't support arrays with duplicated values with same quantity of elements, e.g: [1,2,2] would be considered as equal to [1,1,2]
+    */
+    export function hasSameValues<T>(a1: T[],a2: T[], areEquals: (e1:T,e2:T) => boolean): boolean {
+      if (_.size(a1) !== _.size(a2)) {
+        return false
+      }
+      const a1ConstainsA2 = _.reduce(a1,(acc,e1) => {
+        return acc && ((a2).findIndex((e2) => areEquals(e1,e2)) !== -1)
+      },true)
+      const a2ConstainsA1 = _.reduce(a2,(acc,e2) => {
+        return acc && ((a1).findIndex((e1) => areEquals(e1,e2)) !== -1)
+      },true)
+
+      return a1ConstainsA2 && a2ConstainsA1
+    }
+
+  /**
+   * Generates an array containing all possible combinations (in form of array).
+   * So it returns an array of n! elements where each element is an array holding a possible combination.
+   * @param array
+   * @returns An array of arrays that containst all the possible combinations.
+   */
+  export function combine<T>(array: T[]): T[][] {
+    if (array.length == 1) {
+      return [array]
+    } else {
+      var combinations: T[][] = []
+      array.forEach( (value,index) => {
+        const others = array.slice(0,index).concat(array.slice(index+1,array.length))
+        const subcombinations = combine(others)
+        subcombinations.forEach((subcombination) => {
+          //const combination = [value].concat(subcombination).flat(1)
+          const combination = [value].concat(...subcombination)
+          combinations.push(combination)
+        })
+      });
+      return combinations
+    }
+  }
+
+  export namespace Tests {
+
+    interface CombineTestRun<T> {
+      title: string,
+      input: T[],
+      expected: T[][];
+    }
+
+    export function CombineWorks() {
+      const testRuns = [
+        <CombineTestRun<number>>{
+          title: "Empty array",
+          input: [],
+          expected: [],
+        },
+        <CombineTestRun<number>>{
+          title: "2 element array",
+          input: [1,2],
+          expected: [[1,2],[2,1]],
+        },
+        <CombineTestRun<number>>{
+          title: "3 element array",
+          input: [1,2,3],
+          expected: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]],
+        },
+        <CombineTestRun<number>>{
+          title: "4 element array",
+          input: [1,2,3,4],
+          expected: [[1,2,3,4],[1,2,4,3],[1,3,2,4],[1,3,4,2],[1,4,2,3],[1,4,3,2],[2,1,3,4],[2,1,4,3],[2,3,1,4],[2,3,4,1],[2,4,1,3],[2,4,3,1],[3,1,2,4],[3,1,4,2],[3,2,1,4],[3,2,4,1],[3,4,1,2],[3,4,2,1],[4,1,2,3],[4,1,3,2],[4,2,1,3],[4,2,3,1],[4,3,1,2],[4,3,2,1]],
+        },
+      ]
+
+      _.forEach(testRuns,(testRun) => {
+        const computed = Arrays.combine(testRun.input);
+        if (_.size(computed) != _.size(testRun.expected)) {
+          console.error("No tiene la misma dimension, computada es: ",_.size(computed), " y esperada es: ", _.size(testRun.expected))
+        }
+        for (var i = 0; i < _.size(computed); i++) {
+          const strComputedElem = JSON.stringify(computed[i])
+          const strExpectedElem = JSON.stringify(testRun.expected[i])
+          if (strComputedElem !== strExpectedElem) {
+            console.error(computed[i], " <> ", testRun.expected[i]);
+          }
+        }
+      })
+    }
+  }
+}
