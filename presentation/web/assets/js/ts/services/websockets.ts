@@ -45,16 +45,7 @@ namespace WebSockets {
 
     public retrieve() {
       if (_.isUndefined(this.webSocket)) {
-        return this.adquire()/*.catch((err) => {
-          console.warn("adquire fails err: ", err, " trying to release and readquire (discard the last and create a new upgraded conn)")
-          return this.release().then(() => {
-            return this.adquire().catch(() => {
-              throw err
-            });
-          }).catch(() => {
-            throw err
-          });
-        })*/
+        return this.adquire()
       } else {
         if (this.webSocket.readyState === WebSocket.OPEN) {
           return this.$q.when(this.webSocket) // in the case is called more than once, return the ws already established
