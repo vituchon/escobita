@@ -565,6 +565,7 @@ module Game {
         }
         //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
       }).finally(() => {
+        this.selectedHandCard = undefined
         this.isBoardCardSelectedById = {}
         this.loading = false;
       })
