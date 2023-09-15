@@ -339,11 +339,11 @@ module Game {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
         if (isMatchInProgress && !wasMatchInProgress) {
+          this.suggestionRequestCount = 0; // reset "take action" suggestions request counter
           Toastr.info("¡La partida ha comenzado!")
         }
         if (!isMatchInProgress && wasMatchInProgress) {
           Toastr.success("¡La partida ha terminado!")
-          //this.displayCurrentMatchStatsCopy = true
         }
       })
 
@@ -511,16 +511,20 @@ module Game {
     }
 
     private doSendAndCleanMessage(msg: Api.Message | Games.VolatileMessage): void {
-      this.sendingMessage = true;
-      this.gamesService.sendMessage(msg as Games.VolatileMessage).then(() => {
+      this.doSendMessage(msg).then(() => {
         this.cleanMessage(msg);
-      }).finally(() => {
-        this.sendingMessage = false;
       })
       this.allowSendMessage = false;
       this.$timeout(() => {
         this.allowSendMessage = true;
       }, 2000)
+    }
+
+    private doSendMessage(msg: Api.Message | Games.VolatileMessage) {
+      this.sendingMessage = true;
+      return this.gamesService.sendMessage(msg as Games.VolatileMessage).finally(() => {
+        this.sendingMessage = false;
+      })
     }
 
     public canSendMessage(msg: Api.Message | Games.VolatileMessage) {
@@ -642,6 +646,40 @@ module Game {
       } else {
         return this.currentFontSizeByPlayerName[player.name]
       }
+    }
+
+    private suggestionRequestCount: number = 0;
+    public static maxSuggestionRequestCount = 3;
+    public canRequestTakeActionsSuggestion() {
+      return this.calculateRemainderTakeActionSuggestions() > 0
+    }
+
+    public calculateRemainderTakeActionSuggestions() {
+      return Controller.maxSuggestionRequestCount - this.suggestionRequestCount
+    }
+
+    public suggestedTakeActions: Api.PlayerTakeAction[];
+    public updateSuggestedTakeActions() {
+      this.loading = true;
+      this.suggestionRequestCount++
+      const boardCards = this.game.currentMatch.matchCards.board
+      const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
+      this.suggestedTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
+
+      this.playerMessage.text = "Me 💩 y estoy pidiendo sugerencias al escoba master";
+      this.doSendMessage(this.playerMessage).finally(() => {
+        this.loading = false;
+      })
+    }
+
+    public openSuggestedTakeActionsDialog() {
+      const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
+      dialog.showModal()
+    }
+
+    public closeSuggestedTakeActionsDialog() {
+      const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
+      dialog.close();
     }
 
   }
