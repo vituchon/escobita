@@ -33,11 +33,11 @@ namespace Cards {
             <i>{{:: isTakenAction ? "Toma" : "Descarte"}}&nbsp;</i>
           </div>
           <div class="hand-card">
-            <span>Carta de mano usada</span>
+            <span>Carta de mano</span>
             <card ng-model="action.handCard"></card>
           </div>
           <div class="boards-card" ng-if="isTakenAction">
-            <span>Cartas de mesa usadas</span>
+            <span>Cartas de mesa</span>
             <div ng-repeat="card in action.boardCards">
               <card ng-model="card"></card>
             </div>
