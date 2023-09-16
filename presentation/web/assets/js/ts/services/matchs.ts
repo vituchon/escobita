@@ -16,9 +16,9 @@ namespace Matchs {
         return card.rank - 2
       }
     }
+
     // Determines if a valid take action can be performed
-    // TODO: rename to isValidTakeAction
-    export function canTakeCards(handCard: Api.Card, boardCards: Api.Card[]) {
+    export function isValidTakeAction(handCard: Api.Card, boardCards: Api.Card[]) {
       return sumValues(boardCards.concat(handCard)) == 15
     }
 
@@ -30,6 +30,7 @@ namespace Matchs {
       name: string,
       score: number,
     }
+
     export function calculatePositionByPlayerName(stats: Api.ScoreSummaryByPlayerName): PositionByPlayerName {
       const asArray: PlayerScore[] = _.map(stats,(summary,playerName) => {
         return {
@@ -44,7 +45,6 @@ namespace Matchs {
       },<PositionByPlayerName>{})
       return asMap
     }
-
   }
 
   export function isTakeAction(action: Api.PlayerTakeAction | Api.PlayerDropAction): action is Api.PlayerTakeAction {
@@ -84,7 +84,7 @@ namespace Matchs {
           const cardsCount = _.size(boardCombination)
           for (var i = 1; i <= cardsCount; i++) {
             const boardSubcombination = boardCombination.slice(0,i)
-            const isFeasible = Rules.canTakeCards(handCard,boardSubcombination)
+            const isFeasible = Rules.isValidTakeAction(handCard,boardSubcombination)
             if (isFeasible) {
               const takeAction = Matchs.createTakeAction(player,boardSubcombination, handCard)
               takeActions.push(takeAction)

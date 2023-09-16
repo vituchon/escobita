@@ -554,7 +554,7 @@ module Game {
       if (_.isEmpty(selectedBoardCards)) {
         return false
       }
-      return Matchs.Rules.canTakeCards(this.selectedHandCard,selectedBoardCards)
+      return Matchs.Rules.isValidTakeAction(this.selectedHandCard,selectedBoardCards)
     }
 
     public performTakeAction() {
