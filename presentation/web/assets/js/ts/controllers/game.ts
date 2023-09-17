@@ -664,7 +664,7 @@ module Game {
     public requestTakeActionsSuggestion() {
       var boardCards = this.game.currentMatch.matchCards.board
       if (_.size(boardCards) > 8) {
-        boardCards = boardCards.slice(0,8) // TODO: se puede optimizar para tomar en el análisis al 7 de oro, los otros sietes y los oros!
+        boardCards = Matchs.Engine.getMostImportantCards(boardCards, 8)
       }
 
       this.loading = true;

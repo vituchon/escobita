@@ -116,6 +116,40 @@ namespace Matchs {
       return withoutDups
     }
 
+    export function getMostImportantCards(cards: Api.Card[], uptoCount: number) {
+      const set: Set<Api.Card> = new Set() // dev notes: using set for taking leverage that it not possible to add duplicates. For example: after adding golden 7 it is impossible to re-add the golden 7 as golden card as it will be already added
+
+      const goldenSevenCard = _.find(cards,(card) => Cards.isGoldenSeven(card))
+      const sevenCards = _.filter(cards,(card) => Cards.isSevenRank(card))
+      const goldenCards = _.filter(cards,(card) => Cards.isGoldenSuit(card))
+
+      if (Util.isDefined(goldenSevenCard)) {
+        addToSetUptoLimitSize(set, [goldenSevenCard], uptoCount)
+      }
+
+      var rest = uptoCount - set.size
+      const atMostTwoSevenCards = sevenCards.slice(0,Math.min(2,rest)) // considering at most 2 cards (if golded seven is included the only one seven will be added as the golded seven DO count as a seven too!)
+      addToSetUptoLimitSize(set, atMostTwoSevenCards, uptoCount)
+
+      addToSetUptoLimitSize(set, goldenCards, uptoCount)
+      addToSetUptoLimitSize(set, cards, uptoCount)
+      return Array.from(set)
+    }
+
+    function addToSetUptoLimitSize<T>(set: Set<T>, values: T[], limitCount: number) {
+      if (set.size >= limitCount) {
+        return
+      }
+
+      for (let index = 0; index < values.length; index++) {
+        const value = values[index];
+        set.add(value)
+        if (set.size === limitCount) {
+          return
+        }
+      }
+    }
+
     export function analizeActions(actions: SuggestedTakeAction[], match: Api.Match): TakeActionsAnalysisResult {
       var suggestedAction: SuggestedTakeAction = undefined
       var maxSymbolicScore = 0;
@@ -157,25 +191,22 @@ namespace Matchs {
     }
 
     function determineIsGoldenSevenIsUsed(cards: Api.Card[]) {
-      const card = cards.find((card) => isGoldenSeven(card))
+      const card = cards.find((card) => Cards.isGoldenSeven(card))
       return Util.isDefined(card) ? true : false
-    }
-
-    function isGoldenSeven(card: Api.Card) {
-      return card.rank == 7 && card.suit == Cards.Suits.gold
     }
 
     function coundSevenRankCards(cards: Api.Card[])  {
       return cards.reduce((acc,card) => {
-        return acc + (card.rank === 7 ? 1 : 0)
+        return acc + (Cards.isSevenRank(card) ? 1 : 0)
       }, 0)
     }
 
     function coundGoldenSuitCards(cards: Api.Card[])  {
       return cards.reduce((acc,card) => {
-        return acc + (card.suit === Cards.Suits.gold ? 1 : 0)
+        return acc + (Cards.isGoldenSuit(card) ? 1 : 0)
       }, 0)
     }
+
   }
 
 }

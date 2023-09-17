@@ -3,6 +3,18 @@
 
 namespace Cards {
 
+  export function isGoldenSeven(card: Api.Card) {
+    return isSevenRank(card) && isGoldenSuit(card)
+  }
+
+  export function isGoldenSuit(card: Api.Card) {
+    return card.suit == Cards.Suits.gold
+  }
+
+  export function isSevenRank(card: Api.Card) {
+    return card.rank == 7
+  }
+
   export namespace Suits {
     // dev notes: the values must match some at /local/escobita/model/card.go#Line:25
     export const sword = 0
