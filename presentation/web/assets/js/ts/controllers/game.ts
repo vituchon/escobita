@@ -662,12 +662,9 @@ module Game {
     public possibleTakeActions: Matchs.Engine.SuggestedTakeAction[];
     public recomendedTakeActionTakeAction: Matchs.Engine.SuggestedTakeAction;
     public requestTakeActionsSuggestion() {
-      const boardCards = this.game.currentMatch.matchCards.board
-      if (_.size(boardCards) > 8) { // TODO: Se pueden tomar las primeras 8 cartas y hacer un análisis parcial... con eso puede caminar!
-        this.possibleTakeActions = []
-        Toastr.warn("Hay muchas cartas en mesa a analizar y todavía no se ha optimizado el algoritmo que sugiere acciones posibles!")
-        Toastr.info("Probá nuevamente cuando haya a lo sumo 8 cartas en mesa")
-        return
+      var boardCards = this.game.currentMatch.matchCards.board
+      if (_.size(boardCards) > 8) {
+        boardCards = boardCards.slice(0,8) // TODO: se puede optimizar para tomar en el análisis al 7 de oro, los otros sietes y los oros!
       }
 
       this.loading = true;
