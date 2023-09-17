@@ -68,12 +68,21 @@ namespace Matchs {
 
   export namespace Engine {
 
+    export interface SuggestedTakeAction extends Api.PlayerTakeAction {
+      symbolicScore?: number;
+    }
+
+    export interface TakeActionsAnalysisResult {
+      possibleActions: SuggestedTakeAction[];
+      recomendedAction: SuggestedTakeAction;
+    }
+
     export const BotPlayer: Api.Player = {
       id: 0,
       name: "Botty 🤖",
     }
 
-    export function calculatePossibleTakeActions(boardCards: Api.Card[], handCards: Api.Card[], player: Api.Player = BotPlayer): Api.PlayerTakeAction[] {
+    export function calculatePossibleTakeActions(boardCards: Api.Card[], handCards: Api.Card[], player: Api.Player = BotPlayer): SuggestedTakeAction[] {
       if (_.size(boardCards) == 0) {
         return []
       }
@@ -104,8 +113,68 @@ namespace Matchs {
           withoutDups.push(takeAction)
         }
       });
-
       return withoutDups
+    }
+
+    export function analizeActions(actions: SuggestedTakeAction[], match: Api.Match): TakeActionsAnalysisResult {
+      var suggestedAction: SuggestedTakeAction = undefined
+      var maxSymbolicScore = 0;
+
+      actions.forEach((action) => {
+        const symbolicScore = Matchs.Engine.calculateActionSymbolicScore(action, match)
+        action.symbolicScore = symbolicScore
+        if (symbolicScore > maxSymbolicScore) {
+          maxSymbolicScore = symbolicScore
+          suggestedAction = action
+        }
+      })
+
+      return {
+        possibleActions: actions,
+        recomendedAction: suggestedAction
+      }
+    }
+
+    export function calculateActionSymbolicScore(action: Api.PlayerAction, match: Api.Match) {
+      if (Matchs.isTakeAction(action)) {
+        return calculateTakeActionSymbolicScore(action, match)
+      }
+      return 0
+    }
+
+    function calculateTakeActionSymbolicScore(action: Api.PlayerTakeAction, match: Api.Match) {
+      const employedCards = action.boardCards.concat(action.handCard)
+
+      const seventiesSymbolicScore = coundSevenRankCards(employedCards) * 3
+
+      const goldenSuitCardsSymbolicScore = coundGoldenSuitCards(employedCards) * 2
+      const goldSevenSymbolicScore = (determineIsGoldenSevenIsUsed(employedCards) ? 1: 0) * 10
+
+      const isEscobita = _.size(match.matchCards.board) === _.size(action.boardCards)
+      const escobitaSymbolicScore = (isEscobita?1:0) * 10
+
+      return _.size(employedCards) + escobitaSymbolicScore + seventiesSymbolicScore + goldSevenSymbolicScore + goldenSuitCardsSymbolicScore
+    }
+
+    function determineIsGoldenSevenIsUsed(cards: Api.Card[]) {
+      const card = cards.find((card) => isGoldenSeven(card))
+      return Util.isDefined(card) ? true : false
+    }
+
+    function isGoldenSeven(card: Api.Card) {
+      return card.rank == 7 && card.suit == Cards.Suits.gold
+    }
+
+    function coundSevenRankCards(cards: Api.Card[])  {
+      return cards.reduce((acc,card) => {
+        return acc + (card.rank === 7 ? 1 : 0)
+      }, 0)
+    }
+
+    function coundGoldenSuitCards(cards: Api.Card[])  {
+      return cards.reduce((acc,card) => {
+        return acc + (card.suit === Cards.Suits.gold ? 1 : 0)
+      }, 0)
     }
   }
 

@@ -659,11 +659,12 @@ module Game {
       return Controller.maxSuggestionRequestCount - this.suggestionRequestCount
     }
 
-    public suggestedTakeActions: Api.PlayerTakeAction[];
+    public possibleTakeActions: Matchs.Engine.SuggestedTakeAction[];
+    public recomendedTakeActionTakeAction: Matchs.Engine.SuggestedTakeAction;
     public requestTakeActionsSuggestion() {
       const boardCards = this.game.currentMatch.matchCards.board
-      if (_.size(boardCards) > 8) {
-        this.suggestedTakeActions = []
+      if (_.size(boardCards) > 8) { // TODO: Se pueden tomar las primeras 8 cartas y hacer un análisis parcial... con eso puede caminar!
+        this.possibleTakeActions = []
         Toastr.warn("Hay muchas cartas en mesa a analizar y todavía no se ha optimizado el algoritmo que sugiere acciones posibles!")
         Toastr.info("Probá nuevamente cuando haya a lo sumo 8 cartas en mesa")
         return
@@ -672,20 +673,23 @@ module Game {
       this.loading = true;
       this.suggestionRequestCount++
       const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
-      this.suggestedTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
+      const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
+      const analizedActions = Matchs.Engine.analizeActions(possibleTakeActions, this.game.currentMatch)
+      this.possibleTakeActions = analizedActions.possibleActions;
+      this.recomendedTakeActionTakeAction = analizedActions.recomendedAction;
 
-      this.playerMessage.text = "Me 💩 y estoy pidiendo sugerencias al escoba master";
+      this.playerMessage.text = "Soy 💩 y pido sugerencias al escoba master";
       this.doSendAndCleanMessage(this.playerMessage).finally(() => {
         this.loading = false;
       })
     }
 
-    public openSuggestedTakeActionsDialog() {
+    public openPossibleTakeActionsDialog() {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.showModal()
     }
 
-    public closeSuggestedTakeActionsDialog() {
+    public closePossibleTakeActionsDialog() {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.close();
     }
