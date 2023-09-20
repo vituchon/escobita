@@ -83,14 +83,14 @@ namespace Arrays {
    * @param array
    * @returns An array of arrays that containst all the possible combinations.
    */
-  export function combine<T>(array: T[]): T[][] {
+  export function generatePermutations<T>(array: T[]): T[][] {
     if (array.length == 1) {
       return [array]
     } else {
       var combinations: T[][] = []
       array.forEach( (value,index) => {
         const others = array.slice(0,index).concat(array.slice(index+1,array.length))
-        const subcombinations = combine(others)
+        const subcombinations = generatePermutations(others)
         subcombinations.forEach((subcombination) => {
           //const combination = [value].concat(subcombination).flat(1)
           const combination = [value].concat(...subcombination)
@@ -134,7 +134,7 @@ namespace Arrays {
       ]
 
       _.forEach(testRuns,(testRun) => {
-        const computed = Arrays.combine(testRun.input);
+        const computed = Arrays.generatePermutations(testRun.input);
         if (_.size(computed) != _.size(testRun.expected)) {
           console.error("No tiene la misma dimension, computada es: ",_.size(computed), " y esperada es: ", _.size(testRun.expected))
         }

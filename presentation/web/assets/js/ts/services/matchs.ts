@@ -86,7 +86,7 @@ namespace Matchs {
       if (_.size(boardCards) == 0) {
         return []
       }
-      const boardCombinations = Arrays.combine(boardCards)
+      const boardCombinations = Arrays.generatePermutations(boardCards)
       const takeActions: Api.PlayerTakeAction[]  = [];
       _.forEach(handCards,(handCard) => {
         _.forEach(boardCombinations,(boardCombination) => {
