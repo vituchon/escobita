@@ -84,10 +84,10 @@
     <!-- PLAYING CARDS -->
     <div id="interactive-section">
 
-      <div class="play-section">
+      <div class="play-section" ng-show="ctr.isMatchInProgress">
 
         <!-- DECK -->
-        <div class="deck-section" ng-show="ctr.isMatchInProgress">
+        <div class="deck-section">
           <div class="title">En mesa</div>
           <div class="cards">
             <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
@@ -98,7 +98,7 @@
         </div>
 
         <!-- HAND -->
-        <div class="hand-section" ng-show="ctr.isMatchInProgress">
+        <div class="hand-section">
           <div class="title">En mano</div>
           <div class="cards">
             <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
