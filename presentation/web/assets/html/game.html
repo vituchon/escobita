@@ -92,7 +92,7 @@
           <div class="cards">
             <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.board">
               <input ng-if="ctr.isPlayerTurn" type="checkbox" ng-model="ctr.isBoardCardSelectedById[card.id]" >
-              <card ng-model="card" ng-click="ctr.isBoardCardSelectedById[card.id] = !ctr.isBoardCardSelectedById[card.id]"></card>
+              <card ng-model="card" ng-click="ctr.isPlayerTurn && (ctr.isBoardCardSelectedById[card.id] = !ctr.isBoardCardSelectedById[card.id])"></card>
             </div>
           </div>
         </div>
@@ -103,13 +103,13 @@
           <div class="cards">
             <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
               <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
-              <card ng-model="card" ng-click="ctr.selectedHandCard = card"></card>
+              <card ng-model="card" ng-click="ctr.isPlayerTurn && (ctr.selectedHandCard = card)"></card>
             </div>
           </div>
         </div>
 
         <!-- GAME CONTROLS -->
-        <div id="game-controls" >
+        <div id="game-controls">
           <div class="controls-section" ng-if="ctr.isPlayerTurn">
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</button>
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</button>
