@@ -353,9 +353,15 @@ module Game {
         })
       }).catch((reason) => {
         console.warn("could not adquire web socket: ", reason);
-        Toastr.info(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
         Toastr.error(`No se pudo establecer conexión con el servidor 😢`)
-        $state.go("lobby")
+        this.webSocketsService.release().then(() => {
+          Toastr.info(`Se reseteo la conexión, probá ingresar nuevamente`)
+        }).catch((err) => {
+          Toastr.warn(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
+          console.warn("could not release web socket: ", err);
+        }).finally(() => {
+          $state.go("lobby")
+        })
       })
 
       this.$scope.$watch(() => {

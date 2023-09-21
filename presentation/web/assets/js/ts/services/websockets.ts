@@ -89,7 +89,7 @@ namespace WebSockets {
       return deffered.promise
     }
 
-    private release() {
+    public release() {
       return this.$http.get("/release-ws").then(( ) => {
         this.webSocket = undefined
       })
