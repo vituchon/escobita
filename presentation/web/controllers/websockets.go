@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -81,15 +82,16 @@ var (
 
 // WEB SOCKET DEDICATED END POINTS
 
-func AdquireOrRetrieveWebSocket(w http.ResponseWriter, r *http.Request) {
+func AdquireWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, isNew, err := webSocketsHandler.AdquireOrRetrieve(w, r)
 	if err != nil {
 		log.Printf("Error adquiring or retrieving web socket: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	if !isNew {
-		log.Printf("Web socket already adquired for client(id='%d')\n", getWebPlayerId(r))
-		w.WriteHeader(http.StatusBadRequest)
+		msg := fmt.Sprintf("Web socket already adquired for client(id='%d')", getWebPlayerId(r))
+		log.Println(msg)
+		http.Error(w, msg, http.StatusBadRequest)
 	} else {
 		log.Printf("Web socket(RemoteAddr='%s') adquired OK (connection \"upgraded\") for client(id='%d')\n", conn.RemoteAddr().String(), getWebPlayerId(r))
 	}
