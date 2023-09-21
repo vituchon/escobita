@@ -487,13 +487,16 @@ module Game {
     private generateActionDescription(action: Api.PlayerAction) {
       if (Matchs.isTakeAction(action)) {
         const cardsText = _.map(action.boardCards,(card) => this.cardToText(card))
-        var description = `levantó ${cardsText.join(",")} usando ${this.cardToText(action.handCard)}`
+        var description = `<span>levantó ${cardsText.join(",")} usando ${this.cardToText(action.handCard)}`
         if (action.isEscobita) {
-          description += "<b>e hizó escobita!</b>"
+          const emogis = ["😩","😫","😵","😖"]
+          const emogi = emogis[Math.round(Math.random() * emogis.length)]
+          description += `&nbsp;<b>e hizó escobita!</b>&nbsp;<span style="font-size: 2rem; vertical-align: middle;">${emogi}</span>`
         }
-        return `<b>${action.player.name}</b>: ${description}`
+        description += "</span>"
+        return `<b class="player-name">${action.player.name}</b> ${description}`
       } else {
-        return `<b>${action.player.name}</b>: descartó ${this.cardToText(action.handCard)}`
+        return `<b>${action.player.name}</b> descartó ${this.cardToText(action.handCard)}`
       }
     }
 
@@ -563,7 +566,7 @@ module Game {
       this.loading = true;
       this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
         if (data.action.isEscobita) {
-          Toastr.success("Has hecho escoba!")
+          Toastr.success("Has hecho escoba! 🥳")
         }
         //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
       }).finally(() => {
