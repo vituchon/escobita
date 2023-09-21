@@ -816,33 +816,33 @@ h4 {
         }
       }
 
-      .stats-section {
+    }
+    .stats-section {
+      display: flex;
+      flex-direction: column;
+      font-size: 12px;
+      margin-top: 10px;
+
+      .player-stats-container {
         display: flex;
-        flex-direction: column;
-        font-size: 12px;
+        flex-direction: row;
+        justify-content: space-between;
         margin-top: 10px;
 
-        .player-stats-container {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          margin-top: 10px;
+        .player-stats-item {
+          .player-name {
+            color: darkgrey;
+            font-weight: bold;
+            font-size: x-large;
+          }
 
-          .player-stats-item {
-            .player-name {
-              color: darkgrey;
-              font-weight: bold;
-              font-size: x-large;
-            }
+          .stats-name {
+            font-weight: normal;
+          }
 
-            .stats-name {
-              font-weight: normal;
-            }
-
-            .stats-value {
-              font-weight: bold;
-              color: darkgreen;
-            }
+          .stats-value {
+            font-weight: bold;
+            color: darkgreen;
           }
         }
       }
@@ -854,6 +854,12 @@ h4 {
 
   .player-action {
     margin: 0 1rem;
+  }
+
+  .better-suggested-action {
+    background-color: yellow;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
   }
 
 }
