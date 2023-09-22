@@ -43,9 +43,9 @@ func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	since, err := UrlQueryIntParam(request, "since")
+	since, err := ParseSingleIntegerUrlQueryParam(request, "since")
 	if err != nil {
-		if err == UrlParamNotFoundErr {
+		if err == UrlQueryParamNotFoundErr {
 			var zero = 0
 			since = &zero
 		} else {

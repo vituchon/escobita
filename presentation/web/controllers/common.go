@@ -64,15 +64,27 @@ func ParseRouteParamAsInt(request *http.Request, name string) (int, error) {
 }
 
 var (
-	UrlParamNotFoundErr = errors.New("No url param present with the given name")
+	UrlQueryParamNotFoundErr = errors.New("No url param present with the given name")
 )
 
 // Gets an integer url's query param with the given name
-func UrlQueryIntParam(request *http.Request, name string) (*int, error) {
-	param := request.URL.Query().Get(name)
-	if len(param) == 0 {
-		return nil, UrlParamNotFoundErr
+func ParseSingleIntegerUrlQueryParam(request *http.Request, name string) (*int, error) {
+	param, exists := request.URL.Query()[name]
+	if !exists {
+		return nil, UrlQueryParamNotFoundErr
 	}
-	value, err := strconv.Atoi(param)
-	return &value, err
+	value, err := strconv.Atoi(param[0])
+	if err != nil {
+		return nil, err
+	}
+	return &value, nil
+}
+
+// Gets an string url's query param with the given name
+func ParseSingleStringUrlQueryParam(request *http.Request, name string) (*string, error) {
+	value, exists := request.URL.Query()[name]
+	if !exists {
+		return nil, UrlQueryParamNotFoundErr
+	}
+	return &(value[0]), nil
 }
