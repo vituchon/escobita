@@ -62,12 +62,12 @@ func (h *WebSocketsHandler) Retrieve(r *http.Request) *websocket.Conn {
 	return h.connByClientId[clientId]
 }
 
-func (h *WebSocketsHandler) Release(r *http.Request) error {
+func (h *WebSocketsHandler) Release(r *http.Request, reason string) error {
 	clientId := h.clientIdResolverFunc(r)
-	return h.doRelease(clientId)
+	return h.doRelease(clientId, reason)
 }
 
-func (h *WebSocketsHandler) doRelease(clientId int) error {
+func (h *WebSocketsHandler) doRelease(clientId int, reason string) error {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
 	conn, exists := h.connByClientId[clientId]
@@ -76,7 +76,7 @@ func (h *WebSocketsHandler) doRelease(clientId int) error {
 	}
 	delete(h.connByClientId, clientId)
 	//_1000 := []byte{3, 232}
-	closeMessage := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Connection closed gracefully") // honouring https://tools.ietf.org/html/rfc6455#page-36
+	closeMessage := websocket.FormatCloseMessage(websocket.CloseNormalClosure, reason) // honouring https://tools.ietf.org/html/rfc6455#page-36
 	conn.WriteMessage(websocket.CloseMessage, closeMessage)
 	return conn.Close()
 }
@@ -107,7 +107,7 @@ func ReleaseWebSocket(response http.ResponseWriter, request *http.Request) {
 	conn := webSocketsHandler.Retrieve(request)
 	if conn != nil {
 		gameWebSockets.UnbindClientWebSocketInGame(conn, request) // just in case the ws is associated with a game, then delete the association
-		err := webSocketsHandler.Release(request)
+		err := webSocketsHandler.Release(request, "Connection closed gracefully")
 		if err != nil {
 			log.Printf("Error releasingWeb socket(RemoteAddr='%s') for client(id='%d')\n: %v\n", conn.RemoteAddr().String(), getWebPlayerId(request), err)
 			response.WriteHeader(http.StatusInternalServerError)
@@ -125,7 +125,7 @@ type ServerMessage struct {
 	Message string `json:"message"`
 }
 
-func PingWebSocket(response http.ResponseWriter, request *http.Request) {
+func SendMessageWebSocket(response http.ResponseWriter, request *http.Request) {
 	playerId := getWebPlayerId(request)
 	message, err := getPingMessageOrDefault(request)
 	if err != nil {
@@ -151,7 +151,7 @@ func PingWebSocket(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusOK)
 }
 
-func PingAllWebSockets(response http.ResponseWriter, request *http.Request) {
+func SendMessageAllWebSockets(response http.ResponseWriter, request *http.Request) {
 	message, err := getPingMessageOrDefault(request)
 	if err != nil {
 		log.Printf("error getting ping message: '%v'", err)
@@ -224,7 +224,7 @@ func ReleaseBrokenWebSockets(response http.ResponseWriter, request *http.Request
 		err2 := conn.WriteMessage(websocket.TextMessage, []byte(""))
 		if err1 != nil || err2 != nil {
 			log.Printf("Web socket(RemoteAddr='%s') for client(id='%d') appears to be broken (err1='%v',err2='%v'), releasing...!\n", conn.RemoteAddr().String(), clientId, err1, err2)
-			releaseErr := webSocketsHandler.doRelease(clientId)
+			releaseErr := webSocketsHandler.doRelease(clientId, "Connection appears to be broken")
 			if releaseErr != nil {
 				log.Printf("Error while releasing web socket(RemoteAddr='%s') for client(id='%d'): '%v'", conn.RemoteAddr().String(), clientId, releaseErr)
 			} else {
@@ -237,7 +237,7 @@ func ReleaseBrokenWebSockets(response http.ResponseWriter, request *http.Request
 
 func ReleaseAllWebSockets(response http.ResponseWriter, request *http.Request) {
 	for clientId, conn := range webSocketsHandler.connByClientId {
-			err := webSocketsHandler.doRelease(clientId)
+			err := webSocketsHandler.doRelease(clientId, "Connection terminated by force")
 			if err != nil {
 				log.Printf("Error while releasing web socket(RemoteAddr='%s') for client(id='%d'): '%v'", conn.RemoteAddr().String(), clientId, err)
 			} else {
