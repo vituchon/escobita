@@ -50,7 +50,7 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 	playerId := getWebPlayerId(request) // will be the game's owner
 	if gamesRepository.GetGamesCreatedCount(playerId) == MAX_GAMES_PER_PLAYER {
 		msg := fmt.Sprintf("Player(id='%d') has reached the maximum game creation limit: '%v'", playerId, MAX_GAMES_PER_PLAYER)
-		response.WriteHeader(http.StatusBadRequest)
+		log.Println(msg)
 		http.Error(response, msg, http.StatusBadRequest)
 		return
 	}
@@ -363,7 +363,9 @@ func (gws *GameWebSockets) BindClientWebSocketToGame(response http.ResponseWrite
 
 	for _, exstingConn := range gws.connsByGameId[gameId] {
 		if exstingConn == conn {
-			log.Printf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
+			msg := fmt.Sprintf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
+			log.Println(msg)
+			http.Error(response, msg, http.StatusBadRequest)
 			return
 		}
 	}
