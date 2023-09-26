@@ -399,7 +399,7 @@ func (gws *GameWebSockets) UnbindAllWebSocketsInGame(gameId int, request *http.R
 func (gws *GameWebSockets) UnbindClientWebSocketInGame(conn *websocket.Conn, request *http.Request) {
 	gws.mutex.Lock()
 	defer gws.mutex.Unlock()
-	log.Printf("Unbinding web socket(remoteAddr='%s') from possible joined game...\n", conn.RemoteAddr().String())
+	log.Printf("Unbinding web socket(remoteAddr='%s') from a possible joined game...\n", conn.RemoteAddr().String())
 
 	for gameId, conns := range gws.connsByGameId {
 		for _, _conn := range conns {
@@ -409,7 +409,7 @@ func (gws *GameWebSockets) UnbindClientWebSocketInGame(conn *websocket.Conn, req
 			}
 		}
 	}
-	log.Printf("Web socket(remoteAddr='%s') is NOT binded to a game\n", conn.RemoteAddr().String())
+	log.Printf("Web socket(remoteAddr='%s') was NOT binded to a game\n", conn.RemoteAddr().String())
 }
 
 // helper function, internal usage, do note that synchronization must be provided by in the client code... for now the only client is UnbindClientWebSocketInGame
