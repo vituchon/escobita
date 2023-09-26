@@ -319,49 +319,122 @@ module Game {
     public loading: boolean = false;
     public displayCardsAsSprites: boolean = true;
 
-    constructor($rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, $state: ng.ui.IStateService,
-      private gamesService: Games.Service, private webSocketsService: WebSockets.Service,
-      private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
+    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope,private $state: ng.ui.IStateService,
+        private gamesService: Games.Service, private webSocketsService: WebSockets.Service,
+        private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService, private appStateService: AppState.Service) {
       this.game = $state.params["game"]// || onGoingGame
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
 
-        /*const navPanel = document.getElementById("nav-panel")
-        navPanel.className = 'visible'
+      /*const navPanel = document.getElementById("nav-panel")
+      navPanel.className = 'visible'
 
-        const shortHeader = document.getElementById("short-header")
-        shortHeader.style.display = "flex"*/
+      const shortHeader = document.getElementById("short-header")
+      shortHeader.style.display = "flex"*/
 
       this.isPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
       this.playerMessage = Games.newMessage(this.game.id,this.player,""); // dev notes: the gameId and playerId are constants but the text (last arg) is set from the UI using ng-model="ctr.playerMessage.text"
 
+      this.loading = true;
+      this.bindWebsocketToGame().then((ws) => {
+        this.initWatchs()
+        this.initUIHandlers()
+        this.initWebSocket(ws)
+      }).catch(() => {
+        this.$state.go("lobby")
+      }).finally(() => {
+        this.loading = false
+      })
+
+    }
+
+    private bindWebsocketToGame() {
+      return this.webSocketsService.retrieve().then((ws) => {
+        return this.gamesService.bindWebSocket(this.game.id).then(() => {
+          return ws
+        })
+      }).catch((reason) => {
+        console.warn("could not adquire web socket: ", reason);
+        Toastr.error(`No se pudo establecer conexión con el servidor 😢`)
+        return this.webSocketsService.release().then(() => {
+          Toastr.info(`Se debería haber liberado la conexión, probá ingresar nuevamente`)
+          throw reason
+        }).catch((err) => {
+          Toastr.warn(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
+          console.warn("could not release web socket: ", err);
+          throw err
+        })
+      })
+    }
+
+    private initUIHandlers() {
+      // event binding on dynamically created, "live" watching  https://stackoverflow.com/a/1207393/903998
+      $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
+        if (event.type === "mouseover") { // taken inspiration from https://stackoverflow.com/a/13504775/903998
+          var rotateDegress = Math.random() * 10 - Math.random() * 5;
+          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.25)');
+        } else {
+          $((<any>(event.target)).parentElement.parentElement).css('transform', 'none');
+        }
+      })
+
+      // UI/UX fine tune of vertical-menu: stop click event propagation so the parents doesn't get the event
+      $("div.header ul li ul li").click(function(e) {
+        e.stopPropagation();
+      });
+
+      // TODO: using KeyboardEvent produces a warn that states "which is deprecated", using JQueryEventObject for "salir del paso"
+      const inputKeyHandler = (event: JQueryEventObject) => {
+        if(event.which === 13) {
+            $("#chat-press-enter-hint").hide();
+            this.$timeout(() => {
+              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
+                this.sendAndCleanMessage(this.playerMessage);
+              }
+            });
+            event.preventDefault();
+        }
+        if (String.fromCharCode(event.which) === 'x') {
+          if (this.isMatchInProgress && this.isPlayerTurn) {
+            const playerHandCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand;
+            if (playerHandCards.length > 0) {
+              this.selectedHandCard = playerHandCards[0]
+              this.performDropAction()
+            }
+          }
+        }
+      }
+      this.$rootElement.bind("keydown keypress", inputKeyHandler);
+      this.$scope.$on('$destroy', () => {
+        this.$rootElement.unbind("keydown keypress", inputKeyHandler)
+      });
+
+      this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
+        if (this.isMatchInProgress) {
+          const stay = !confirm("Si te vas en plena partida, vas a cagarle la partida a los demás. ¿Estaś seguro de irte igual?")
+          if (stay) {
+            event.preventDefault(); // Prevent the state change for now
+          } else {
+            this.playerMessage.text = "Me tome el palo 👋🏿... nos vemos en disney gatos"
+            this.sendAndCleanMessage(this.playerMessage);
+          }
+        }
+      });
+    }
+
+    private initWatchs() {
       this.$scope.$watch(() => {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
         if (isMatchInProgress && !wasMatchInProgress) {
           this.suggestionRequestCount = 0; // reset "take action" suggestions request counter
+          this.appStateService.set("isAMatchInProgress", true)
           Toastr.info("¡La partida ha comenzado!")
         }
         if (!isMatchInProgress && wasMatchInProgress) {
+          this.appStateService.set("isAMatchInProgress", false)
           Toastr.success("¡La partida ha terminado!")
         }
-      })
-
-      this.webSocketsService.retrieve().then((ws) => {
-        this.gamesService.bindWebSocket(this.game.id).then(() => {
-          this.setupPushRefresh(ws)
-        })
-      }).catch((reason) => {
-        console.warn("could not adquire web socket: ", reason);
-        Toastr.error(`No se pudo establecer conexión con el servidor 😢`)
-        this.webSocketsService.release().then(() => {
-          Toastr.info(`Se reseteo la conexión, probá ingresar nuevamente`)
-        }).catch((err) => {
-          Toastr.warn(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
-          console.warn("could not release web socket: ", err);
-        }).finally(() => {
-          $state.go("lobby")
-        })
       })
 
       this.$scope.$watch(() => {
@@ -373,21 +446,6 @@ module Game {
         const displayMode = displayCardsAsSprites ? 'sprite' : 'text'
         this.$rootScope.$broadcast(Cards.changeDisplayModeEventName, displayMode);
       })
-
-      $rootElement.bind("keydown keypress", (event) => {
-        if(event.which === 13) {
-            $("#chat-press-enter-hint").hide();
-            $timeout(() => {
-              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
-                this.sendAndCleanMessage(this.playerMessage);
-              }
-            });
-            event.preventDefault();
-        }
-      });
-      $scope.$on('$destroy', function() {
-        $rootElement.unbind("keydown keypress")
-      });
 
       this.$scope.$watch(() => {
         if (!this.isMatchInProgress) {
@@ -402,25 +460,10 @@ module Game {
           this.displayLastAction();
         }
       })
-
-      // event binding on dynamically created, "live" watching  https://stackoverflow.com/a/1207393/903998
-      $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
-        if (event.type === "mouseover") { // taken inspiration from https://stackoverflow.com/a/13504775/903998
-          var rotateDegress = Math.random() * 10 - Math.random() * 5;
-          $((<any>(event.target)).parentElement.parentElement).css('transform', 'rotate(' + rotateDegress + 'deg) scale(1.25)');
-        } else {
-          $((<any>(event.target)).parentElement.parentElement).css('transform', 'none');
-        }
-      })
-
-      // UI/UX fine tune of vertical-menu: stop click event propagation so the parents doesn't get the event
-      $("div.header ul li ul li").click(function(e) {
-        e.stopPropagation();
-     });
     }
 
-    private setupPushRefresh(webSocket: WebSocket) {
-      webSocket.onmessage = (event) => {
+    private initWebSocket(webSocket: WebSocket) {
+      const onMessageHandler = (event: MessageEvent<any>) => {
         const notification : {
           kind: string,
           data: {
@@ -429,7 +472,7 @@ module Game {
             message?: Games.VolatileMessage
           };
         } = JSON.parse(event.data)
-        console.log("llega una notificación", notification);
+        console.debug("llega una notificación", notification);
 
         switch (notification.kind) {
           case "drop":
@@ -449,23 +492,18 @@ module Game {
             break;
         }
       }
-      const onUnload = (event: any):any => {
-        //this.gamesService.unbindWebSocket(this.game.id)
-        /*event.preventDefault();
-        return event.returnValue = null;*/
-      }
-      this.$window.addEventListener("beforeunload",onUnload)
-      this.$scope.$on('$destroy', () => {
+      webSocket.addEventListener("message", onMessageHandler)
+      this.$scope.$on('$destroy',() => {
+        webSocket.removeEventListener("message", onMessageHandler)
+        this.gamesService.unbindWebSocket(this.game.id)
+      });
+
+      /*const onUnload = (event: any):any => {
+        webSocket.removeEventListener("message", onMessageHandler)
         this.gamesService.unbindWebSocket(this.game.id)
         this.$window.removeEventListener("beforeunload",onUnload)
-      })
-
-      this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
-       /*if (this.isMatchInProgress) {
-          alert("Si te vas en plena partida, vas a cagarle la partida a los demás")
-          event.preventDefault(); // Prevent the state change for now
-        }*/
-      });
+      }
+      this.$window.addEventListener("beforeunload",onUnload)*/
     }
 
     private displayMessage(message: Games.VolatileMessage) {
@@ -602,7 +640,7 @@ module Game {
     }
 
     public performDropAction() {
-      const selectedBoardCards = this.getSelectedBoardCards()
+      const selectedBoardCards = this.getSelectedBoardCards() // TODO : remove this line
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
@@ -702,5 +740,5 @@ module Game {
 
   }
 
-  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', Controller]);
+  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
 }

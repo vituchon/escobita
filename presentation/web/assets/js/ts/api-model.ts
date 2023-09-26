@@ -17,7 +17,7 @@ namespace Api {
     players?: Player[];
     actionsByPlayerName: ActionsByPlayerName;
     playerActions: PlayerAction[];
-    matchCards: MatchCards;
+    matchCards: MatchCards; // TODO: rename member to cards to avoid stuttering
     firstPlayerIndex: number;
     roundNumber: number;
     currentRound?: Round;
@@ -37,6 +37,10 @@ namespace Api {
     players?: Player[];
     scoreByPlayerName?: ScoreByPlayerName;
     currentMatch?: Match;
+
+    // these below properties exists on the back...
+    /*actionsByPlayerName?: ActionsByPlayerName;
+    playerActions?: PlayerAction[];*/
   }
 
   export interface ScoreByPlayerName extends _.Dictionary<number> {

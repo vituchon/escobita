@@ -50,7 +50,6 @@ namespace WebSockets {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService, private $window: ng.IWindowService) {
     }
 
-
     public retrieve() {
       if (_.isUndefined(this.webSocket)) {
         return this.adquire()
@@ -140,9 +139,8 @@ namespace WebSockets {
   escobita.service('WebSocketsService', ['$http', '$q', '$window', Service]);
 }
 
-/*
+
 var wss:any;
 escobita.run(['WebSocketsService', (_wss: any) => {
   wss = _wss;
 }])
-*/

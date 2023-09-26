@@ -13,11 +13,19 @@ namespace AppState {
       this.clear();
     }
 
-    public set(key: string, value:any) {
+    public incByOne(key: string, startFrom: number = 1) {
+      var value =  this.state[key]
+      if (_.isUndefined(value)) {
+        value = startFrom
+      }
+      return this.state[key] = value
+    }
+
+    public set<T>(key: string, value:T) {
       this.state[key] = value;
     };
 
-    public get(key: string) {
+    public get<T>(key: string): T {
       return this.state[key]
     };
 
@@ -26,5 +34,5 @@ namespace AppState {
     };
   }
 
-  escobita.service('AppState', [Service]);
+  escobita.service('AppStateService', [Service]);
 }

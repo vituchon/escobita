@@ -25,7 +25,7 @@ module Lobby {
 
     constructor($rootElement: ng.IRootElementService, $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
-        private playersService: Players.Service) {
+        private playersService: Players.Service, private appStateService: AppState.Service) {
       this.games = [];
       this.loading = true
       const getClientPlayerPromise = this.playersService.getClientPlayer().then((player) => {
@@ -67,6 +67,14 @@ module Lobby {
         return this.canCreateGame(this.playerGame)
       }, (can) => {
         this.canCreateNewGame = !!can;
+      })
+
+      $scope.$watch(() => {
+        return this.player?.id + this.player?.name
+      }, (playerDescription) => {
+        if (!_.isUndefined(playerDescription)) {
+          this.appStateService.set<Api.Player>("player",this.player)
+        }
       })
 
       getClientPlayerPromise.then((player) => {
@@ -192,7 +200,7 @@ module Lobby {
       this.loading = true
       this.gamesService.getGameById(game.id).then((game) => {
         if (Games.isStarted(game)) {
-          Toastr.warn("La partida esta en progreso, no te podés unir.")
+          Toastr.warn("La partida ha comenzado, no te podés unir.")
           return
         }
         Games.addPlayer(game, player)
@@ -233,5 +241,5 @@ module Lobby {
     }
   }
 
-  escobita.controller('LobbyController', ['$rootElement', '$scope', '$timeout','$state', '$q', 'GamesService', 'PlayersService', Controller]);
+  escobita.controller('LobbyController', ['$rootElement', '$scope', '$timeout','$state', '$q', 'GamesService', 'PlayersService', 'AppStateService', Controller]);
 }
