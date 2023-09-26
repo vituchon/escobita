@@ -5,9 +5,9 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -16,10 +16,11 @@ import (
 	"github.com/vituchon/escobita/presentation/util"
 	"github.com/vituchon/escobita/presentation/web/controllers"
 
+	//embed "embed"
+
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
-	//	embed "embed"
 )
 
 // TODO : nice implement something like this
@@ -44,11 +45,11 @@ const (
 func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
 	if util.FileExists(filepath) {
 		key, err = ioutil.ReadFile(storeKeyFilePath)
-		//fmt.Printf("Using existing key %s\n", string(key))
+		//log.Printf("Using existing key %s\n", string(key))
 	} else {
 		key = securecookie.GenerateRandomKey(32)
 		ioutil.WriteFile(storeKeyFilePath, key, 0644)
-		//fmt.Printf("Generated new key %s and stored at %s\n", string(key), storeKeyFilePath)
+		//log.Printf("Generated new key %s and stored at %s\n", string(key), storeKeyFilePath)
 	}
 	return
 }
@@ -61,12 +62,12 @@ func StartServer() {
 	//file, err := assets.Open("assets/html/root.html")
 	//bytes, err := ioutil.ReadFile("./pepe.txt")
 
-	//fmt.Println(err, string(bytes))
+	//log.Println(err, string(bytes))
 	//fileBytes, err := ioutil.ReadAll(file)
 
 	key, err := retrieveCookieStoreKey(storeKeyFilePath)
 	if err != nil {
-		fmt.Printf("Unexpected error while retrieving cookie store key: %v", err)
+		log.Printf("Unexpected error while retrieving cookie store key: %v", err)
 		return
 	}
 	controllers.NewSessionStore(key)
@@ -78,56 +79,52 @@ func StartServer() {
 		ReadTimeout:  40 * time.Second,
 		WriteTimeout: 300 * time.Second,
 	}
-	fmt.Printf("escobita web server listening at port %v", server.Addr)
+	log.Printf("Escobita web server listening at port %v", server.Addr)
 	err = server.ListenAndServe()
 	if err != nil {
-		fmt.Println("Unexpected error initiliazing web server: ", err)
+		log.Println("Unexpected error initiliazing escobita web server: ", err)
 	}
 
 	// TODO (for greater good) : Perhaps we are now in condition to add https://github.com/gorilla/mux#graceful-shutdown
 }
 
 func buildRouter() *mux.Router {
-	root := mux.NewRouter()
-	// TODO : word "presentation" in the path may be redudant, perpahs using just "assets" would be enought!
+	router := mux.NewRouter()
+	//router.Use(AccessLogMiddleware) // no logging at this level as assets' requests would be logged thus creating a lot of unnecessary log messages
+	router.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
+
 	// BEFORE go:embed
-	fileServer := http.FileServer(http.Dir("./"))
-	root.PathPrefix("/presentation/web/assets").Handler(fileServer)
+	assetsFileServer := http.FileServer(http.Dir("./"))
+	assetsRouter := router.PathPrefix("/presentation/web/assets").Subrouter()
+	assetsRouter.PathPrefix("/").Handler(assetsFileServer)
 
 	// AFTER go:embed
-	/*fileServer := http.FileServer(http.FS(assets))
-	root.PathPrefix("/presentation/web/").Handler(http.StripPrefix("/presentation/web/", fileServer))*/
+	/*assetsFileServer := http.FileServer(http.FS(assets))
+	assetsRouter := router.PathPrefix("/presentation/web/assets").Subrouter()
+	assetsRouter.PathPrefix("/").Handler(http.StripPrefix("/presentation/web/", assetsFileServer))*/
 
-	root.NotFoundHandler = http.HandlerFunc(NoMatchingHandler)
-	//root.Use(SslRedirect, AccessLogMiddleware, OrgAwareMiddleware)
-	root.Use(ClientSessionAwareMiddleware)
+	rootRouter := router.PathPrefix("/").Subrouter()
+	rootRouter.Use(AccessLogMiddleware, ClientSessionAwareMiddleware)
 
-	Get := BuildSetHandleFunc(root, "GET")
-	//Post := BuildSetHandleFunc(root, "POST")
-	Get("/", serveRoot)
-	Get("/healthcheck", controllers.Healthcheck)
-	Get("/version", controllers.Version)
+	rootGet := BuildSetHandleFunc(rootRouter, "GET")
+	rootGet("/", serveRoot)
+	rootGet("/healthcheck", controllers.Healthcheck)
+	rootGet("/version", controllers.Version)
 
-	Get("/adquire-ws", controllers.AdquireWebSocket)
-	Get("/release-ws", controllers.ReleaseWebSocket)
-	Get("/debug-ws", controllers.DebugWebSockets)
-	Get("/send-message-ws", controllers.SendMessageWebSocket)
+	rootGet("/adquire-ws", controllers.AdquireWebSocket)
+	rootGet("/release-ws", controllers.ReleaseWebSocket)
+	rootGet("/debug-ws", controllers.DebugWebSockets)
+	rootGet("/send-message-ws", controllers.SendMessageWebSocket)
 
-	Get("/send-message-all-ws", controllers.SendMessageAllWebSockets)
-	Get("/release-broken-ws", controllers.ReleaseBrokenWebSockets)
-	Get("/release-all-ws", controllers.ReleaseAllWebSockets)
+	rootGet("/send-message-all-ws", controllers.SendMessageAllWebSockets)
+	rootGet("/release-broken-ws", controllers.ReleaseBrokenWebSockets)
+	rootGet("/release-all-ws", controllers.ReleaseAllWebSockets)
 
-	/*Post("/api/v1/login", controllers.Login)
-	ServeHomeAuth := AuthMiddlewareForHome(http.HandlerFunc(controllers.ServeHome)).(http.HandlerFunc)
-	Get("/home", ServeHomeAuth)*/
-
-	api := root.PathPrefix("/api/v1").Subrouter()
-	api.Use(AccessLogMiddleware) // only logs api calls
-	//api.Use(AuthMiddleware)
-	apiGet := BuildSetHandleFunc(api, "GET")
-	apiPost := BuildSetHandleFunc(api, "POST")
-	apiPut := BuildSetHandleFunc(api, "PUT")
-	apiDelete := BuildSetHandleFunc(api, "DELETE")
+	apiRouter := rootRouter.PathPrefix("/api/v1").Subrouter()
+	apiGet := BuildSetHandleFunc(apiRouter, "GET")
+	apiPost := BuildSetHandleFunc(apiRouter, "POST")
+	apiPut := BuildSetHandleFunc(apiRouter, "PUT")
+	apiDelete := BuildSetHandleFunc(apiRouter, "DELETE")
 
 	apiGet("/games", controllers.GetGames)
 	apiGet("/games/{id:[0-9]+}", controllers.GetGameById)
@@ -157,7 +154,7 @@ func buildRouter() *mux.Router {
 	apiPut("/messages/{id:[0-9]+}", controllers.UpdateMessage)
 	apiDelete("/messages/{id:[0-9]+}", controllers.DeleteMessage)
 
-	return root
+	return router
 }
 
 type setHandlerFunc func(path string, f http.HandlerFunc)
@@ -170,15 +167,8 @@ func BuildSetHandleFunc(router *mux.Router, methods ...string) setHandlerFunc {
 }
 
 func NoMatchingHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("No maching route for " + request.URL.Path)
+	log.Println("No maching route for " + request.URL.Path)
 	response.WriteHeader(http.StatusNotFound)
-
-	/*if request.URL.Path == "/favicon.ico" { // avoids to trigger another request to landing or login on the "silent" http request by chrome to get an icon! I guess i could tell chrome for ubuntu that redirection for an icon can create more and bigger troubles than solutions... i mean nobody dies for an icon... for now...
-		response.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	http.Redirect(response, request, "/presentation/web/assets/images/logo.png", http.StatusSeeOther)*/
 }
 
 // Adds a logging handler for logging each request's in Apache Common Log Format (CLF).
@@ -195,13 +185,13 @@ func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		clientSession, err := controllers.GetOrCreateClientSession(request)
 		if err != nil {
-			fmt.Printf("error while getting client session: %v", err)
+			log.Printf("error while getting client session: %v", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		err = controllers.SaveClientSession(request, response, clientSession)
 		if err != nil {
-			fmt.Printf("error while saving client session: %v", err)
+			log.Printf("error while saving client session: %v", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -215,7 +205,7 @@ func serveRoot(response http.ResponseWriter, request *http.Request) {
 	//t, err := template.ParseFS(assets, "assets/html/root.html")
 	t, err := template.ParseFiles("presentation/web/assets/html/root.html")
 	if err != nil {
-		fmt.Printf("Error while parsing template : %v", err)
+		log.Printf("Error while parsing template : %v", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}

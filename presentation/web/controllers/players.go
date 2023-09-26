@@ -82,7 +82,7 @@ func GetPlayerById(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetPlayersByGame(response http.ResponseWriter, request *http.Request) {
-	WriteJsonResponse(response, http.StatusOK, "not implemeted yet")
+	WriteJsonResponse(response, http.StatusBadRequest, "Endpoint not implemeted")
 }
 
 func CreatePlayer(response http.ResponseWriter, request *http.Request) {

@@ -6,7 +6,7 @@ import (
 
 // TODO: Add at least a test to verify for solo player game, if the player perform only ONE take action... and the end he will got all the 40 cards taken.. so i can check that!
 
-func TestMatchFlow(t *testing.T) {
+func TestMatchDropFlow(t *testing.T) {
 	var party []Player = []Player{
 		Player{Name: "P1"},
 		Player{Name: "P2"},
