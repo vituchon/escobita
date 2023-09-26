@@ -363,7 +363,9 @@ func (gws *GameWebSockets) BindClientWebSocketToGame(response http.ResponseWrite
 
 	for _, exstingConn := range gws.connsByGameId[gameId] {
 		if exstingConn == conn {
-			log.Printf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
+			msg := fmt.Sprintf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
+			log.Println(msg)
+			http.Error(response, msg, http.StatusBadRequest)
 			return
 		}
 	}
@@ -386,20 +388,20 @@ func UnbindClientWebSocketInGame(response http.ResponseWriter, request *http.Req
 func (gws *GameWebSockets) UnbindAllWebSocketsInGame(gameId int, request *http.Request) {
 	gws.mutex.Lock()
 	defer gws.mutex.Unlock()
-	log.Printf("Unbinding all web sockets from possible joined game id='%d'...\n", gameId)
+	log.Printf("Unbinding all web sockets from game id='%d'...\n", gameId)
 
 	for _, conn := range gws.connsByGameId[gameId] {
 		gws.doUnbindClientWebSocketInGame(conn, gameId, request)
 	}
 	delete(gws.connsByGameId, gameId)
 
-	log.Printf("Unbinded all web sockets from possible joined game id='%d'\n", gameId)
+	log.Printf("Unbinded all web sockets from game id='%d'\n", gameId)
 }
 
 func (gws *GameWebSockets) UnbindClientWebSocketInGame(conn *websocket.Conn, request *http.Request) {
 	gws.mutex.Lock()
 	defer gws.mutex.Unlock()
-	log.Printf("Unbinding web socket(remoteAddr='%s') from possible joined game...\n", conn.RemoteAddr().String())
+	log.Printf("Determining if web socket(remoteAddr='%s') is binding to any game...\n", conn.RemoteAddr().String())
 
 	for gameId, conns := range gws.connsByGameId {
 		for _, _conn := range conns {
