@@ -9,11 +9,11 @@
       <div class="name-control">
         <span class="title">Nombre</span>
         <div class="input" style="flex-grow: 10;">
-          <input placeholder="Escribe tu nombre" ng-model="ctr.playerName"></input>
+          <input placeholder="Escribe tu nombre" ng-model="ctr.player.name"></input>
           <i ng-hide="ctr.player.name">Para <strong>empezar</strong> introducí un nombre y apreta <strong>enter</strong> (ó bien hace click en <strong>Guardar</strong>)</i>
         </div>
         <span style="flex-grow: 0;"></span>
-        <button class="materialButton raised colorButton" ng-disabled="!ctr.canUpdatePlayerName(ctr.playerName)" ng-click="ctr.updatePlayerName(ctr.playerName)">Guardar</button>
+        <button class="materialButton raised colorButton" ng-disabled="!ctr.canUpdatePlayerName(ctr.player.name)" ng-click="ctr.updatePlayerName(ctr.player.name)">Guardar</button>
       </div>
     </div>
 
@@ -34,7 +34,7 @@
 
 
 
-  <div id="games-and-cards-outer-container" class="section" ng-if="ctr.isPlayerRegistered(ctr.player)">
+  <div id="games-and-cards-outer-container" class="section" ng-if="ctr.isPlayerRegistered">
     <div id="games-and-cards-inner-container">
       <div id="game-list-section" class="section" >
         <div id="game-list-header" style="display: flex; flex-direction: row; align-items: center;">

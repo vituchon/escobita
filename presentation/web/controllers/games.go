@@ -177,6 +177,7 @@ type WebSockectOutgoingActionMsgPayload struct {
 	Action *model.PlayerAction          `json:"action,omitempty"`
 }
 
+// TODO: Validate that the player performing the action is the current player!
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
@@ -212,6 +213,7 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
 
+// TODO: Validate that the player performing the action is the current player!
 func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)

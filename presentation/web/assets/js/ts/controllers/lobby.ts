@@ -12,8 +12,8 @@ module Lobby {
     public games: Games.Game[];
     public players: Players.Player[];
 
+    public isPlayerRegistered: boolean = false;
     public player: Players.Player; // the client player
-    public playerName: string = ""; // for entering a player name
 
     public loading: boolean = false;
 
@@ -23,14 +23,15 @@ module Lobby {
     public viewGamesMode: ViewGamesMode;
     public viewGamesModes: ViewGamesMode[] = [{code: 'view-all',label: 'Ver todos'},{code: 'select',label: 'Lista Desplegable'}];
 
-    constructor($rootElement: ng.IRootElementService, $scope: ng.IScope, $timeout: ng.ITimeoutService,
+    constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
-        private playersService: Players.Service) {
+        private playersService: Players.Service, private $window: ng.IWindowService, private appStateService: AppState.Service) {
       this.games = [];
       this.loading = true
       const getClientPlayerPromise = this.playersService.getClientPlayer().then((player) => {
         this.player = player;
-        this.playerName = this.player.name
+        this.appStateService.set("clientPlayer", player)
+        this.isPlayerRegistered = AppState.isPlayerRegistered(player)
         return player
       })
       const getGamesPromise = this.gamesService.getGames().then((games) => {
@@ -41,7 +42,7 @@ module Lobby {
         this.loading = false;
       })
 
-      $rootElement.bind("keydown keypress", (event) => {
+      this.$rootElement.bind("keydown", (event) => {
         if(event.which === 13) {
             $timeout(() => {
               const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
@@ -51,36 +52,32 @@ module Lobby {
                   this.createAndResetGame(this.playerGame)
                 }
               } else {
-                if (!_.isEmpty(this.playerName)) {
-                  this.updatePlayerName(this.playerName)
+                if (!_.isEmpty(this.player.name)) {
+                  this.updatePlayerName(this.player.name)
                 }
               }
             });
             event.preventDefault();
         }
       });
-      $scope.$on('$destroy', function() {
-        $rootElement.unbind("keydown keypress")
+      this.$scope.$on('$destroy', function() {
+        $rootElement.unbind("keydown")
       });
 
-      $scope.$watch(() => {
+      this.$scope.$watch(() => {
         return this.canCreateGame(this.playerGame)
       }, (can) => {
         this.canCreateNewGame = !!can;
       })
 
       getClientPlayerPromise.then((player) => {
-        if (Players.isPlayerRegistered(player)) {
+        if (this.isPlayerRegistered) {
           this.showDisplayPlayerName("none");
           this.rearrangeHeaderAfterRegistration("none");
         } else {
           this.rearrangeHeaderBeforeRegistration();
         }
       })
-    }
-
-    public isPlayerRegistered(player: Players.Player) {
-      return Players.isPlayerRegistered(player)
     }
 
     private createGame(game: Api.Game) {
@@ -119,12 +116,13 @@ module Lobby {
 
     public updatePlayerName(name: string) {
       this.loading = true
-      const playerIsRegistered = Players.isPlayerRegistered(this.player)
       this.player.name = name;
       this.playersService.updatePlayer(this.player).then((player) => {
-        const msg = "Nombre de jugador " + ((playerIsRegistered) ? "actualizado" : "registrado")
-        Toastr.success(msg)
         this.player = player;
+        this.isPlayerRegistered = true;
+        this.appStateService.set("clientPlayer", player)
+        const msg = "Nombre de jugador " + ((this.isPlayerRegistered) ? "actualizado" : "registrado")
+        Toastr.success(msg)
       }).then(() => {
         this.showDisplayPlayerName("transform 1s ease");
         this.rearrangeHeaderAfterRegistration("opacity 1s ease");
@@ -233,5 +231,5 @@ module Lobby {
     }
   }
 
-  escobita.controller('LobbyController', ['$rootElement', '$scope', '$timeout','$state', '$q', 'GamesService', 'PlayersService', Controller]);
+  escobita.controller('LobbyController', ['$rootElement', '$scope', '$timeout','$state', '$q', 'GamesService', 'PlayersService', '$window', 'AppStateService', Controller]);
 }
