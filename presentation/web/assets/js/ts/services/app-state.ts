@@ -4,27 +4,35 @@
 
 namespace AppState {
 
+  export function isPlayerRegistered(player: Api.Player) {
+    return Util.isDefined(player?.id) && !_.isEmpty(player?.name)
+  }
+
   export class Service {
     private state: {
       [key:string]: any;
     }
     constructor() {
-      console.log("App state set")
       this.clear();
     }
 
-    public set(key: string, value:any) {
+    public set<T>(key: string, value:T) {
       this.state[key] = value;
     };
 
-    public get(key: string) {
+    public get<T>(key: string): T {
       return this.state[key]
     };
 
     public clear() {
       this.state = {};
     };
+
+    public isClientPlayerRegistered(): boolean {
+      const clientPlayer = this.get<Api.Player>("clientPlayer")
+      return isPlayerRegistered(clientPlayer)
+    }
   }
 
-  escobita.service('AppState', [Service]);
+  escobita.service('AppStateService', [Service]);
 }
