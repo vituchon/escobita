@@ -167,7 +167,9 @@ func BuildSetHandleFunc(router *mux.Router, methods ...string) setHandlerFunc {
 }
 
 func NoMatchingHandler(response http.ResponseWriter, request *http.Request) {
-	log.Println("No maching route for " + request.URL.Path)
+	if request.URL.Path != "/favicon.ico" { // don't log this
+		log.Println("No maching route for " + request.URL.Path)
+	}
 	response.WriteHeader(http.StatusNotFound)
 }
 
