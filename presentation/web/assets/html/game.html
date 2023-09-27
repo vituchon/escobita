@@ -26,14 +26,14 @@
   <!-- CHAT -->
   <div id="chat-container" class="section">
 
-    <div ng-show="ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
-      <strong >Sos el administrador</strong>&nbsp;
+    <div ng-show="ctr.isClientPlayerGameOwner && !ctr.isMatchInProgress">
+      <strong >Sos el administrador (🪑)</strong>&nbsp;
       <span>Solo vos podés comenzar la partida, una vez comenzada se cierran las puertas</span>
       <span class="promote-chat-usage">Podés usar el chat mientras tanto</span>
     </div>
 
-    <div ng-show="!ctr.isPlayerGameOwner && !ctr.isMatchInProgress">
-      <span>El administrador esta configurando la partida para el gusto de todos, una vez comenzada las puertas se cerrarán</span>
+    <div ng-show="!ctr.isClientPlayerGameOwner && !ctr.isMatchInProgress">
+      <span>El administrador (🪑) esta configurando la partida para el gusto de todos, una vez comenzada las puertas se cerrarán</span>
       <span class="promote-chat-usage">Podés usar el chat mientras tanto</span>
     </div>
 
@@ -54,6 +54,7 @@
     <!-- the check performed at Games.addPlayer at joining a game ensures that won't be two players with the same name, but they could share it and they will actually share the player -->
     <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.name">
       <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : ctr.currentTurnPlayer.name === player.name}">{{player.name}}</span></span> <!-- recall game players doesn't have id -->
+      <span ng-if="ctr.isPlayerGameOwner(ctr.game,player)" style="font-size: 2rem;">🪑</span>
       <span style="width: 10px;"></span>
       <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
       <div ng-show="ctr.player.name != player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
@@ -77,7 +78,7 @@
 
   <div class="section game-match-section">
 
-    <button class="materialButton colorButton" style="background-color: firebrick; align-self: center;"  ng-hide="ctr.isMatchInProgress || !ctr.isPlayerGameOwner" ng-disabled="ctr.loading" ng-click="ctr.startGame(ctr.game)">COMENZAR</button>
+    <button class="materialButton colorButton" style="background-color: firebrick; align-self: center;"  ng-hide="ctr.isMatchInProgress || !ctr.isClientPlayerGameOwner" ng-disabled="ctr.loading" ng-click="ctr.startGame(ctr.game)">COMENZAR</button>
 
     <!-- <loading message="Cargando..." ng-if="ctr.loading"></loading>-->
 
