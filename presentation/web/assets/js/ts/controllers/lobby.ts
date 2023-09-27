@@ -23,28 +23,40 @@ module Lobby {
     public viewGamesMode: ViewGamesMode;
     public viewGamesModes: ViewGamesMode[] = [{code: 'view-all',label: 'Ver todos'},{code: 'select',label: 'Lista Desplegable'}];
 
-    constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope, $timeout: ng.ITimeoutService,
+    constructor(private $rootElement: ng.IRootElementService,private $scope: ng.IScope,private $timeout: ng.ITimeoutService,
         private $state: ng.ui.IStateService, private $q: ng.IQService, private gamesService: Games.Service,
         private playersService: Players.Service, private $window: ng.IWindowService, private appStateService: AppState.Service) {
       this.games = [];
       this.loading = true
-      const getClientPlayerPromise = this.playersService.getClientPlayer().then((player) => {
-        this.player = player;
-        this.appStateService.set("clientPlayer", player)
-        this.isPlayerRegistered = AppState.isPlayerRegistered(player)
-        return player
+      this.init().then(() => {
+        try { // if something unexpected happens angularjs wraps the error within the promise and shallow its
+          this.setupWatchs();
+          this.setupUI();
+        } catch(err) {
+          console.error(err) // ... so this way at least I log something here
+          Toastr.error("Hubo un error con el navegador 😿")
+          throw err
+        }
+      }).catch((err) => {
+        console.error(err)
+        Toastr.error("Hubo un error con el navegador 😿")
+      }).finally(() => {
+        this.loading = false
       })
-      const getGamesPromise = this.gamesService.getGames().then((games) => {
-        this.games = games
-        this.viewGamesMode = _.size(games) <= 10 ? this.viewGamesModes[0] : this.viewGamesModes[1];
-      })
-      this.$q.all([getClientPlayerPromise,getGamesPromise]).finally(() => {
-        this.loading = false;
-      })
+    }
 
+    private setupWatchs() {
+      this.$scope.$watch(() => {
+        return this.canCreateGame(this.playerGame)
+      }, (can) => {
+        this.canCreateNewGame = !!can;
+      })
+    }
+
+    private setupUI() {
       this.$rootElement.bind("keydown", (event) => {
         if(event.which === 13) {
-            $timeout(() => {
+            this.$timeout(() => {
               const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
               if (dialog?.open) {
                 if (!_.isEmpty(this.playerGame?.name)) {
@@ -60,23 +72,34 @@ module Lobby {
             event.preventDefault();
         }
       });
-      this.$scope.$on('$destroy', function() {
-        $rootElement.unbind("keydown")
+      this.$scope.$on('$destroy', () => {
+        this.$rootElement.unbind("keydown")
       });
 
-      this.$scope.$watch(() => {
-        return this.canCreateGame(this.playerGame)
-      }, (can) => {
-        this.canCreateNewGame = !!can;
+      if (this.isPlayerRegistered) {
+        this.showDisplayPlayerName("none");
+        this.rearrangeHeaderAfterRegistration("none");
+      } else {
+        this.rearrangeHeaderBeforeRegistration();
+        const nameInput = document.getElementById("name-input")
+        nameInput.focus()
+      }
+    }
+
+    private init() {
+      const getClientPlayerPromise = this.playersService.getClientPlayer().then((player) => {
+        this.player = player;
+        this.appStateService.set("clientPlayer", player)
+        this.isPlayerRegistered = AppState.isPlayerRegistered(player)
+        return player
+      })
+      const getGamesPromise = this.gamesService.getGames().then((games) => {
+        this.games = games
+        this.viewGamesMode = _.size(games) <= 10 ? this.viewGamesModes[0] : this.viewGamesModes[1];
       })
 
-      getClientPlayerPromise.then((player) => {
-        if (this.isPlayerRegistered) {
-          this.showDisplayPlayerName("none");
-          this.rearrangeHeaderAfterRegistration("none");
-        } else {
-          this.rearrangeHeaderBeforeRegistration();
-        }
+      return this.$q.all([getClientPlayerPromise,getGamesPromise]).finally(() => {
+
       })
     }
 
@@ -117,11 +140,12 @@ module Lobby {
     public updatePlayerName(name: string) {
       this.loading = true
       this.player.name = name;
+      const wasPlayerRegistered = this.isPlayerRegistered
       this.playersService.updatePlayer(this.player).then((player) => {
         this.player = player;
         this.isPlayerRegistered = true;
         this.appStateService.set("clientPlayer", player)
-        const msg = "Nombre de jugador " + ((this.isPlayerRegistered) ? "actualizado" : "registrado")
+        const msg = "Nombre de jugador " + ((wasPlayerRegistered) ? "actualizado" : "registrado")
         Toastr.success(msg)
       }).then(() => {
         this.showDisplayPlayerName("transform 1s ease");
@@ -228,6 +252,19 @@ module Lobby {
     public hideCreateGameDialog() {
       const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
       dialog.close()
+    }
+
+    public animateCardOnClick(id: number) {
+      const card = document.getElementById(id.toString());
+      var x = 200 + Math.random() * 200
+      var y = 200 + Math.random() * 200
+      if (Math.random() < 0.5) { // thanks https://stackoverflow.com/a/36756480/903998
+        x = -x
+      }
+      if (Math.random() < 0.5) { // thanks again :D
+        y = -y
+      }
+      card.style.transform = `translate(${x}%,${y}%)`
     }
   }
 

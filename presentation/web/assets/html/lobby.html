@@ -9,7 +9,7 @@
       <div class="name-control">
         <span class="title">Nombre</span>
         <div class="input" style="flex-grow: 10;">
-          <input placeholder="Escribe tu nombre" ng-model="ctr.player.name"></input>
+          <input id="name-input" placeholder="Escribe tu nombre" ng-model="ctr.player.name"></input>
           <i ng-hide="ctr.player.name">Para <strong>empezar</strong> introducí un nombre y apreta <strong>enter</strong> (ó bien hace click en <strong>Guardar</strong>)</i>
         </div>
         <span style="flex-grow: 0;"></span>
@@ -84,7 +84,7 @@
           <div ng-repeat="suit in [0,1,2,3]">
             <div ng-repeat="rank in [1,2,3,4,5,6,7,8,9,10,11,12]" ng-init="model = {suit: suit, rank: rank};">
               <!--<div ng-init="myStyle={'position':'relative', 'left': ($index)+'px'}" ng-style="myStyle">-->
-                <card class="card" ng-model="model"></card>
+                <card ng-init="id=suit*10+rank" id="{{id}}" class="card" ng-model="model" ng-click="ctr.animateCardOnClick(id)"></card>
               <!--</div>-->
             </div>
           </div>

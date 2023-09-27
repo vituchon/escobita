@@ -40,7 +40,7 @@
     <div class="flex"></div>
     <div ng-if="ctr.isChatEnabled">
       <div class="send-message-control">
-        <input class="text" placeholder="Escribe un mensaje" ng-model="ctr.playerMessage.text" >
+        <input id="chat-message-input" class="text" placeholder="Escribe un mensaje" ng-model="ctr.playerMessage.text" >
         <button class="materialButton raised colorButton" style="display: flex; flex-direction: column;; margin-left: 1em;" ng-disabled="!ctr.canSendMessage(ctr.playerMessage)" title="Podés apretar enter para enviar" ng-click="ctr.sendAndCleanMessage(ctr.playerMessage);">
           <span>Enviar</span>
           <span id="chat-press-enter-hint">(ó enter)</span>

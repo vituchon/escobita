@@ -337,11 +337,18 @@ module Game {
 
       this.loading = true;
       this.init().then((ws) => {
-        this.setupWatchs();
-        this.setupUIEvents();
-        this.setupWebsockt(ws)
+        try { // if something unexpected happens angularjs wraps the error within the promise and shallow its
+          this.setupWatchs();
+          this.setupUI();
+          this.setupWebsockt(ws)
+        } catch(err) {
+          console.error(err) // ... so this way at least I log something here
+          Toastr.error("Hubo un error con el navegador 😿")
+          throw err
+        }
         this.appStateService.set("currentGame", this.game)
       }).catch((err) => {
+        console.error(err)
         this.appStateService.set("isMatchInProgress", false)
         this.appStateService.set("currentGame", null)
         $state.go("lobby")
@@ -355,16 +362,18 @@ module Game {
         return this.gamesService.bindWebSocket(this.game.id).then(() => {
           return ws
         })
-      }).catch((err) => {
-        console.warn("could not adquire web socket: ", err);
+      }).catch((retriveAndBindErr) => {
+        console.warn("could not adquire web socket: ", retriveAndBindErr);
         Toastr.error(`No se pudo establecer conexión con el servidor 😢`)
         return this.webSocketsService.release().then(() => {
           Toastr.info(`Se reseteo la conexión, probá ingresar nuevamente`)
-          throw err
-        }).catch((err) => {
+          throw retriveAndBindErr
+        }).catch((releaseErr) => {
           Toastr.warn(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
-          console.warn("could not release web socket: ", err);
-          throw err
+          if (releaseErr != retriveAndBindErr) { // if they are equals for avoiding loggin twice err (as throw err above is actually catched by ths catch block)
+            console.warn("could not release web socket: ", releaseErr);
+          }
+          throw retriveAndBindErr
         })
       })
     }
@@ -409,9 +418,9 @@ module Game {
       })
     }
 
-    private setupUIEvents() {
-      const keyHandler = (event: JQueryEventObject) => {  // if event is type KeyboardEvent `event.which` is flaged to be deprecated
-        if(event.which === 13) {
+    private setupUI() {
+      const keyHandler = (event: JQueryEventObject) => {
+        if(event.key === 'Enter') { // following convention at https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key#examples
             $("#chat-press-enter-hint").hide();
             this.$timeout(() => {
               if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
@@ -437,6 +446,8 @@ module Game {
         this.$rootElement.unbind("keydown", keyHandler)
         // TODO: Implement leave game API CALL in order to remove player from the player list
       });
+      const chatMessageInput = document.getElementById("chat-message-input")
+      chatMessageInput.focus();
 
       // event binding on dynamically created, "live" watching  https://stackoverflow.com/a/1207393/903998
       $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
@@ -454,7 +465,7 @@ module Game {
       });
 
       // dev notes: above handler is not needed as there is no UI control to transition to another ui state when match is in progress
-      this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
+      /*this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
         if (this.isMatchInProgress) {
           const quit = confirm("Si te vas en plena partida, vas a cagarle la partida a los demás. ¿Estás seguro de irte?")
           if (!quit) {
@@ -464,9 +475,9 @@ module Game {
             this.appStateService.set("currentGame", null)
           }
         }
-      });
+      });*/
 
-      // TODO : this hook doesn't works well as the other beforeunload in websockets.ts release the web socket! each beforeunload execute independently... so...
+      // TODO : this hook doesn't works well as the other beforeunload in websockets.ts release the web socket! each beforeunload execute independently... so... a sync mechanish must be employed... perhaps adding to much complexity to something not required (disposing resource on exit tab, could be done by the browser I guess...)
       /*this.$window.addEventListener("beforeunload",(event : any) => {
         if (this.isMatchInProgress) {
           event.preventDefault();
@@ -511,6 +522,10 @@ module Game {
         this.gamesService.unbindWebSocket(this.game.id)
         webSocket.removeEventListener("message", onmessage)
       })
+    }
+
+    private finalize() {
+      // implementent code regarding exiting this screen
     }
 
     private displayMessage(message: Games.VolatileMessage) {
@@ -744,7 +759,6 @@ module Game {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.close();
     }
-
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
