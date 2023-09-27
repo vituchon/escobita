@@ -7,11 +7,11 @@ import (
 )
 
 type PersistentGame struct {
-	model.Game               // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
-	Id         *int          `json:"id,omitempty"`
-	Name       string        `json:"name"`
-	PlayerId   int           `json:"playerId"`         // owner
-	Matchs     []model.Match `json:"matchs,omitempty"` // played matchs
+	model.Game                  // not using json notation intenttonaly in order to marshall the model.Game fields without wrapping into a new subfield
+	Id         *int             `json:"id,omitempty"`
+	Name       string           `json:"name"`
+	Owner      PersistentPlayer `json:"owner"`
+	Matchs     []model.Match    `json:"matchs,omitempty"` // played matchs
 }
 
 type GamesMemoryRepository struct {
@@ -55,7 +55,7 @@ func (repo *GamesMemoryRepository) CreateGame(game PersistentGame) (created *Per
 	game.Id = &nextId
 	repo.gamesById[nextId] = game
 	repo.idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
-	repo.gamesCreatedByPlayerId[game.PlayerId]++
+	repo.gamesCreatedByPlayerId[*game.Owner.Id]++
 	return &game, nil
 }
 
@@ -73,7 +73,7 @@ func (repo *GamesMemoryRepository) DeleteGame(id int) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	game := repo.gamesById[id]
-	repo.gamesCreatedByPlayerId[game.PlayerId]--
+	repo.gamesCreatedByPlayerId[*game.Owner.Id]--
 	delete(repo.gamesById, id)
 	return nil
 }

@@ -31,7 +31,11 @@ namespace Games {
   }
 
   export function isPlayerOwner(game :Game, player: Players.Player) {
-    return player.id === game.playerId
+    if (Util.isDefined(player.id)) {
+      return player.id === game.owner.id
+    } else {
+      return player.name === game.owner.name // Dev notes (Loop hole here!) : recall that in a game players MUST have different names...
+    }
   }
 
   export namespace Periods {

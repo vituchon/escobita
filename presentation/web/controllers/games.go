@@ -63,7 +63,14 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	game.PlayerId = playerId
+	player, err := playersRepository.GetPlayerById(playerId)
+	if err != nil {
+		log.Printf("error getting player by id='%d': '%v'", playerId, err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	game.Owner = *player
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
 		log.Printf("error while creating Game: '%v'", err)
@@ -114,7 +121,7 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	if !services.CanPlayerDeleteGame(game, player) {
-		log.Printf("Only game's owner(id=%d) is allowed to delete it. Requesting player(id='%d') is not the owner.", game.PlayerId, *player.Id)
+		log.Printf("Only game's owner(id=%d) is allowed to delete it. Requesting player(id='%d') is not the owner.", *game.Owner.Id, *player.Id)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -153,7 +160,7 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	playerId := getWebPlayerId(request)
-	if game.PlayerId != playerId {
+	if *game.Owner.Id != playerId {
 		log.Printf("error while starting Game: request doesn't cames from the owner, in cames from %d\n", playerId)
 		response.WriteHeader(http.StatusBadRequest)
 		return

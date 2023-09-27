@@ -38,7 +38,10 @@ module Game {
     "scoreByPlayerName": null,
     "id": 1,
     "name": "1",
-    "playerId": 1
+    "owner": {
+      id: 1,
+      name: "Betoven"
+    }
   }
 
   const onGoingGame: Games.Game = <any>{
@@ -297,7 +300,7 @@ module Game {
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
-    public isPlayerGameOwner: boolean;
+    public isClientPlayerGameOwner: boolean;
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[] = []; // persistent messages of this game (retrieved from the server using the previous message Api that works with persistent messages)
     public isBoardCardSelectedById: _.Dictionary<boolean>;
@@ -332,7 +335,7 @@ module Game {
         const shortHeader = document.getElementById("short-header")
         shortHeader.style.display = "flex"*/
 
-      this.isPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
+      this.isClientPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
       this.playerMessage = Games.newMessage(this.game.id,this.player,""); // dev notes: the gameId and playerId are constants but the text (last arg) is set from the UI using ng-model="ctr.playerMessage.text"
 
       this.loading = true;
@@ -759,6 +762,8 @@ module Game {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.close();
     }
+
+    public isPlayerGameOwner = Games.isPlayerOwner
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
