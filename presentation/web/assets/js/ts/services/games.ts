@@ -21,7 +21,7 @@ namespace Games {
     if (_.isEmpty(game.players)) {
       game.players = [player]
     } else {
-      // it allow to share screen for those users with same name... could result in unexpected behaviour, although it may be very funny!
+      // it allow to share screen for those users with same name... could result in unexpected behaviour, although it may be very funny! <-- No, I guess nou... it would be a big problem
       const gamePlayer = _.find(game.players,(gamePlayer) => gamePlayer.name == player.name)
       const playerNotJoined = _.isUndefined(gamePlayer)
       if (playerNotJoined) {
