@@ -38,7 +38,10 @@ module Game {
     "scoreByPlayerName": null,
     "id": 1,
     "name": "1",
-    "playerId": 1
+    "owner": {
+      id: 1,
+      name: "Betoven"
+    }
   }
 
   const onGoingGame: Games.Game = <any>{
@@ -297,7 +300,7 @@ module Game {
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
-    public isPlayerGameOwner: boolean;
+    public isClientPlayerGameOwner: boolean;
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[] = []; // persistent messages of this game (retrieved from the server using the previous message Api that works with persistent messages)
     public isBoardCardSelectedById: _.Dictionary<boolean>;
@@ -319,9 +322,9 @@ module Game {
     public loading: boolean = false;
     public displayCardsAsSprites: boolean = true;
 
-    constructor($rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, $state: ng.ui.IStateService,
-      private gamesService: Games.Service, private webSocketsService: WebSockets.Service,
-      private $timeout: ng.ITimeoutService, private $q: ng.IQService, private $window: ng.IWindowService) {
+    constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, $state: ng.ui.IStateService,
+        private gamesService: Games.Service, private webSocketsService: WebSockets.Service, private $timeout: ng.ITimeoutService,
+        private $q: ng.IQService, private $window: ng.IWindowService, private appStateService: AppState.Service) {
       this.game = $state.params["game"]// || onGoingGame
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
@@ -332,36 +335,65 @@ module Game {
         const shortHeader = document.getElementById("short-header")
         shortHeader.style.display = "flex"*/
 
-      this.isPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
+      this.isClientPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
       this.playerMessage = Games.newMessage(this.game.id,this.player,""); // dev notes: the gameId and playerId are constants but the text (last arg) is set from the UI using ng-model="ctr.playerMessage.text"
 
+      this.loading = true;
+      this.init().then((ws) => {
+        try { // if something unexpected happens angularjs wraps the error within the promise and shallow its
+          this.setupWatchs();
+          this.setupUI();
+          this.setupWebsockt(ws)
+        } catch(err) {
+          console.error(err) // ... so this way at least I log something here
+          Toastr.error("Hubo un error con el navegador 😿")
+          throw err
+        }
+        this.appStateService.set("currentGame", this.game)
+      }).catch((err) => {
+        console.error(err)
+        this.appStateService.set("isMatchInProgress", false)
+        this.appStateService.set("currentGame", null)
+        $state.go("lobby")
+      }).finally(() => {
+        this.loading = false
+      })
+    }
+
+    private init() {
+      return this.webSocketsService.retrieve().then((ws) => {
+        return this.gamesService.bindWebSocket(this.game.id).then(() => {
+          return ws
+        })
+      }).catch((retriveAndBindErr) => {
+        console.warn("could not adquire web socket: ", retriveAndBindErr);
+        Toastr.error(`No se pudo establecer conexión con el servidor 😢`)
+        return this.webSocketsService.release().then(() => {
+          Toastr.info(`Se reseteo la conexión, probá ingresar nuevamente`)
+          throw retriveAndBindErr
+        }).catch((releaseErr) => {
+          Toastr.warn(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
+          if (releaseErr != retriveAndBindErr) { // if they are equals for avoiding loggin twice err (as throw err above is actually catched by ths catch block)
+            console.warn("could not release web socket: ", releaseErr);
+          }
+          throw retriveAndBindErr
+        })
+      })
+    }
+
+    private setupWatchs() {
       this.$scope.$watch(() => {
         return this.isMatchInProgress
       },(isMatchInProgress,wasMatchInProgress) => {
         if (isMatchInProgress && !wasMatchInProgress) {
           this.suggestionRequestCount = 0; // reset "take action" suggestions request counter
-          Toastr.info("¡La partida ha comenzado!")
+          Toastr.info("¡La partida ha comenzado! ¡Las puertas se han cerrado!")
+          this.appStateService.set("isMatchInProgress", true)
         }
         if (!isMatchInProgress && wasMatchInProgress) {
           Toastr.success("¡La partida ha terminado!")
+          this.appStateService.set("isMatchInProgress", false)
         }
-      })
-
-      this.webSocketsService.retrieve().then((ws) => {
-        this.gamesService.bindWebSocket(this.game.id).then(() => {
-          this.setupPushRefresh(ws)
-        })
-      }).catch((reason) => {
-        console.warn("could not adquire web socket: ", reason);
-        Toastr.error(`No se pudo establecer conexión con el servidor 😢`)
-        this.webSocketsService.release().then(() => {
-          Toastr.info(`Se reseteo la conexión, probá ingresar nuevamente`)
-        }).catch((err) => {
-          Toastr.warn(`Asegurate de tener solo una pestaña en ${window.location.origin} y probá recargar la página`)
-          console.warn("could not release web socket: ", err);
-        }).finally(() => {
-          $state.go("lobby")
-        })
       })
 
       this.$scope.$watch(() => {
@@ -373,21 +405,6 @@ module Game {
         const displayMode = displayCardsAsSprites ? 'sprite' : 'text'
         this.$rootScope.$broadcast(Cards.changeDisplayModeEventName, displayMode);
       })
-
-      $rootElement.bind("keydown keypress", (event) => {
-        if(event.which === 13) {
-            $("#chat-press-enter-hint").hide();
-            $timeout(() => {
-              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
-                this.sendAndCleanMessage(this.playerMessage);
-              }
-            });
-            event.preventDefault();
-        }
-      });
-      $scope.$on('$destroy', function() {
-        $rootElement.unbind("keydown keypress")
-      });
 
       this.$scope.$watch(() => {
         if (!this.isMatchInProgress) {
@@ -402,6 +419,38 @@ module Game {
           this.displayLastAction();
         }
       })
+    }
+
+    private setupUI() {
+      const keyHandler = (event: JQueryEventObject) => {
+        if(event.key === 'Enter') { // following convention at https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key#examples
+            $("#chat-press-enter-hint").hide();
+            this.$timeout(() => {
+              if (this.isChatEnabled && this.canSendMessage(this.playerMessage)) {
+                this.sendAndCleanMessage(this.playerMessage);
+              }
+            });
+            event.preventDefault();
+        }
+
+        // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
+        if (event.key === 'x') { // helper code for dev purposes
+          if (this.isMatchInProgress) {
+            const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
+            if (handCards.length > 0) {
+              this.selectedHandCard = handCards[0]
+              this.performDropAction();
+            }
+          }
+        }
+      };
+      this.$rootElement.bind("keydown", keyHandler)
+      this.$scope.$on('$destroy', () => {
+        this.$rootElement.unbind("keydown", keyHandler)
+        // TODO: Implement leave game API CALL in order to remove player from the player list
+      });
+      const chatMessageInput = document.getElementById("chat-message-input")
+      chatMessageInput.focus();
 
       // event binding on dynamically created, "live" watching  https://stackoverflow.com/a/1207393/903998
       $("div.game-match-section").on("mouseover mouseout","div.play-section .card-image",(event: Event) => {
@@ -414,13 +463,35 @@ module Game {
       })
 
       // UI/UX fine tune of vertical-menu: stop click event propagation so the parents doesn't get the event
-      $("div.header ul li ul li").click(function(e) {
+      $("div.header ul li ul li").click((e) => {
         e.stopPropagation();
-     });
+      });
+
+      // dev notes: above handler is not needed as there is no UI control to transition to another ui state when match is in progress
+      /*this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
+        if (this.isMatchInProgress) {
+          const quit = confirm("Si te vas en plena partida, vas a cagarle la partida a los demás. ¿Estás seguro de irte?")
+          if (!quit) {
+            event.preventDefault();
+          } else {
+            this.appStateService.set("isMatchInProgress", false)
+            this.appStateService.set("currentGame", null)
+          }
+        }
+      });*/
+
+      // TODO : this hook doesn't works well as the other beforeunload in websockets.ts release the web socket! each beforeunload execute independently... so... a sync mechanish must be employed... perhaps adding to much complexity to something not required (disposing resource on exit tab, could be done by the browser I guess...)
+      /*this.$window.addEventListener("beforeunload",(event : any) => {
+        if (this.isMatchInProgress) {
+          event.preventDefault();
+          return event.returnValue = "Si te vas en plena partida, vas a cagarle la partida a los demás. ¿Estás seguro de irte?";
+        }
+        return undefined
+      });*/
     }
 
-    private setupPushRefresh(webSocket: WebSocket) {
-      webSocket.onmessage = (event) => {
+    private setupWebsockt(webSocket: WebSocket) {
+      const onmessage = (event: MessageEvent<any>) => {
         const notification : {
           kind: string,
           data: {
@@ -449,23 +520,15 @@ module Game {
             break;
         }
       }
-      const onUnload = (event: any):any => {
-        //this.gamesService.unbindWebSocket(this.game.id)
-        /*event.preventDefault();
-        return event.returnValue = null;*/
-      }
-      this.$window.addEventListener("beforeunload",onUnload)
+      webSocket.addEventListener("message", onmessage)
       this.$scope.$on('$destroy', () => {
         this.gamesService.unbindWebSocket(this.game.id)
-        this.$window.removeEventListener("beforeunload",onUnload)
+        webSocket.removeEventListener("message", onmessage)
       })
+    }
 
-      this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
-       /*if (this.isMatchInProgress) {
-          alert("Si te vas en plena partida, vas a cagarle la partida a los demás")
-          event.preventDefault(); // Prevent the state change for now
-        }*/
-      });
+    private finalize() {
+      // implementent code regarding exiting this screen
     }
 
     private displayMessage(message: Games.VolatileMessage) {
@@ -700,7 +763,8 @@ module Game {
       dialog.close();
     }
 
+    public isPlayerGameOwner = Games.isPlayerOwner
   }
 
-  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', Controller]);
+  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
 }

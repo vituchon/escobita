@@ -21,7 +21,7 @@ namespace Games {
     if (_.isEmpty(game.players)) {
       game.players = [player]
     } else {
-      // it allow to share screen for those users with same name... could result in unexpected behaviour, although it may be very funny!
+      // it allow to share screen for those users with same name... could result in unexpected behaviour, although it may be very funny! <-- No, I guess nou... it would be a big problem
       const gamePlayer = _.find(game.players,(gamePlayer) => gamePlayer.name == player.name)
       const playerNotJoined = _.isUndefined(gamePlayer)
       if (playerNotJoined) {
@@ -31,7 +31,11 @@ namespace Games {
   }
 
   export function isPlayerOwner(game :Game, player: Players.Player) {
-    return player.id === game.playerId
+    if (Util.isDefined(player.id)) {
+      return player.id === game.owner.id
+    } else {
+      return player.name === game.owner.name // Dev notes (Loop hole here!) : recall that in a game players MUST have different names...
+    }
   }
 
   export namespace Periods {

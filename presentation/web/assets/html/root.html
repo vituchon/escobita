@@ -39,7 +39,7 @@
     <div id="progress-line"></div>
     <div id="header-container">
       <div id="long-header" style="display: none;">
-        <h1>Bienvenido al server mundial de escobitas de 15</h1>
+        <h1>Bienvenido al server mundial de escobas de 15</h1>
         <div id="logo-container">
             <div class="square up"></div>
             <div class="square left"></div>
@@ -48,12 +48,13 @@
         </div>
       </div>
       <div id="short-header" style="display: none;">
-        <h1>Server mundial de escobitas de 15</h1>
+        <h1>Server mundial de escobas de 15</h1>
       </div>
     </div>
     <div id="nav-panel" class="not-visible">
-      <button class="materialButton" ng-class="{ 'selected-button': ctr.currentStatename === 'lobby' }" ui-sref="lobby" >Lobby</button>
-      <button class="materialButton" ng-class="{ 'selected-button': ctr.currentStatename === 'about' }" ui-sref="about" >Acerca de</button>
+      <button class="materialButton" ng-hide="ctr.isMatchInProgress" ng-class="{ 'selected-button': ctr.currentStatename === 'lobby' }" ui-sref="lobby" >Lobby</button>
+      <button class="materialButton" ng-hide="ctr.isMatchInProgress || !ctr.currentGame" ng-class="{ 'selected-button': ctr.currentStatename === 'game' }" ui-sref="game({ game: ctr.currentGame, player: ctr.clientPlayer })" >Juego&nbsp;<span>{{`{{ctr.currentGame.name}}`}}</span></button>
+      <button class="materialButton" ng-hide="ctr.isMatchInProgress" ng-class="{ 'selected-button': ctr.currentStatename === 'about' }" ui-sref="about" >Acerca de</button>
     </div>
     <div class="ui-view-container" ui-view>
     </div>
