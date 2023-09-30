@@ -14,6 +14,7 @@ module Lobby {
 
     public isPlayerRegistered: boolean = false;
     public player: Players.Player; // the client player
+    public lastSavedPlayerName: string;
 
     public loading: boolean = false;
 
@@ -55,7 +56,7 @@ module Lobby {
 
     private setupUI() {
       this.$rootElement.bind("keydown", (event) => {
-        if(event.which === 13) {
+        if(event.key === "Enter") {  // following convention at https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key#examples
             this.$timeout(() => {
               const dialog = document.getElementById('create-game-dialog') as HTMLDialogElement;
               if (dialog?.open) {
@@ -91,6 +92,9 @@ module Lobby {
         this.player = player;
         this.appStateService.set("clientPlayer", player)
         this.isPlayerRegistered = AppState.isPlayerRegistered(player)
+        if (this.isPlayerRegistered) {
+          this.lastSavedPlayerName = this.player.name
+        }
         return player
       })
       const getGamesPromise = this.gamesService.getGames().then((games) => {
@@ -138,6 +142,12 @@ module Lobby {
     }
 
     public updatePlayerName(name: string) {
+      if (this.lastSavedPlayerName === name) {
+        Toastr.info("No cambiaste el nombre 😮‍💨")
+        this.showDisplayPlayerName("transform 1s ease");
+        this.rearrangeHeaderAfterRegistration("opacity 1s ease");
+        return
+      }
       this.loading = true
       this.player.name = name;
       const wasPlayerRegistered = this.isPlayerRegistered
