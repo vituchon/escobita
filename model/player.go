@@ -48,9 +48,12 @@ func (player Player) MarshalJSON() ([]byte, error) {
 	return []byte(`{"name":"` + player.Name + `", "id":` + strconv.Itoa(player.Id) + `}`), nil
 }
 
-func (player *Player) UnmarshalJSON(b []byte) error {
+func (player *Player) UnmarshalJSON(bytes []byte) error {
+	if strings.Contains(string(bytes), playerFieldSeparator) {
+		return player.UnmarshalText(bytes[1 : len(bytes)-1]) //  removing leading (beginning) and trailing (end) quotes that are present in a json string
+	}
 	var stuff map[string]interface{}
-	err := json.Unmarshal(b, &stuff)
+	err := json.Unmarshal(bytes, &stuff)
 	if err != nil {
 		return err
 	}
