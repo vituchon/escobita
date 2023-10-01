@@ -35,7 +35,6 @@ namespace Game {
         "id" : 1,
       }
     ],
-    "scoreByPlayerName": null,
     "id": 1,
     "name": "1",
     "owner": {
@@ -51,7 +50,6 @@ namespace Game {
         "id": 1,
       }
     ],
-    "scoreByPlayerName": null,
     "currentMatch": {
       "players": [
         {

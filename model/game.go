@@ -7,22 +7,16 @@ import (
 var MatchInProgressErr error = errors.New("A match is in progress")
 
 type Game struct {
-	PlayedMatchs  []Match        `json:"matchs"`
-	Players       []Player       `json:"players"`
-	ScoreByPlayer map[Player]int `json:"scoreByPlayerName"` // dev notes (TODO): The map uses the id+name... not only name, shall I change the name?
-	CurrentMatch  *Match         `json:"currentMatch,omitempty"`
+	PlayedMatchs []Match  `json:"matchs"`
+	Players      []Player `json:"players"`
+	CurrentMatch *Match   `json:"currentMatch,omitempty"`
 }
 
 func NewGame(players []Player) Game {
-	game := Game{
-		Players:       players,
-		ScoreByPlayer: make(map[Player]int),
-		PlayedMatchs:  make([]Match, 0, 2 /** 36/(len(players)*3) <- TODO: no me acuerdo porque esta formula acá!!**/),
+	return Game{
+		Players:      players,
+		PlayedMatchs: make([]Match, 0, 2 /** 36/(len(players)*3) <- TODO: no me acuerdo porque esta formula acá!!**/),
 	}
-	for _, player := range players {
-		game.ScoreByPlayer[player] = 0
-	}
-	return game
 }
 
 func (game *Game) BeginsNewMatch() error {
