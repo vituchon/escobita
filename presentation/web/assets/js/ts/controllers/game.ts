@@ -2,8 +2,7 @@
 /// <reference path='../services/_services.d.ts' />
 /// <reference path='../directives/_directives.d.ts' />
 
-module Game {
-
+namespace Game {
 
   namespace UIMessages {
 
@@ -670,7 +669,7 @@ module Game {
     }
 
     public performDropAction() {
-      const selectedBoardCards = this.getSelectedBoardCards()
+      const selectedBoardCards = this.getSelectedBoardCards() // TODO: remove this line
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
