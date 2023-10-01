@@ -11,6 +11,28 @@ namespace Players {
   export interface Player extends Api.Player {
   }
 
+  // a decorated object that facilitates access an object used as map, transforim the player into a key using the transformation function "toMapKey"
+  export class MapByPlayer<T> implements Api.MapByPlayer<T>, Object {
+    [key: string]: T | any;
+
+    constructor(object: any) {
+      if (Util.isDefined(object)) {
+        const props = Object.getOwnPropertyNames(object)
+        _.forEach(props,(prop) => {
+          this[prop] = object[prop]
+        })
+      }
+    }
+
+    public set(player: Player, data: T) {
+      this[toMapKey(player)] = data
+    }
+
+    public get(player: Player): T {
+      return this[toMapKey(player)]
+    }
+  }
+
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }

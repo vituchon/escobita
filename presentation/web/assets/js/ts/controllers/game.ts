@@ -438,7 +438,7 @@ namespace Game {
         // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
         if (event.key === 'x') { // helper code for dev purposes
           if (this.isMatchInProgress) {
-            const handCards = this.game.currentMatch.matchCards.byPlayerName[Players.toMapKey(this.player)].hand
+            const handCards = this.game.currentMatch.matchCards.byPlayerName.get(this.player).hand
             if (handCards.length > 0) {
               this.selectedHandCard = handCards[0]
               this.performDropAction();
