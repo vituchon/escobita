@@ -2,7 +2,7 @@
 
 namespace Games {
 
-  export interface Game extends Api.Game {
+  export interface Game extends Api.Game {  // TODO : analyse if this approach is worty...
   }
 
   export function hasMatchInProgress(game :Game) : boolean {

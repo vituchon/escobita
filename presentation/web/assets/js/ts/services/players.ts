@@ -8,7 +8,7 @@ namespace Players {
   export function toMapKey(player: Api.Player) {
     return player.id + playerFieldSeparator + player.name
   }
-  export interface Player extends Api.Player {
+  export interface Player extends Api.Player {  // TODO : analyse if this approach is worty...
   }
 
   export class Service {
