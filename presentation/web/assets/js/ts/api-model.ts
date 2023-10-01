@@ -9,7 +9,7 @@ namespace Api {
   }
 
   export interface Player {
-    id?: number;
+    id: number;
     name: string;
   }
 

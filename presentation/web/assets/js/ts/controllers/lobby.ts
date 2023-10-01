@@ -153,6 +153,7 @@ module Lobby {
       const wasPlayerRegistered = this.isPlayerRegistered
       this.playersService.updatePlayer(this.player).then((player) => {
         this.player = player;
+        this.lastSavedPlayerName = player.name;
         this.isPlayerRegistered = true;
         this.appStateService.set("clientPlayer", player)
         const msg = "Nombre de jugador " + ((wasPlayerRegistered) ? "actualizado" : "registrado")

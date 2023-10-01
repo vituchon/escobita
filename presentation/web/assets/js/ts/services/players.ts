@@ -3,6 +3,11 @@
 
 namespace Players {
 
+  // Dev notes: Would be the client side function of this back side function => model/player.go#MarshalText
+  const playerFieldSeparator = "|"
+  export function toMapKey(player: Api.Player) {
+    return player.id + playerFieldSeparator + player.name
+  }
   export interface Player extends Api.Player {
   }
 

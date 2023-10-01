@@ -8,7 +8,7 @@ import (
 
 type Match struct {
 	Players          []Player        `json:"players"`
-	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayerName"`
+	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayerName"`  // dev notes (TODO): The map uses the id+name... not only name, shall I change the name?
 	ActionsLog       PlayerActions   `json:"playerActions"`
 	Cards            MatchCards      `json:"matchCards"`
 	FirstPlayerIndex int             `json:"firstPlayerIndex"`
@@ -135,7 +135,7 @@ func newActionsByPlayer(players []Player) ActionsByPlayer {
 type MatchCards struct {
 	Board    Deck                        `json:"board"` // the cards on the table that anyone can reclaim
 	Left     Deck                        `json:"left"`  // the remaining cards to play in the rest of the match
-	ByPlayer map[Player]PlayerMatchCards `json:"byPlayerName"`
+	ByPlayer map[Player]PlayerMatchCards `json:"byPlayerName"`  // dev notes (TODO): The map uses the id+name... not only name, shall I change the name?
 }
 
 func newMatchCards(players []Player, deck Deck) MatchCards {

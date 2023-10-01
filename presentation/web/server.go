@@ -144,7 +144,6 @@ func buildRouter() *mux.Router {
 	apiGet("/players-by-game", controllers.GetPlayersByGame) // TODO: Implement if necessary...
 	apiGet("/player", controllers.GetClientPlayer)
 	apiGet("/players/{id:[0-9]+}", controllers.GetPlayerById)
-	apiPost("/players", controllers.CreatePlayer)
 	apiPut("/players/{id:[0-9]+}", controllers.UpdatePlayer)
 
 	apiGet("/messages", controllers.GetMessages) // TODO : add optional parameter "since", default beign server start up time
