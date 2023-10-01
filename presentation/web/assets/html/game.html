@@ -62,7 +62,7 @@
        <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
       </div>
       <div ng-if="ctr.isMatchInProgress && peekPlayer" class="player-action">
-        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerName[player.name]">
+        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerName[ctr.playerToMapKey(player)]">
           <player-action ng-if="$last" order="$index" ng-model="action"></player-action>
         </div>
       </div>
@@ -102,7 +102,7 @@
         <div class="hand-section">
           <div class="title">En mano</div>
           <div class="cards">
-            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].hand">
+            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.playerToMapKey(ctr.player)].hand">
               <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
               <card ng-model="card" ng-click="ctr.isPlayerTurn && (ctr.selectedHandCard = card)"></card>
             </div>
@@ -124,6 +124,7 @@
       <dialog id="suggested-take-actions-dialog" ng-click="ctr.closePossibleTakeActionsDialog();" style="border-radius: 0.5rem; border: inset; background-color: beige;">
         <div class="player-actions-container" ng-show="ctr.possibleTakeActions">
           <span><i>Apreta ESC o hace click en cualquier lado para cerrar esta ventanita</i></span>
+          <a href="#" onclick="event.preventDefault()">Maestro quiero saber como se calcula el puntaje simbolico</a>
           <h3 style="display: flex;align-items: center;">Acciones sugeridas por el&nbsp;<span style="color:deepskyblue; font-weight: bold;">escoba master</span><img style="margin-left: 1rem; width: 100px;" src="/presentation/web/assets/images/escoba master.png"/></h3>
           <div class="player-actions-section">
             <div class="player-action" ng-repeat="suggestedTakeAction in ctr.possibleTakeActions" ng-class="{'better-suggested-action' : ctr.recomendedTakeActionTakeAction === suggestedTakeAction}">
@@ -139,7 +140,7 @@
       <div class="taken-cards-container" ng-show="ctr.isMatchInProgress" ng-if="showTakenCards">
         <h3>Cartas tomadas</h3>
         <div class="taken-cards-section">
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.player.name].taken">
+          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.playerToMapKey(ctr.player)].taken">
             <card ng-model="card"></card>
           </div>
         </div>
@@ -149,7 +150,7 @@
       <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
         <h3>Acciones</h3>
         <div class="player-actions-section">
-          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerName[ctr.player.name]">
+          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerName[ctr.playerToMapKey(ctr.player)]">
             <player-action order="$index" ng-model="playerAction"></player-action>
           </div>
         </div>

@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/vituchon/escobita/model"
-	"github.com/vituchon/escobita/repositories"
 
 	"github.com/gorilla/sessions"
+	"github.com/vituchon/escobita/repositories"
 )
 
 var playersRepository repositories.Players = repositories.NewPlayersMemoryRepository()
@@ -21,13 +21,6 @@ func getWebPlayerId(request *http.Request) int {
 	return wrappedInt.(int)
 }
 
-func ensurePlayerHasId(request *http.Request, player *repositories.PersistentPlayer) {
-	if player.Id == nil {
-		id := getWebPlayerId(request)
-		player.Id = &id
-	}
-}
-
 func GetPlayers(response http.ResponseWriter, request *http.Request) {
 	players, err := playersRepository.GetPlayers()
 	if err != nil {
@@ -38,22 +31,31 @@ func GetPlayers(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, players)
 }
 
-// Gets the web client's correspondant player
+// Gets the web client's correspondant player (There is only ONE player per client!)
 func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
 	id := getWebPlayerId(request)
 	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
 		if err == repositories.EntityNotExistsErr {
-			player = &repositories.PersistentPlayer{
-				Player: model.Player{
-					Name: "",
-				},
-				Id: &id,
+			name := ""
+			paramName, err := ParseSingleStringUrlQueryParam(request, "name")
+			if err != nil && paramName != nil {
+				name = *paramName
 			}
-			player, err = playersRepository.CreatePlayer(*player)
+			player, err = createPlayer(id, name) // create player in memory
+			if err != nil {
+				log.Printf("error while getting client player : '%v'", err)
+				response.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			_, err = playersRepository.CreatePlayer(*player) // saves player in a persistent storage
+			if err != nil {
+				log.Printf("error while getting client player : '%v'", err)
+				response.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 			log.Printf("Creating new player %+v \n", player)
-		}
-		if err != nil {
+		} else {
 			log.Printf("error while getting client player : '%v'", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
@@ -62,6 +64,18 @@ func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
 		log.Printf("Using existing player %+v \n", player)
 	}
 	WriteJsonResponse(response, http.StatusOK, player)
+}
+
+func createPlayer(id int, name string) (*repositories.PersistentPlayer, error) {
+	err := model.ValidateName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &repositories.PersistentPlayer{
+		Name: name,
+		Id:   id,
+	}, nil
 }
 
 func GetPlayerById(response http.ResponseWriter, request *http.Request) {
@@ -85,27 +99,6 @@ func GetPlayersByGame(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusBadRequest, "Endpoint not implemeted")
 }
 
-func CreatePlayer(response http.ResponseWriter, request *http.Request) {
-	var player repositories.PersistentPlayer
-	err := parseJsonFromReader(request.Body, &player)
-	if err != nil {
-		log.Printf("error reading request body: '%v'", err)
-		response.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	log.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
-	ensurePlayerHasId(request, &player)
-	log.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
-
-	created, err := playersRepository.CreatePlayer(player)
-	if err != nil {
-		log.Printf("error while creating Player: '%v'", err)
-		response.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	WriteJsonResponse(response, http.StatusOK, created)
-}
-
 func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 	var player repositories.PersistentPlayer
 	err := parseJsonFromReader(request.Body, &player)
@@ -114,9 +107,6 @@ func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Printf("ParseJsonFromReader(request.Body, &player) = %v %v\n", player, err)
-	ensurePlayerHasId(request, &player)
-	log.Printf("ensurePlayerHasId(request, &player) => %v\n", player)
 	updated, err := playersRepository.UpdatePlayer(player)
 	if err != nil {
 		log.Printf("error while updating Player: '%v'", err)

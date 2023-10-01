@@ -82,31 +82,53 @@ namespace Games {
       text: text,
     }
   }
+
+  function enhanceMaps(game: Api.Game) {
+    if (Util.isDefined(game.currentMatch)) {
+      game.currentMatch.actionsByPlayerName = new Players.MapByPlayer<Api.PlayerAction>(<any>game.currentMatch.actionsByPlayerName)
+      game.currentMatch.matchCards.byPlayerName = new Players.MapByPlayer<Api.PlayerMatchCards>(<any>game.currentMatch.matchCards.byPlayerName)
+    }
+
+    if (_.size(game.matchs) > 0) {
+      for (let i = 0; i < game.matchs.length; i++) {
+        game.matchs[i].actionsByPlayerName = new Players.MapByPlayer<Api.PlayerAction>(<any>game.matchs[i].actionsByPlayerName)
+        game.matchs[i].matchCards.byPlayerName = new Players.MapByPlayer<Api.PlayerMatchCards>(<any>game.matchs[i].matchCards.byPlayerName)
+      }
+    }
+
+    return game
+  }
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
 
     getGames(): ng.IPromise<Game[]> {
       return this.$http.get<Game[]>(`/api/v1/games`).then((response) => {
-        return response.data;
+        const games = response.data
+        //return games
+        return games.map(game => enhanceMaps(game));
       });
     }
 
     getGameById(gamesId: number): ng.IPromise<Game> {
       return this.$http.get<Game>(`/api/v1/games/${gamesId}`).then((response) => {
-        return response.data;
+        const game = response.data
+        //return game
+        return enhanceMaps(game);
       });
     }
 
     createGame(game: Game): ng.IPromise<Game> {
       return this.$http.post<Game>(`/api/v1/games`,game).then((response) => {
-        return response.data
+        const game = response.data
+        return enhanceMaps(game);
       })
     }
 
     updateGame(game: Game): ng.IPromise<Game> {
       return this.$http.put<Game>(`/api/v1/games/${game.id}`,game).then((response) => {
-        return response.data
+        const game = response.data
+        return enhanceMaps(game);
       })
     }
 
@@ -121,7 +143,8 @@ namespace Games {
 
     startGame(game: Game): ng.IPromise<Game> {
       return this.$http.post<Game>(`/api/v1/games/${game.id}/resume`,game).then((response) => {
-        return response.data
+        const game = response.data
+        return enhanceMaps(game);
       })
     }
 
@@ -150,19 +173,22 @@ namespace Games {
 
     bindWebSocket(id: number) {
       return this.$http.get<Game>(`/api/v1/games/${id}/bind-ws`).then((response) => {
-        return response.data;
+        const game = response.data
+        return enhanceMaps(game);
       });
     }
 
     unbindWebSocket(id: number) {
       return this.$http.get<Game>(`/api/v1/games/${id}/unbind-ws`).then((response) => {
-        return response.data;
+        const game = response.data
+        return enhanceMaps(game);
       });
     }
 
     sendMessage(msg: VolatileMessage) {
       return this.$http.post<Game>(`/api/v1/games/${msg.gameId}/message`, msg).then((response) => {
-        return response.data
+        const game = response.data
+        return enhanceMaps(game);
       })
     }
   }

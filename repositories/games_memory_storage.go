@@ -55,7 +55,7 @@ func (repo *GamesMemoryRepository) CreateGame(game PersistentGame) (created *Per
 	game.Id = &nextId
 	repo.gamesById[nextId] = game
 	repo.idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
-	repo.gamesCreatedByPlayerId[*game.Owner.Id]++
+	repo.gamesCreatedByPlayerId[game.Owner.Id]++
 	return &game, nil
 }
 
@@ -73,7 +73,7 @@ func (repo *GamesMemoryRepository) DeleteGame(id int) error {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	game := repo.gamesById[id]
-	repo.gamesCreatedByPlayerId[*game.Owner.Id]--
+	repo.gamesCreatedByPlayerId[game.Owner.Id]--
 	delete(repo.gamesById, id)
 	return nil
 }

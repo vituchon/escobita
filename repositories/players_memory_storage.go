@@ -1,43 +1,12 @@
 package repositories
 
 import (
-	"encoding/json"
-	"strconv"
 	"sync"
 
 	"github.com/vituchon/escobita/model"
 )
 
-type PersistentPlayer struct {
-	model.Player
-	Id *int `json:"id"`
-}
-
-func (pp PersistentPlayer) String() string {
-	if pp.Id == nil {
-		return "NO_ID " + pp.Name
-	}
-	return strconv.Itoa(*pp.Id) + " " + pp.Name
-}
-
-func (pp PersistentPlayer) MarshalJSON() ([]byte, error) {
-	if pp.Id == nil {
-		return []byte(`{"name":"` + pp.Name + `"}`), nil
-	}
-	return []byte(`{"name":"` + pp.Name + `", "id":` + strconv.Itoa(*pp.Id) + `}`), nil
-}
-
-func (pp *PersistentPlayer) UnmarshalJSON(b []byte) error {
-	var stuff map[string]interface{}
-	err := json.Unmarshal(b, &stuff)
-	if err != nil {
-		return err
-	}
-	pp.Name = stuff["name"].(string)
-	id := int(stuff["id"].(float64))
-	pp.Id = &id
-	return nil
-}
+type PersistentPlayer = model.Player
 
 type PlayersMemoryRepository struct {
 	playersById map[int]PersistentPlayer
@@ -71,20 +40,14 @@ func (repo *PlayersMemoryRepository) GetPlayerById(id int) (*PersistentPlayer, e
 func (repo *PlayersMemoryRepository) CreatePlayer(player PersistentPlayer) (created *PersistentPlayer, err error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	if player.Id == nil {
-		return nil, InvalidEntityStateErr
-	}
-	repo.playersById[*player.Id] = player
+	repo.playersById[player.Id] = player
 	return &player, nil
 }
 
 func (repo *PlayersMemoryRepository) UpdatePlayer(player PersistentPlayer) (updated *PersistentPlayer, err error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	if player.Id == nil {
-		return nil, InvalidEntityStateErr
-	}
-	repo.playersById[*player.Id] = player
+	repo.playersById[player.Id] = player
 	return &player, nil
 }
 

@@ -9,13 +9,19 @@ namespace Api {
   }
 
   export interface Player {
-    id?: number;
+    id: number;
     name: string;
+  }
+
+  export interface MapByPlayer<T> extends _.Dictionary<T> {
+    [key:string]: T | any;
+    set(player: Player, data: T): void
+    get(player: Player): T
   }
 
   export interface Match {
     players?: Player[];
-    actionsByPlayerName: ActionsByPlayerName;
+    actionsByPlayerName: MapByPlayer<Api.PlayerAction>;
     playerActions: PlayerAction[];
     matchCards: MatchCards;
     firstPlayerIndex: number;
@@ -33,14 +39,9 @@ namespace Api {
     id?: number;
     name: string;
     owner?: Player;
-    matchs?: Match[];
+    matchs?: Match[]; // previous played matchs
     players?: Player[];
-    scoreByPlayerName?: ScoreByPlayerName;
     currentMatch?: Match;
-  }
-
-  export interface ScoreByPlayerName extends _.Dictionary<number> {
-    [name:string]: number;
   }
 
   export interface ActionsByPlayerName extends _.Dictionary<PlayerAction> {
@@ -54,7 +55,7 @@ namespace Api {
   export interface MatchCards {
     board?: Card[];
     left: Card[];
-    byPlayerName: MatchCardsByPlayerName;
+    byPlayerName: MapByPlayer<PlayerMatchCards>;
   }
 
   export interface MatchCardsByPlayerName extends _.Dictionary<PlayerMatchCards> {

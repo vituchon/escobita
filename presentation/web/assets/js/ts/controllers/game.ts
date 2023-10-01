@@ -2,8 +2,7 @@
 /// <reference path='../services/_services.d.ts' />
 /// <reference path='../directives/_directives.d.ts' />
 
-module Game {
-
+namespace Game {
 
   namespace UIMessages {
 
@@ -32,10 +31,10 @@ module Game {
   const game: Games.Game = {
     "players": [
       {
-        "name": "Betoven"
+        "name": "Betoven",
+        "id" : 1,
       }
     ],
-    "scoreByPlayerName": null,
     "id": 1,
     "name": "1",
     "owner": {
@@ -47,18 +46,19 @@ module Game {
   const onGoingGame: Games.Game = <any>{
     "players": [
       {
-        "name": "Betoven"
+        "name": "Betoven",
+        "id": 1,
       }
     ],
-    "scoreByPlayerName": null,
     "currentMatch": {
       "players": [
         {
-          "name": "Betoven"
+          "name": "Betoven",
+          "id": 1,
         }
       ],
       "actionsByPlayerName": {
-        "Betoven": []
+        "1|Betoven": []
       },
       "playerActions": [],
       "matchCards": {
@@ -285,8 +285,10 @@ module Game {
       }
     },
     "id": 1,
-    "name": "Betoven",
-    "playerId": 1
+    "owner": {
+      "name": "Betoven",
+      "id": 1
+    }
   }
 
   const player: Players.Player = {
@@ -436,7 +438,7 @@ module Game {
         // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
         if (event.key === 'x') { // helper code for dev purposes
           if (this.isMatchInProgress) {
-            const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
+            const handCards = this.game.currentMatch.matchCards.byPlayerName.get(this.player).hand
             if (handCards.length > 0) {
               this.selectedHandCard = handCards[0]
               this.performDropAction();
@@ -665,7 +667,7 @@ module Game {
     }
 
     public performDropAction() {
-      const selectedBoardCards = this.getSelectedBoardCards()
+      const selectedBoardCards = this.getSelectedBoardCards() // TODO: remove this line
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
@@ -717,7 +719,7 @@ module Game {
       if (_.isEmpty(this.currentFontSizeByPlayerName)) {
         return UIMessages.minFontSize;
       } else {
-        return this.currentFontSizeByPlayerName[player.name]
+        return this.currentFontSizeByPlayerName[Players.toMapKey(player)]
       }
     }
 
@@ -741,7 +743,7 @@ module Game {
 
       this.loading = true;
       this.suggestionRequestCount++
-      const handCards = this.game.currentMatch.matchCards.byPlayerName[this.player.name].hand
+      const handCards = this.game.currentMatch.matchCards.byPlayerName[Players.toMapKey(this.player)].hand
       const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
       const analizedActions = Matchs.Engine.analizeActions(possibleTakeActions, this.game.currentMatch)
       this.possibleTakeActions = analizedActions.possibleActions;
@@ -764,6 +766,7 @@ module Game {
     }
 
     public isPlayerGameOwner = Games.isPlayerOwner
+    public playerToMapKey = Players.toMapKey
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
