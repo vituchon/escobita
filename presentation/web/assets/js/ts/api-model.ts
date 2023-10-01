@@ -23,6 +23,10 @@ namespace Api {
     currentRound?: Round;
   }
 
+  export interface ActionsByPlayerName extends _.Dictionary<PlayerAction> {
+    [name:string]: PlayerAction;
+  }
+
   export interface Round {
     currentTurnPlayer: Player;
     consumedTurns: number;
@@ -38,9 +42,7 @@ namespace Api {
     currentMatch?: Match;
   }
 
-  export interface ActionsByPlayerName extends _.Dictionary<PlayerAction> {
-    [name:string]: PlayerAction;
-  }
+
 
   interface BasePlayerAction {
     player: Player;
