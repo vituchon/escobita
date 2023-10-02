@@ -62,7 +62,7 @@
        <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
       </div>
       <div ng-if="ctr.isMatchInProgress && peekPlayer" class="player-action">
-        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerName[ctr.playerToMapKey(player)]">
+        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerKey[ctr.playerToUniqueKey(player)]">
           <player-action ng-if="$last" order="$index" ng-model="action"></player-action>
         </div>
       </div>
@@ -102,7 +102,7 @@
         <div class="hand-section">
           <div class="title">En mano</div>
           <div class="cards">
-            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.playerToMapKey(ctr.player)].hand">
+            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayer[ctr.playerToUniqueKey(ctr.player)].hand">
               <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
               <card ng-model="card" ng-click="ctr.isPlayerTurn && (ctr.selectedHandCard = card)"></card>
             </div>
@@ -140,7 +140,7 @@
       <div class="taken-cards-container" ng-show="ctr.isMatchInProgress" ng-if="showTakenCards">
         <h3>Cartas tomadas</h3>
         <div class="taken-cards-section">
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayerName[ctr.playerToMapKey(ctr.player)].taken">
+          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayer[ctr.playerToUniqueKey(ctr.player)].taken">
             <card ng-model="card"></card>
           </div>
         </div>
@@ -150,7 +150,7 @@
       <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
         <h3>Acciones</h3>
         <div class="player-actions-section">
-          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerName[ctr.playerToMapKey(ctr.player)]">
+          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerKey[ctr.playerToUniqueKey(ctr.player)]">
             <player-action order="$index" ng-model="playerAction"></player-action>
           </div>
         </div>
