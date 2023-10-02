@@ -22,8 +22,8 @@ namespace Matchs {
       return sumValues(boardCards.concat(handCard)) == 15
     }
 
-    export interface PositionByPlayerName extends _.Dictionary<number> {
-      [name:string]: number;
+    export interface PositionByPlayerUniqueKey extends _.Dictionary<number> {
+      [uniqueKey:string]: number;
     }
 
     interface PlayerScore {
@@ -31,7 +31,7 @@ namespace Matchs {
       score: number,
     }
 
-    export function calculatePositionByPlayerName(stats: Api.ScoreSummaryByPlayerName): PositionByPlayerName {
+    export function calculatePositionByPlayerUniqueKey(stats: Api.ScoreSummaryByPlayerUniqueKey): PositionByPlayerUniqueKey {
       const asArray: PlayerScore[] = _.map(stats,(summary,playerName) => {
         return {
           name: playerName,
@@ -42,7 +42,7 @@ namespace Matchs {
       const asMap = _.reduce(sorted,(acc, playerScore, index) => {
         acc[playerScore.name] = index
         return acc
-      },<PositionByPlayerName>{})
+      },<PositionByPlayerUniqueKey>{})
       return asMap
     }
   }

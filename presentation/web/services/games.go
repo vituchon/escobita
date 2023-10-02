@@ -40,7 +40,7 @@ func CalculatePlayedMatchStats(game repositories.PersistentGame, index int) mode
 }
 
 func CanPlayerDeleteGame(game *repositories.PersistentGame, player repositories.PersistentPlayer) bool {
-	return *game.Owner.Id == *player.Id
+	return game.Owner.Id == player.Id
 }
 
 // advances the game into his next state, that is, a new match or a new round or ends
