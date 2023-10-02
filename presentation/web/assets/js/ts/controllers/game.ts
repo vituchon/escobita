@@ -16,15 +16,15 @@ namespace Game {
         return size;
     }
 
-    export interface FontSizeByPlayerName extends _.Dictionary<number> {
-      [name:string]: number;
+    export interface FontSizeByPlayerUniqueKey extends _.Dictionary<number> {
+      [uniqueKey:string]: number;
     }
 
-    export function calculateFontSizeByPlayerName(positionsByPlayerName: Matchs.Rules.PositionByPlayerName) : FontSizeByPlayerName {
-      return _.reduce(positionsByPlayerName,(acc, position, name) => {
+    export function calculateFontSizeByPlayerUniqueKey(positionsByPlayerUniqueKey: Matchs.Rules.PositionByPlayerUniqueKey) : FontSizeByPlayerUniqueKey {
+      return _.reduce(positionsByPlayerUniqueKey,(acc, position, name) => {
         acc[name] = determineFontSize(position + 1) // position starts at 0
         return acc
-      },<FontSizeByPlayerName>{})
+      },<FontSizeByPlayerUniqueKey>{})
     }
   }
 
@@ -57,7 +57,7 @@ namespace Game {
           "id": 1,
         }
       ],
-      "actionsByPlayerName": {
+      "actionsByPlayer": {
         "1|Betoven": []
       },
       "playerActions": [],
@@ -251,7 +251,7 @@ namespace Game {
             "rank": 5
           }
         ],
-        "byPlayerName": {
+        "byPlayer": {
           "Betoven": {
             "taken": null,
             "hand": [
@@ -312,11 +312,11 @@ namespace Game {
     private sendingMessage: boolean = false;
     private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = true;
-    private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
-    private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
+    private currentFontSizeByPlayerUniqueKey: UIMessages.FontSizeByPlayerUniqueKey; // funny font size to use by player name
+    private currentPositionByPlayerUniqueKey: Matchs.Rules.PositionByPlayerUniqueKey; // positions by player name
 
     public isMatchInProgress: boolean = false;
-    public currentMatchStats: Api.ScoreSummaryByPlayerName;
+    public currentMatchStats: Api.ScoreSummaryByPlayerUniqueKey;
 
     public formatUnixTimestamp = Util.unixToReadableClock
     public translateSuit = Cards.Suits.translate
@@ -438,7 +438,7 @@ namespace Game {
         // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
         if (event.key === 'x') { // helper code for dev purposes
           if (this.isMatchInProgress) {
-            const handCards = this.game.currentMatch.matchCards.byPlayerName[Players.toMapKey(this.player)].hand
+            const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
             if (handCards.length > 0) {
               this.selectedHandCard = handCards[0]
               this.performDropAction();
@@ -709,17 +709,17 @@ namespace Game {
     private updateGameStats(matchIndex: number) {
       return this.gamesService.calculateStatsByGameId(this.game.id,matchIndex).then((stats) => {
         this.currentMatchStats = stats;
-        this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
-        this.currentFontSizeByPlayerName = UIMessages.calculateFontSizeByPlayerName(this.currentPositionByPlayerName)
+        this.currentPositionByPlayerUniqueKey = Matchs.Rules.calculatePositionByPlayerUniqueKey(stats)
+        this.currentFontSizeByPlayerUniqueKey = UIMessages.calculateFontSizeByPlayerUniqueKey(this.currentPositionByPlayerUniqueKey)
         return stats
       })
     }
 
     public getFontSize(player: Players.Player) {
-      if (_.isEmpty(this.currentFontSizeByPlayerName)) {
+      if (_.isEmpty(this.currentFontSizeByPlayerUniqueKey)) {
         return UIMessages.minFontSize;
       } else {
-        return this.currentFontSizeByPlayerName[Players.toMapKey(player)]
+        return this.currentFontSizeByPlayerUniqueKey[Players.generateUniqueKey(player)]
       }
     }
 
@@ -743,7 +743,7 @@ namespace Game {
 
       this.loading = true;
       this.suggestionRequestCount++
-      const handCards = this.game.currentMatch.matchCards.byPlayerName[Players.toMapKey(this.player)].hand
+      const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
       const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
       const analizedActions = Matchs.Engine.analizeActions(possibleTakeActions, this.game.currentMatch)
       this.possibleTakeActions = analizedActions.possibleActions;
@@ -766,7 +766,7 @@ namespace Game {
     }
 
     public isPlayerGameOwner = Games.isPlayerOwner
-    public playerToMapKey = Players.toMapKey
+    public playerToUniqueKey = Players.generateUniqueKey // interesting case! both names are pretty same. the player context is provivded by the leading namespace or the inclusion in the name's identifier
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);

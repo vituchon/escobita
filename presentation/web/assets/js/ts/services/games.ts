@@ -143,7 +143,7 @@ namespace Games {
           matchIndex: matchIndex
         }
       };
-      return this.$http.get<Api.ScoreSummaryByPlayerName>(`/api/v1/games/${id}/calculate-stats`,config).then((response) => {
+      return this.$http.get<Api.ScoreSummaryByPlayerUniqueKey>(`/api/v1/games/${id}/calculate-stats`,config).then((response) => {
         return response.data
       })
     }
