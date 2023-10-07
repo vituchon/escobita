@@ -184,7 +184,6 @@ type WebSockectOutgoingActionMsgPayload struct {
 	Action *model.PlayerAction          `json:"action,omitempty"`
 }
 
-// TODO: Validate that the player performing the action is the current player!
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
@@ -206,21 +205,24 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	updated, action := services.PerformTakeAction(*game, takeAction)
+	updated, action, err := services.PerformTakeAction(*game, takeAction)
+	if err != nil {
+		log.Printf("error while performing take action: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	updated, err = gamesRepository.UpdateGame(*updated)
 	if err != nil {
-		log.Printf("error while doing take action: '%v'", err)
+		log.Printf("error while updating game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	msgPayload := WebSockectOutgoingActionMsgPayload{game, &action}
+	msgPayload := WebSockectOutgoingActionMsgPayload{game, action}
 	gameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
 
-// TODO: Validate that the player performing the action is the current player!
 func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 	paramId := RouteParam(request, "id")
 	id, err := strconv.Atoi(paramId)
@@ -243,15 +245,20 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	game, action := services.PerformDropAction(*game, dropAction)
-	game, err = gamesRepository.UpdateGame(*game)
+	game, action, err := services.PerformDropAction(*game, dropAction)
 	if err != nil {
-		log.Printf("error while doing drop action: '%v'", err)
+		log.Printf("error while performing drop action: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	game, err = gamesRepository.UpdateGame(*game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	msgPayload := WebSockectOutgoingActionMsgPayload{game, action}
 
-	msgPayload := WebSockectOutgoingActionMsgPayload{game, &action}
 	gameWebSockets.NotifyGameConns(*game.Id, "drop", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }

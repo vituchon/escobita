@@ -1,6 +1,9 @@
 package services
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/vituchon/escobita/model"
 	"github.com/vituchon/escobita/repositories"
 )
@@ -15,16 +18,30 @@ func ResumeGame(game repositories.PersistentGame) (*repositories.PersistentGame,
 	return updatedGame, nil
 }
 
-func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, model.PlayerAction) {
-	updatedAction := game.CurrentMatch.Take(action)
+func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
+	if game.CurrentMatch == nil {
+		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id=('%d')", game.Id)
+		return nil, nil, errors.New(errMsg)
+	}
+	updatedAction, err := game.CurrentMatch.Take(action)
+	if err != nil {
+		return nil, nil, err
+	}
 	updatedGame := advanceGame(game)
-	return updatedGame, updatedAction
+	return updatedGame, &updatedAction, nil
 }
 
-func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, model.PlayerAction) {
-	updatedAction := game.CurrentMatch.Drop(action)
+func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
+	if game.CurrentMatch == nil {
+		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id=('%d')", game.Id)
+		return nil, nil, errors.New(errMsg)
+	}
+	updatedAction, err := game.CurrentMatch.Drop(action)
+	if err != nil {
+		return nil, nil, err
+	}
 	updatedGame := advanceGame(game)
-	return updatedGame, updatedAction
+	return updatedGame, &updatedAction, nil
 }
 
 func CalculateCurrentMatchStats(game repositories.PersistentGame) model.ScoreSummaryByPlayer {

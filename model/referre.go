@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -60,7 +62,11 @@ func (match Match) getLastCardTaker() *Player {
 
 // Performs cards take from board using a hand card.
 // It is assumed that the combination of cards is valid (sums 15)
-func (match *Match) Take(action PlayerTakeAction) PlayerAction {
+func (match *Match) Take(action PlayerTakeAction) (PlayerAction, error) {
+	if action.Player.Id != match.CurrentRound.CurrentTurnPlayer.Id {
+		errMsg := fmt.Sprintf("Can not perform take action: it is not player(id='%d') turn", action.Player.Id)
+		return nil, errors.New(errMsg)
+	}
 	player := action.Player
 	match.Cards.Board.Without(action.BoardCards...)
 	matchPlayerCards := match.Cards.ByPlayer[player]
@@ -72,11 +78,15 @@ func (match *Match) Take(action PlayerTakeAction) PlayerAction {
 	action.Is_Escobita = isEscobita
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
-	return action
+	return action, nil
 }
 
 // Performs a card drop
-func (match *Match) Drop(action PlayerDropAction) PlayerAction {
+func (match *Match) Drop(action PlayerDropAction) (PlayerAction, error) {
+	if action.Player.Id != match.CurrentRound.CurrentTurnPlayer.Id {
+		errMsg := fmt.Sprintf("Can not perform take action: it is not player(id='%d') turn", action.Player.Id)
+		return nil, errors.New(errMsg)
+	}
 	player := action.Player
 	match.Cards.Board = append(match.Cards.Board, action.HandCard)
 	matchPlayerCards := match.Cards.ByPlayer[player]
@@ -84,7 +94,7 @@ func (match *Match) Drop(action PlayerDropAction) PlayerAction {
 	match.Cards.ByPlayer[player] = matchPlayerCards
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
-	return action
+	return action, nil
 }
 
 // Deal cards to each player for starting a new round

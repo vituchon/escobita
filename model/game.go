@@ -29,6 +29,7 @@ func (game *Game) BeginsNewMatch() error {
 		game.PlayedMatchs = append(game.PlayedMatchs, *game.CurrentMatch)
 		game.createNewMatch()
 	}
+	// TODO : Analize if these tree actions could be placed into match within a funtion called "(m *Match) Begins" or "BeginsMatch"
 	// there is a current match after executing above statements
 	game.CurrentMatch.Begins()
 	game.CurrentMatch.NextRound()

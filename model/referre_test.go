@@ -8,12 +8,12 @@ import (
 
 func TestMatchDropFlow(t *testing.T) {
 	var party []Player = []Player{
-		Player{Name: "P1"},
-		Player{Name: "P2"},
-		Player{Name: "P3"},
-		Player{Name: "P4"},
-		Player{Name: "P5"},
-		Player{Name: "P6"},
+		Player{Id: 1, Name: "P1"},
+		Player{Id: 2, Name: "P2"},
+		Player{Id: 3, Name: "P3"},
+		Player{Id: 4, Name: "P4"},
+		Player{Id: 5, Name: "P5"},
+		Player{Id: 6, Name: "P6"},
 	}
 	testRuns := []struct {
 		title          string
@@ -72,12 +72,15 @@ func TestMatchDropFlow(t *testing.T) {
 				dropAction := NewPlayerDropAction(player, match.Cards.ByPlayer[player].Hand[0])
 
 				//t.Logf("dropAction: %+v por parte de %v\n ", dropAction, player)
-				match.Drop(dropAction) // each players just drops a player
+				_, err := match.Drop(dropAction) // each players just drops a player
+				if err != nil {
+					t.Error("Unexpected error performing a drop action", err)
+				}
 				actualTurns++
 			}
 			for player, turnsCount := range turnsCountByPlayer {
 				if turnsCount != 3 {
-					t.Fatalf("Player %v has %d turns and expected turns are 3", player, turnsCount)
+					t.Errorf("Player %v has %d turns and expected turns are 3", player, turnsCount)
 				}
 			}
 
@@ -152,6 +155,44 @@ func TestCardsCombinationValues(t *testing.T) {
 		computedValue := sumValues(testRun.cards)
 		if computedValue != testRun.expectedValue {
 			t.Errorf("aggregated card values differs! Expected is %d and computed value is %d", testRun.expectedValue, computedValue)
+		}
+	}
+}
+
+func TestDropActionCanBePerformedOnlyByTheTurnPlayer(t *testing.T) {
+	var player1 Player = Player{Id: 1, Name: "P1"}
+	var player2 Player = Player{Id: 2, Name: "P2"}
+	var party []Player = []Player{
+		player1,
+		player2,
+	}
+	testRuns := []struct {
+		title   string
+		players []Player
+	}{
+		{
+			title:   "Not turn's player tries to perform a drop action",
+			players: party,
+		},
+	}
+
+	for _, testRun := range testRuns {
+		t.Logf("==== Running unit test: %s ====", testRun.title)
+		match := CreateAndBegins(testRun.players)
+		round := match.NextRound()
+		player := round.NextTurn()
+		var notTurnPlayer *Player
+		if player.Id == player1.Id {
+			notTurnPlayer = &player2
+		} else {
+			notTurnPlayer = &player1
+		}
+		t.Log("Current turn's player is", player, "and player", notTurnPlayer, "will try to perform a drop action.")
+		_, err := dropCard(t, *notTurnPlayer, &match, Card{})
+		if err == nil {
+			t.Error("An error was expected")
+		} else {
+			t.Log("Expected error happens", err)
 		}
 	}
 }

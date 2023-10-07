@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -363,21 +365,24 @@ func TestLastTaker(t *testing.T) {
 	}
 }
 
-func takeCard(t *testing.T, player Player, match *Match, handCard Card, boardCards []Card, mustBeEscobita bool) PlayerAction {
+func takeCard(t *testing.T, player Player, match *Match, handCard Card, boardCards []Card, mustBeEscobita bool) (PlayerAction, error) {
 	if CanTakeCards(handCard, boardCards) {
 		takeAction := NewPlayerTakeAction(player, handCard, boardCards)
-		action := match.Take(takeAction)
+		action, err := match.Take(takeAction)
+		if err != nil {
+			return nil, err
+		}
 		if mustBeEscobita && !action.IsEscobita() {
 			t.Fatalf("player take action shall be escobita and actual result is not")
 		}
-		return action
+		return action, nil
 	} else {
-		t.Fatalf("\n(!) Invalid take action handCard=%v, boardCards=%v\n", handCard, boardCards)
-		return PlayerTakeAction{}
+		errMsg := fmt.Sprintf("Invalid take action handCard=%v, boardCards=%v\n", handCard, boardCards)
+		return nil, errors.New(errMsg)
 	}
 }
 
-func dropCard(t *testing.T, player Player, match *Match, card Card) PlayerAction {
+func dropCard(t *testing.T, player Player, match *Match, card Card) (PlayerAction, error) {
 	dropAction := NewPlayerDropAction(player, card)
 	return match.Drop(dropAction)
 }
