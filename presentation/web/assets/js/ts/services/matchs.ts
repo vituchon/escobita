@@ -27,20 +27,20 @@ namespace Matchs {
     }
 
     interface PlayerScore {
-      name: string,
+      playerKey: string,
       score: number,
     }
 
     export function calculatePositionByPlayerUniqueKey(stats: Api.ScoreSummaryByPlayerUniqueKey): PositionByPlayerUniqueKey {
-      const asArray: PlayerScore[] = _.map(stats,(summary,playerName) => {
+      const asArray: PlayerScore[] = _.map(stats,(summary,playerKey) => {
         return {
-          name: playerName,
+          playerKey: playerKey,
           score: summary.score,
         }
       })
       const sorted = _.sortBy(asArray,(elem) => -elem.score) // sort desc so the higher score goes in "first"
       const asMap = _.reduce(sorted,(acc, playerScore, index) => {
-        acc[playerScore.name] = index
+        acc[playerScore.playerKey] = index
         return acc
       },<PositionByPlayerUniqueKey>{})
       return asMap

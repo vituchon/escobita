@@ -8,6 +8,11 @@ namespace Players {
   export function generateUniqueKey(player: Api.Player) {
     return player.id + playerFieldSeparator + player.name
   }
+
+  export function extractName(playerKey: string): string {
+    return playerKey?.split?.(playerFieldSeparator)?.[1]
+  }
+
   export interface Player extends Api.Player {  // TODO : analyse if this approach is worty...
   }
 

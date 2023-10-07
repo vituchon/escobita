@@ -316,7 +316,7 @@ namespace Game {
     private currentPositionByPlayerUniqueKey: Matchs.Rules.PositionByPlayerUniqueKey; // positions by player name
 
     public isMatchInProgress: boolean = false;
-    public currentMatchStats: Api.ScoreSummaryByPlayerUniqueKey;
+    public currentMatchStatsByPlayerUniqueKey: Api.ScoreSummaryByPlayerUniqueKey;
 
     public formatUnixTimestamp = Util.unixToReadableClock
     public translateSuit = Cards.Suits.translate
@@ -708,7 +708,7 @@ namespace Game {
 
     private updateGameStats(matchIndex: number) {
       return this.gamesService.calculateStatsByGameId(this.game.id,matchIndex).then((stats) => {
-        this.currentMatchStats = stats;
+        this.currentMatchStatsByPlayerUniqueKey = stats;
         this.currentPositionByPlayerUniqueKey = Matchs.Rules.calculatePositionByPlayerUniqueKey(stats)
         this.currentFontSizeByPlayerUniqueKey = UIMessages.calculateFontSizeByPlayerUniqueKey(this.currentPositionByPlayerUniqueKey)
         return stats
@@ -767,6 +767,7 @@ namespace Game {
 
     public isPlayerGameOwner = Games.isPlayerOwner
     public playerToUniqueKey = Players.generateUniqueKey // interesting case! both names are pretty same. the player context is provivded by the leading namespace or the inclusion in the name's identifier
+    public extractPlayerName = Players.extractName
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
