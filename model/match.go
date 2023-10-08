@@ -20,7 +20,7 @@ type Match struct {
 }
 
 func newMatch(players []Player, deck Deck) Match {
-	totalTurns := len(deck) - 4 // it should be 36, but in the tests is lower because i employ an small deck
+	totalTurns := len(deck) - 4 // it should be 36, but in the tests is lower because I employ an small deck, so this formula works for both cases (real life and test life)
 	match := Match{
 		Players:          players,
 		ActionsByPlayer:  newActionsByPlayer(players),
