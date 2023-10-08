@@ -54,7 +54,7 @@ func TestMatchDropFlow(t *testing.T) {
 
 	for _, testRun := range testRuns {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
-		match := CreateAndBegins(testRun.players)
+		match := CreateAndPrepare(testRun.players)
 		actualRounds := 0
 		//t.Log(actualRounds, match)
 		for match.HasMoreRounds() && actualRounds < 100 { // the match ends by dealing cards until there a no more cards left
@@ -178,7 +178,7 @@ func TestDropActionCanBePerformedOnlyByTheTurnPlayer(t *testing.T) {
 
 	for _, testRun := range testRuns {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
-		match := CreateAndBegins(testRun.players)
+		match := CreateAndPrepare(testRun.players)
 		round := match.NextRound()
 		player := round.NextTurn()
 		var notTurnPlayer *Player

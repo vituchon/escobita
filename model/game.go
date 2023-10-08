@@ -31,7 +31,7 @@ func (game *Game) BeginsNewMatch() error {
 	}
 	// TODO : Analize if these tree actions could be placed into match within a funtion called "(m *Match) Begins" or "BeginsMatch"
 	// there is a current match after executing above statements
-	game.CurrentMatch.Begins()
+	game.CurrentMatch.Prepare()
 	game.CurrentMatch.NextRound()
 	// there is a current round after executing above statements
 	game.CurrentMatch.CurrentRound.NextTurn()

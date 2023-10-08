@@ -22,7 +22,7 @@ func StartApp() {
 	}
 
 	quitGame := false
-	match := model.CreateAndBegins(players)
+	match := model.CreateAndPrepare(players)
 	for match.HasMoreRounds() && !quitGame {
 		round := match.NextRound()
 		for round.HasNextTurn() && !quitGame {

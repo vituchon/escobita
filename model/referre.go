@@ -12,9 +12,9 @@ var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
 
 // creates the match and prepare it for play
 // do note that the initial cards are laydown at moment 0 and not at round one!
-func CreateAndBegins(players []Player) Match {
+func CreateAndPrepare(players []Player) Match {
 	match := CreateMatch(players)
-	match.Begins()
+	match.Prepare()
 	return match
 }
 
@@ -24,7 +24,7 @@ func CreateMatch(players []Player) Match {
 }
 
 // performs the initial lay down of cards and select the initial player so the match is ready to begin
-func (match *Match) Begins() {
+func (match *Match) Prepare() {
 	shuffle(match.Cards.Left)
 	match.Cards.Board = copyDeck(match.Cards.Left[:4])
 	match.Cards.Left = match.Cards.Left[4:]
