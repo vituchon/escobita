@@ -54,7 +54,8 @@ func TestMatchDropFlow(t *testing.T) {
 
 	for _, testRun := range testRuns {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
-		match := CreateAndPrepare(testRun.players)
+		match := CreateMatch(testRun.players)
+		match.Prepare()
 		actualRounds := 0
 		//t.Log(actualRounds, match)
 		for match.HasMoreRounds() && actualRounds < 100 { // the match ends by dealing cards until there a no more cards left
@@ -178,7 +179,8 @@ func TestDropActionCanBePerformedOnlyByTheTurnPlayer(t *testing.T) {
 
 	for _, testRun := range testRuns {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
-		match := CreateAndPrepare(testRun.players)
+		match := CreateMatch(testRun.players)
+		match.Prepare()
 		round := match.NextRound()
 		player := round.NextTurn()
 		var notTurnPlayer *Player
@@ -195,4 +197,11 @@ func TestDropActionCanBePerformedOnlyByTheTurnPlayer(t *testing.T) {
 			t.Log("Expected error happens", err)
 		}
 	}
+}
+
+// Helper method: (Evaluate if necessary) Starts a match, beginning the first round and then the first turn within that first round
+func (match *Match) Begins() (actingPlayer Player) {
+	match.Prepare()
+	match.NextRound()                    // advances into first round
+	return match.CurrentRound.NextTurn() // advances into first turn
 }

@@ -80,7 +80,11 @@ func advanceGame(game repositories.PersistentGame) *repositories.PersistentGame 
 		return &game
 	} else {
 		// match ended, advancing means to begin another match
-		game.BeginsNewMatch() // no need to check the returned error
+		game.CreatesNewMatch() // no need to check the returned error
+		// begins the brand new match
+		game.CurrentMatch.Prepare()
+		game.CurrentMatch.NextRound()             // advances into the first round (within the current match)
+		game.CurrentMatch.CurrentRound.NextTurn() // advances into the first turn (within the first round)
 		return &game
 	}
 }

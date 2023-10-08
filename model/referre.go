@@ -10,14 +10,6 @@ import (
 
 var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
 
-// creates the match and prepare it for play
-// do note that the initial cards are laydown at moment 0 and not at round one!
-func CreateAndPrepare(players []Player) Match {
-	match := CreateMatch(players)
-	match.Prepare()
-	return match
-}
-
 func CreateMatch(players []Player) Match {
 	var deck Deck = NewDeck(Suits, EscobitaRanks)
 	return newMatch(players, deck)
@@ -31,7 +23,7 @@ func (match *Match) Prepare() {
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
 }
 
-// finalizes the match grating the left cards to the last taker
+// Ends the match grating the left cards to the last taker
 func (match *Match) Ends() {
 	if len(match.Cards.Board) > 0 {
 		player := match.getLastCardTaker()

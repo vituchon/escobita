@@ -19,7 +19,7 @@ func NewGame(players []Player) Game {
 	}
 }
 
-func (game *Game) BeginsNewMatch() error {
+func (game *Game) CreatesNewMatch() error {
 	if game.CurrentMatch == nil {
 		game.createNewMatch()
 	} else {
@@ -29,12 +29,6 @@ func (game *Game) BeginsNewMatch() error {
 		game.PlayedMatchs = append(game.PlayedMatchs, *game.CurrentMatch)
 		game.createNewMatch()
 	}
-	// TODO : Analize if these tree actions could be placed into match within a funtion called "(m *Match) Begins" or "BeginsMatch"
-	// there is a current match after executing above statements
-	game.CurrentMatch.Prepare()
-	game.CurrentMatch.NextRound()
-	// there is a current round after executing above statements
-	game.CurrentMatch.CurrentRound.NextTurn()
 	return nil
 }
 
