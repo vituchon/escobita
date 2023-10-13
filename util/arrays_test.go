@@ -3,9 +3,19 @@ package util
 import (
 	"fmt"
 	"reflect"
-	"sort"
 	"testing"
 )
+
+func compareIntsSlices(left, right []int) int {
+	for i := 0; i < len(left); i++ {
+		diff := left[i] - right[i]
+		if diff != 0 {
+			return diff
+		}
+		// if they are equals then continue until there is a order difference or the slice ends
+	}
+	return 0
+}
 
 func TestGeneratePermutationsWorks(t *testing.T) {
 	testRuns := []struct {
@@ -41,26 +51,10 @@ func TestGeneratePermutationsWorks(t *testing.T) {
 		if len(computed) != len(testRun.expected) {
 			t.Error("Length doesn't match, computed was: ", len(computed), " and expected is: ", len(testRun.expected))
 		}
-		if !HasSameValuesDisregardingOrder(computed, testRun.expected) {
+		if !HasSameValuesDisregardingOrder(computed, testRun.expected, compareIntsSlices) {
 			t.Error("Computed was", computed, "and expected is", testRun.expected)
 		}
 	}
-}
-
-func sortIntSliceSlice(slice [][]int) {
-	sort.Slice(slice, func(i, j int) bool {
-		iSlice := slice[i]
-		jSlice := slice[j]
-		for k := 0; k < len(iSlice); k++ {
-			if iSlice[k] < jSlice[k] {
-				return true
-			} else if iSlice[k] > jSlice[k] {
-				return false
-			}
-			// if they are equals then continue until there is a order difference or the slice ends
-		}
-		return false
-	})
 }
 
 func TestSortIntSliceSliceWork(t *testing.T) {
@@ -118,7 +112,7 @@ func TestSortIntSliceSliceWork(t *testing.T) {
 	for _, testRun := range testRuns {
 		t.Log("Running", testRun.title)
 		computed := DeepCopySlice(testRun.input)
-		sortIntSliceSlice(computed)
+		SortSlice(computed, compareIntsSlices)
 		for i := 0; i < len(testRun.expected); i++ {
 			if !reflect.DeepEqual(computed[i], testRun.expected[i]) {
 				t.Error("Computed was", computed, "and expected is", testRun.expected)
@@ -126,24 +120,6 @@ func TestSortIntSliceSliceWork(t *testing.T) {
 			}
 		}
 	}
-}
-
-func HasSameValuesDisregardingOrder(left, right [][]int) bool {
-	if len(left) != len(right) {
-		return false
-	}
-	sortIntSliceSlice(left)
-	sortIntSliceSlice(right)
-	return hasSameValuesRegardingOrder(left, right)
-}
-
-func hasSameValuesRegardingOrder(left, right [][]int) bool {
-	for i := 0; i < len(left); i++ {
-		if !reflect.DeepEqual(left[i], right[i]) {
-			return false
-		}
-	}
-	return true
 }
 
 func TestHasSameValuesDisregardingOrder(t *testing.T) {
@@ -234,7 +210,7 @@ func TestHasSameValuesDisregardingOrder(t *testing.T) {
 	}
 	for _, testRun := range testRuns {
 		t.Log("Running", testRun.title)
-		computed := HasSameValuesDisregardingOrder(testRun.left, testRun.right)
+		computed := HasSameValuesDisregardingOrder(testRun.left, testRun.right, compareIntsSlices)
 		if computed != testRun.expected {
 			t.Error("Computed was", computed, "and expected is", testRun.expected)
 		}

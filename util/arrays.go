@@ -1,5 +1,10 @@
 package util
 
+import (
+	"reflect"
+	"sort"
+)
+
 // Generates an array containing all possible permutations regarding element's order
 // chatgpt states: Keep in mind that the number of permutations grows rapidly with the size of the input array, so this function may not be practical for very large input arrays due to the combinatorial explosion of possibilities.
 // so the length of the input array should not be larger than 10, as 10! = 3628800
@@ -54,4 +59,33 @@ func Flatten[T any](lists [][]T) []T {
         res = append(res, list...)
     }
     return res
+}
+
+func HasSameValuesDisregardingOrder[T any](left, right []T, comparisionFunc func (left,right T) int) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	SortSlice(left, comparisionFunc)
+	SortSlice(right, comparisionFunc)
+	return HasSameValuesRegardingOrder(left, right)
+}
+
+
+func SortSlice[T any](slice []T, comparisionFunc func (left,right T) int) {
+	sort.Slice(slice, func(i, j int) bool {
+		order := comparisionFunc(slice[i],slice[j])
+		if (order <= -1) {
+			return true
+		}
+		return false
+	})
+}
+
+func HasSameValuesRegardingOrder[T any](left, right []T) bool {
+	for i := 0; i < len(left); i++ {
+		if !reflect.DeepEqual(left[i], right[i]) {
+			return false
+		}
+	}
+	return true
 }
