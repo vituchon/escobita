@@ -15,7 +15,7 @@ type Card struct {
 
 func (s Card) String() string {
 	//return "(id=" + strconv.Itoa(s.Id) + ",value=" + strconv.Itoa(determineValue(s)) + ") " + s.Suit.String() + "," + strconv.Itoa(s.Rank)
-	return s.Suit.String() + "," + strconv.Itoa(s.Rank)
+	return s.Suit.String() + "#" + strconv.Itoa(s.Rank) + "(id=" + strconv.Itoa(s.Id) + ")"
 }
 
 // The suit that a card belongs to
@@ -142,7 +142,7 @@ func NewDeck(suits []Suit, ranks []Rank) Deck {
 }
 
 func copyDeck(original Deck) (replica Deck) {
-	replica = make(Deck, len(original), len(original))
+	replica = make(Deck, len(original))
 	copy(replica, original)
 	return
 }
