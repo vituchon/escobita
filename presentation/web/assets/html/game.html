@@ -162,7 +162,7 @@
     <div class="stats-section" ng-show="ctr.isMatchInProgress">
       <h3>Estadísticas del partido actual</h3>
       <div class="player-stats-container">
-        <div ng-repeat="(playerName,stats) in ctr.currentMatchStats" class="player-stats-item">
+        <div ng-init="playerName = ctr.extractPlayerName(playerUniqueKey)" ng-repeat="(playerUniqueKey,stats) in ctr.currentMatchStatsByPlayerUniqueKey" class="player-stats-item">
           <div>
             <span class="player-name">{{playerName}}</span>&nbsp;
             <span style="font-size:120%;">
