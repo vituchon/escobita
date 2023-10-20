@@ -54,11 +54,11 @@ func ShallowCopySlice[T any](original []T) []T {
 
 
 func Flatten[T any](lists [][]T) []T {
-    var res []T
-    for _, list := range lists {
-        res = append(res, list...)
-    }
-    return res
+	var res []T
+	for _, list := range lists {
+			res = append(res, list...)
+	}
+	return res
 }
 
 func HasSameValuesDisregardingOrder[T any](left, right []T, comparisionFunc func (left,right T) int) bool {
@@ -88,4 +88,14 @@ func HasSameValuesRegardingOrder[T any](left, right []T) bool {
 		}
 	}
 	return true
+}
+
+// taken from https://stackoverflow.com/a/37563128/903998, thanks :D!
+func Filter[T any](ss []T, predicateFunc func(T) bool) (ret []T) {
+    for _, s := range ss {
+        if predicateFunc(s) {
+            ret = append(ret, s)
+        }
+    }
+    return
 }
