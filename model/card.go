@@ -18,17 +18,14 @@ func (s Card) String() string {
 	return s.Suit.String() + "#" + strconv.Itoa(s.Rank) + "(id=" + strconv.Itoa(s.Id) + ")"
 }
 
-// TODO : promote usage of this func
 func (card Card) IsGoldenSeven() bool {
 	return card.IsSevenRank() && card.IsGoldenSuit()
 }
 
-// TODO : promote usage of this func
 func (card Card) IsGoldenSuit() bool {
 	return card.Suit == GOLD
 }
 
-// TODO : promote usage of this func
 func (card Card) IsSevenRank() bool {
 	return card.Rank == 7
 }

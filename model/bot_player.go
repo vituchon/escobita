@@ -42,6 +42,10 @@ func CalculatePossibleTakeActions(boardCards []Card, handCards []Card) []PlayerT
 		}
 	}
 
+	return removeDuplicates(takeActions)
+}
+
+func removeDuplicates(takeActions []PlayerTakeAction) []PlayerTakeAction {
 	// eliminating duplicates
 	compareCards := func(left, right Card) int {
 		return left.Id - right.Id
@@ -61,7 +65,6 @@ func CalculatePossibleTakeActions(boardCards []Card, handCards []Card) []PlayerT
 			withoutDups = append(withoutDups, takeAction)
 		}
 	}
-	// end elimitating duplicates: extract into new method
 	return withoutDups
 }
 
