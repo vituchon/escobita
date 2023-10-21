@@ -96,6 +96,15 @@ func DetermineIsGoldenSevenIsUsed(cards []Card) bool {
 	return idx != -1
 }
 
+func DetermineIsGoldenSevenIsUsedNative(cards []Card) bool {
+	for _, card := range cards {
+		if card.IsGoldenSeven() {
+			return true
+		}
+	}
+	return false
+}
+
 func CountSevenRankCards(cards []Card) int {
 	count := 0
 	for _, card := range cards {
@@ -144,13 +153,14 @@ func AnalizeActions(actions []PlayerTakeAction, match Match) TakeActionsAnalysis
 func GetMostImportantCards(cards []Card, uptoCount int) []Card {
 	//const set: Set<Card> = new Set() // dev notes: using set for taking leverage that it not possible to add duplicates. For example: after adding golden 7 it is impossible to re-add the golden 7 as golden card as it will be already added
 
-	idx := slices.IndexFunc(cards, func(card Card) bool { return card.IsGoldenSeven() })
+	/*idx := slices.IndexFunc(cards, func(card Card) bool { return card.IsGoldenSeven() })
 	sevenCards := util.Filter(cards, func(card Card) bool { return card.isSevenRank() })
 	goldenCards := util.Filter(cards, func(card Card) bool { return card.isGoldenSuit() })
 
 	if idx != -1 {
 
-	}
+	}*/
+	return nil
 	/*if (Util.isDefined(goldenSevenCard)) {
 	    addToSetUptoLimitSize(set, [goldenSevenCard], uptoCount)
 	  }
