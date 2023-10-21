@@ -42,57 +42,76 @@ func TestScoreCalculationOnBeginMatch(t *testing.T) {
 
 func TestSeventiesCalculation(t *testing.T) {
 	testRuns := []struct {
-		title         string
-		cards         []Card
-		expectedValue int
+		title                       string
+		cards                       []Card
+		expectedScore               int
+		expectedSevenRankCardsCount int
 	}{
 		{
-			title:         "1 (GOLD) + 1 (SWORD) + 1 (CLUB) + 1 (CUP) = 1 + 1 + 1 + 1",
-			cards:         []Card{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, SWORD, 1}, Card{MOCK_ID, CLUB, 1}, Card{MOCK_ID, CUP, 1}},
-			expectedValue: 4,
+			title:                       "1 (GOLD) + 1 (SWORD) + 1 (CLUB) + 1 (CUP) = 1 + 1 + 1 + 1",
+			cards:                       []Card{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, SWORD, 1}, Card{MOCK_ID, CLUB, 1}, Card{MOCK_ID, CUP, 1}},
+			expectedScore:               4,
+			expectedSevenRankCardsCount: 0,
 		},
 		{
-			title:         "3 (GOLD) + 1 (CUP) = 4 + 1",
-			cards:         Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 2}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 1}},
-			expectedValue: 5,
+			title:                       "3 (GOLD) + 1 (CUP) = 4 + 1",
+			cards:                       Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 2}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 1}},
+			expectedScore:               5,
+			expectedSevenRankCardsCount: 0,
 		},
 		{
-			title:         "4 (GOLD) + 5 (CUP) = 8 + 16",
-			cards:         Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 4}, Card{MOCK_ID, CUP, 5}, Card{MOCK_ID, CUP, 1}},
-			expectedValue: 24,
+			title:                       "4 (GOLD) + 5 (CUP) = 8 + 16",
+			cards:                       Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 4}, Card{MOCK_ID, CUP, 5}, Card{MOCK_ID, CUP, 1}},
+			expectedScore:               24,
+			expectedSevenRankCardsCount: 0,
 		},
 		{
-			title:         "6 (GOLD) + 1 (CUP) + 7 (CUP) = 32 + 2 + 64",
-			cards:         Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 6}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 2}, Card{MOCK_ID, SWORD, 6}, Card{MOCK_ID, SWORD, 7}},
-			expectedValue: 98,
+			title:                       "6 (GOLD) + 1 (CUP) + 7 (CUP) = 32 + 2 + 64",
+			cards:                       Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 6}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 2}, Card{MOCK_ID, SWORD, 6}, Card{MOCK_ID, SWORD, 7}},
+			expectedScore:               98,
+			expectedSevenRankCardsCount: 1,
 		},
 		// same as above plus not valid cards for seventies (> 7)
 		{
-			title:         "1 (GOLD) + 1 (SWORD) + 1 (CLUB) + 1 (CUP) = 1 + 1 + 1 + 1",
-			cards:         []Card{Card{MOCK_ID, GOLD, 10}, Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, SWORD, 1}, Card{MOCK_ID, CLUB, 1}, Card{MOCK_ID, CUP, 1}},
-			expectedValue: 4,
+			title:                       "1 (GOLD) + 1 (SWORD) + 1 (CLUB) + 1 (CUP) = 1 + 1 + 1 + 1",
+			cards:                       []Card{Card{MOCK_ID, GOLD, 10}, Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, SWORD, 1}, Card{MOCK_ID, CLUB, 1}, Card{MOCK_ID, CUP, 1}},
+			expectedScore:               4,
+			expectedSevenRankCardsCount: 0,
 		},
 		{
-			title:         "3 (GOLD) + 1 (CUP) = 4 + 1",
-			cards:         Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 2}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 11}, Card{MOCK_ID, CUP, 1}},
-			expectedValue: 5,
+			title:                       "3 (GOLD) + 1 (CUP) = 4 + 1",
+			cards:                       Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 2}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 11}, Card{MOCK_ID, CUP, 1}},
+			expectedScore:               5,
+			expectedSevenRankCardsCount: 0,
 		},
 		{
-			title:         "4 (GOLD) + 5 (CUP) = 8 + 16",
-			cards:         Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 12}, Card{MOCK_ID, GOLD, 4}, Card{MOCK_ID, CUP, 5}, Card{MOCK_ID, CUP, 10}, Card{MOCK_ID, CUP, 1}},
-			expectedValue: 24,
+			title:                       "4 (GOLD) + 5 (CUP) = 8 + 16",
+			cards:                       Deck{Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 12}, Card{MOCK_ID, GOLD, 4}, Card{MOCK_ID, CUP, 5}, Card{MOCK_ID, CUP, 10}, Card{MOCK_ID, CUP, 1}},
+			expectedScore:               24,
+			expectedSevenRankCardsCount: 0,
 		},
 		{
-			title:         "6 (GOLD) + 1 (CUP) + 7 (CUP) = 32 + 2 + 64",
-			cards:         Deck{Card{MOCK_ID, CLUB, 10}, Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 6}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 2}, Card{MOCK_ID, SWORD, 6}, Card{MOCK_ID, GOLD, 11}, Card{MOCK_ID, SWORD, 7}},
-			expectedValue: 98,
+			title:                       "6 (GOLD) + 1 (CUP) + 7 (CUP) = 32 + 2 + 64",
+			cards:                       Deck{Card{MOCK_ID, CLUB, 10}, Card{MOCK_ID, GOLD, 1}, Card{MOCK_ID, GOLD, 6}, Card{MOCK_ID, GOLD, 3}, Card{MOCK_ID, CUP, 2}, Card{MOCK_ID, SWORD, 6}, Card{MOCK_ID, GOLD, 11}, Card{MOCK_ID, SWORD, 7}},
+			expectedScore:               98,
+			expectedSevenRankCardsCount: 1,
+		},
+		{
+			title:                       "7 (GOLD) + 7 (SWORD) + 7 (CUP) + 7 (CLUB) = 64 * 4 = 256",
+			cards:                       Deck{Card{MOCK_ID, GOLD, 7}, Card{MOCK_ID, SWORD, 7}, Card{MOCK_ID, CUP, 7}, Card{MOCK_ID, CLUB, 7}},
+			expectedScore:               256,
+			expectedSevenRankCardsCount: 4,
 		},
 	}
 	for _, testRun := range testRuns {
 		t.Logf("Running unit test: %s ", testRun.title)
-		computedValue := calculateSeventiesScore(testRun.cards)
-		if computedValue != testRun.expectedValue {
-			t.Errorf("aggregated card values differs! Expected is %d and computed value is %d", testRun.expectedValue, computedValue)
+		computedScore := calculateSeventiesScore(testRun.cards)
+		if computedScore != testRun.expectedScore {
+			t.Errorf("aggregated card values differs! Expected is %d and computed value is %d", testRun.expectedScore, computedScore)
+		}
+		computedCountSevenRankCards := CountSevenRankCards(testRun.cards)
+		if computedCountSevenRankCards != testRun.expectedSevenRankCardsCount {
+			t.Errorf("CountSevenRankCards differs! Expected is %d and computed value is %d", testRun.expectedSevenRankCardsCount, computedCountSevenRankCards)
 		}
 	}
 }

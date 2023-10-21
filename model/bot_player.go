@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/vituchon/escobita/util"
-	"golang.org/x/exp/slices"
 )
 
 var BotPlayer Player = Player{
@@ -88,38 +87,6 @@ func CalculateTakeActionSymbolicScore(action PlayerTakeAction, match Match) int 
 	escobitaSymbolicScore := boolToInt[isEscobita] * 10
 
 	return len(employedCards) + escobitaSymbolicScore + seventiesSymbolicScore + goldSevenSymbolicScore + goldenSuitCardsSymbolicScore
-}
-
-// TODO: unifiy functions. This is duplicating functionaly at model/statistics.go#hasGoldSeven
-func DetermineIsGoldenSevenIsUsed(cards []Card) bool {
-	idx := slices.IndexFunc(cards, func(card Card) bool { return card.IsGoldenSeven() })
-	return idx != -1
-}
-
-func DetermineIsGoldenSevenIsUsedNative(cards []Card) bool {
-	for _, card := range cards {
-		if card.IsGoldenSeven() {
-			return true
-		}
-	}
-	return false
-}
-
-func CountSevenRankCards(cards []Card) int {
-	count := 0
-	for _, card := range cards {
-		count += boolToInt[card.IsSevenRank()]
-	}
-	return count
-}
-
-// TODO: unifiy functions. This is duplicating functionaly at model/statistics.go#countGoldCards
-func CountGoldenSuitCards(cards []Card) int {
-	count := 0
-	for _, card := range cards {
-		count += boolToInt[card.IsGoldenSuit()]
-	}
-	return count
 }
 
 type TakeActionsAnalysisResult struct {
