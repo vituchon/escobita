@@ -1,7 +1,9 @@
 package model
 
 import (
+	"fmt"
 	"github.com/vituchon/escobita/util"
+	"strings"
 )
 
 var BotPlayer Player = Player{
@@ -42,7 +44,10 @@ func CalculatePossibleTakeActions(boardCards []Card, handCards []Card) []PlayerT
 		}
 	}
 
-	return removeDuplicates(takeActions)
+	fmt.Println("before",len(takeActions))
+	after := removeDuplicates(takeActions)
+	fmt.Println("after",len(after))
+	return  after
 }
 
 func removeDuplicates(takeActions []PlayerTakeAction) []PlayerTakeAction {
@@ -56,6 +61,7 @@ func removeDuplicates(takeActions []PlayerTakeAction) []PlayerTakeAction {
 		for _, anotherTakeAction := range withoutDups {
 			hasSameBoardCards := util.HasSameValuesDisregardingOrder(takeAction.BoardCards, anotherTakeAction.BoardCards, compareCards)
 			hasSameHandCard := takeAction.HandCard.Id == anotherTakeAction.HandCard.Id
+			fmt.Println("BoardCards A:",takeAction.BoardCards,"\nBoardCards B:",anotherTakeAction.BoardCards, "\n", "hasSameBoardCards" ,hasSameBoardCards, "hasSameHandCard",hasSameHandCard)
 			if hasSameBoardCards && hasSameHandCard {
 				isContained = true
 				break
@@ -97,6 +103,15 @@ type TakeActionsAnalysisResult struct {
 	RecomendedAction SuggestedTakeAction
 }
 
+func (analysis TakeActionsAnalysisResult) String() string {
+	var sb strings.Builder
+	for i, possibleAction := range analysis.PossibleActions {
+		sb.WriteString(fmt.Sprintf("%d. Sugerencia:%+v\n", i+1, possibleAction))
+	}
+	sb.WriteString(fmt.Sprintf("Recomendada:%+v\n", analysis.RecomendedAction))
+	return sb.String()
+}
+
 func AnalizeActions(actions []PlayerTakeAction, match Match) TakeActionsAnalysisResult {
 	var recommendedAction SuggestedTakeAction
 	var suggestedTakeActions []SuggestedTakeAction
@@ -121,25 +136,49 @@ func AnalizeActions(actions []PlayerTakeAction, match Match) TakeActionsAnalysis
 }
 
 func GetMostImportantCards(cards []Card, uptoCount int) []Card {
-	//const set: Set<Card> = new Set() // dev notes: using set for taking leverage that it not possible to add duplicates. For example: after adding golden 7 it is impossible to re-add the golden 7 as golden card as it will be already added
+	goldenSevenCard := util.Find(cards, func(card Card) bool { return card.IsGoldenSeven() })
+	sevenCards := util.Filter(cards, func(card Card) bool { return card.IsSevenRank() })
+	goldenCards := util.Filter(cards, func(card Card) bool { return card.IsGoldenSuit() })
 
-	/*idx := slices.IndexFunc(cards, func(card Card) bool { return card.IsGoldenSeven() })
-	sevenCards := util.Filter(cards, func(card Card) bool { return card.isSevenRank() })
-	goldenCards := util.Filter(cards, func(card Card) bool { return card.isGoldenSuit() })
+	var cardsSet map[Card]bool = make(map[Card]bool)
+	if goldenSevenCard != nil {
+		addToSetUptoLimitSize(cardsSet, []Card{*goldenSevenCard}, uptoCount)
+	}
+	//fmt.Println("1 cardset:", cardsSet)
+	rest := uptoCount - len(cardsSet)
+	maxSevenCards := min(2, len(sevenCards))
+	atMostTwoSevenCards := sevenCards[0:min(maxSevenCards, rest)] // considering at most 2 cards (if golded seven is included the only one seven will be added as the golded seven DO count as a seven too!)
+	addToSetUptoLimitSize(cardsSet, atMostTwoSevenCards, uptoCount)
+    //fmt.Println("2 cardset:", cardsSet)
+	addToSetUptoLimitSize(cardsSet, goldenCards, uptoCount)
+	//fmt.Println("3 cardset:", cardsSet)
+	addToSetUptoLimitSize(cardsSet, cards, uptoCount)
+	//fmt.Println("4 cardset:", cardsSet)
 
-	if idx != -1 {
+	mostImportantCards := make([]Card,0,  len(cardsSet))
+	for card := range cardsSet {
+		//fmt.Println("card",card)
+		mostImportantCards = append(mostImportantCards, card)
+	}
+	return mostImportantCards
+}
 
-	}*/
-	return nil
-	/*if (Util.isDefined(goldenSevenCard)) {
-	    addToSetUptoLimitSize(set, [goldenSevenCard], uptoCount)
-	  }
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
 
-	  var rest = uptoCount - set.size
-	  const atMostTwoSevenCards = sevenCards.slice(0,Math.min(2,rest)) // considering at most 2 cards (if golded seven is included the only one seven will be added as the golded seven DO count as a seven too!)
-	  addToSetUptoLimitSize(set, atMostTwoSevenCards, uptoCount)
+func addToSetUptoLimitSize[T comparable](set map[T]bool, values []T, limitCount int) {
+	if len(set) >= limitCount {
+		return
+	}
 
-	  addToSetUptoLimitSize(set, goldenCards, uptoCount)
-	  addToSetUptoLimitSize(set, cards, uptoCount)
-	  return Array.from(set)*/
+	for _, value := range values {
+		set[value] = true
+		if len(set) >= limitCount {
+			return
+		}
+	}
 }
