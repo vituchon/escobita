@@ -14,7 +14,7 @@ func GeneratePermutations[T any](array []T) [][]T {
 	} else {
 		combinations := [][]T{}
 		for index, value := range array {
-			others := make([]T,len(array)-1,len(array)-1)
+			others := make([]T, len(array)-1, len(array)-1)
 			j := 0
 			for i := 0; i < index; i++ {
 				others[j] = array[i]
@@ -24,6 +24,7 @@ func GeneratePermutations[T any](array []T) [][]T {
 				others[j] = array[i]
 				j++
 			}
+			// performs somethink like this => others := array[0:index].concat(array[index+1,len(array)]), but working over sliced slices is not a good choice!
 			subcombinations := GeneratePermutations(others)
 			for _, subcombination := range subcombinations {
 				combination := append([]T{value}, subcombination...)
@@ -52,16 +53,15 @@ func ShallowCopySlice[T any](original []T) []T {
 	return copied
 }
 
-
 func Flatten[T any](lists [][]T) []T {
 	var res []T
 	for _, list := range lists {
-			res = append(res, list...)
+		res = append(res, list...)
 	}
 	return res
 }
 
-func HasSameValuesDisregardingOrder[T any](left, right []T, comparisionFunc func (left,right T) int) bool {
+func HasSameValuesDisregardingOrder[T any](left, right []T, comparisionFunc func(left, right T) int) bool {
 	if len(left) != len(right) {
 		return false
 	}
@@ -70,11 +70,10 @@ func HasSameValuesDisregardingOrder[T any](left, right []T, comparisionFunc func
 	return HasSameValuesRegardingOrder(left, right)
 }
 
-
-func SortSlice[T any](slice []T, comparisionFunc func (left,right T) int) {
+func SortSlice[T any](slice []T, comparisionFunc func(left, right T) int) {
 	sort.Slice(slice, func(i, j int) bool {
-		order := comparisionFunc(slice[i],slice[j])
-		if (order <= -1) {
+		order := comparisionFunc(slice[i], slice[j])
+		if order <= -1 {
 			return true
 		}
 		return false
@@ -92,10 +91,19 @@ func HasSameValuesRegardingOrder[T any](left, right []T) bool {
 
 // taken from https://stackoverflow.com/a/37563128/903998, thanks :D!
 func Filter[T any](ss []T, predicateFunc func(T) bool) (ret []T) {
-    for _, s := range ss {
-        if predicateFunc(s) {
-            ret = append(ret, s)
-        }
-    }
-    return
+	for _, s := range ss {
+		if predicateFunc(s) {
+			ret = append(ret, s)
+		}
+	}
+	return
+}
+
+func Find[T any](ss []T, predicateFunc func(T) bool) *T {
+	for _, s := range ss {
+		if predicateFunc(s) {
+			return &s
+		}
+	}
+	return nil
 }
