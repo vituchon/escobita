@@ -6,9 +6,26 @@ import (
 	"strings"
 )
 
-var BotPlayer Player = Player{
+var ComputerPlayer Player = Player{
 	Id:   0,
-	Name: "Botty ",
+	Name: "Computer ",
+}
+
+func CalculateAction(match Match) PlayerAction {
+	cards := GetMostImportantCards(match.Cards.Board, 8)
+	playerCards := match.Cards.ByPlayer[ComputerPlayer]
+	possibleTakeActions := CalculatePossibleTakeActions(cards, playerCards.Hand)
+	analizedActions := AnalizeActions(possibleTakeActions, match)
+	fmt.Println("analizedActions", analizedActions)
+	if len(analizedActions.PossibleActions) > 0 {
+		fmt.Println("Take action", analizedActions.RecomendedAction.PlayerTakeAction)
+		return analizedActions.RecomendedAction.PlayerTakeAction
+	} else {
+		// TODO : There is a lot of room to improve this answer! func CalculatePossibleDropActions comming soon!
+		dropAction := NewPlayerDropAction(ComputerPlayer, playerCards.Hand[0])
+		fmt.Println("Drop action", dropAction)
+		return dropAction
+	}
 }
 
 type SuggestedTakeAction struct {
@@ -33,7 +50,7 @@ func CalculatePossibleTakeActions(boardCards []Card, handCards []Card) []PlayerT
 				if isFeasible {
 					takeAction := PlayerTakeAction{
 						basePlayerAction: basePlayerAction{
-							Player: BotPlayer,
+							Player: ComputerPlayer,
 						},
 						BoardCards: boardSubcombination,
 						HandCard:   handCard,
@@ -44,9 +61,9 @@ func CalculatePossibleTakeActions(boardCards []Card, handCards []Card) []PlayerT
 		}
 	}
 
-	fmt.Println("before",len(takeActions))
+	//fmt.Println("before",len(takeActions))
 	after := removeDuplicates(takeActions)
-	fmt.Println("after",len(after))
+	//fmt.Println("after",len(after))
 	return  after
 }
 
@@ -61,7 +78,7 @@ func removeDuplicates(takeActions []PlayerTakeAction) []PlayerTakeAction {
 		for _, anotherTakeAction := range withoutDups {
 			hasSameBoardCards := util.HasSameValuesDisregardingOrder(takeAction.BoardCards, anotherTakeAction.BoardCards, compareCards)
 			hasSameHandCard := takeAction.HandCard.Id == anotherTakeAction.HandCard.Id
-			fmt.Println("BoardCards A:",takeAction.BoardCards,"\nBoardCards B:",anotherTakeAction.BoardCards, "\n", "hasSameBoardCards" ,hasSameBoardCards, "hasSameHandCard",hasSameHandCard)
+			//fmt.Println("BoardCards A:",takeAction.BoardCards,"\nBoardCards B:",anotherTakeAction.BoardCards, "\n", "hasSameBoardCards" ,hasSameBoardCards, "hasSameHandCard",hasSameHandCard)
 			if hasSameBoardCards && hasSameHandCard {
 				isContained = true
 				break

@@ -30,7 +30,7 @@ func TestCalculatePossibleTakeActions(t *testing.T) {
 			expectedSuggestions: []PlayerTakeAction{
 				PlayerTakeAction{
 					basePlayerAction: basePlayerAction{
-						Player: BotPlayer,
+						Player: ComputerPlayer,
 					},
 					BoardCards: []Card{
 						Card{Id: 1, Suit: GOLD, Rank: 1},
@@ -42,7 +42,7 @@ func TestCalculatePossibleTakeActions(t *testing.T) {
 				},
 				PlayerTakeAction{
 					basePlayerAction: basePlayerAction{
-						Player: BotPlayer,
+						Player: ComputerPlayer,
 					},
 					BoardCards: []Card{
 						Card{Id: 4, Suit: SWORD, Rank: 5},
