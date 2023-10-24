@@ -8,7 +8,7 @@ import (
 
 var ComputerPlayer Player = Player{
 	Id:   0,
-	Name: "Computer ",
+	Name: "Computer",
 }
 
 func CalculateAction(match Match) PlayerAction {
