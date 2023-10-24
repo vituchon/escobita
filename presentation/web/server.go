@@ -132,7 +132,7 @@ func buildRouter() *mux.Router {
 	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
 	apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
 	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
-	apiPost("/games/{id:[0-9]+}/resume", controllers.ResumeGame)
+	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
 	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
 	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
 	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)

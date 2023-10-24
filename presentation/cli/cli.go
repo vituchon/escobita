@@ -18,7 +18,7 @@ func StartApp() {
 
 	var players []model.Player = []model.Player{
 		model.Player{Name: "Beto"},
-		model.Player{Name: "Pepe"},
+		model.ComputerPlayer,
 	}
 
 	quitGame := false
@@ -38,32 +38,50 @@ func StartApp() {
 				fmt.Println("En mano: ", playerCards.Hand)
 				fmt.Println("Tomadas: ", playerCards.Taken)
 
-				fmt.Print("Que deseas hacer, jugar (t), soltar carta (d), salir (q): ")
-				cmd := doReadInput()
-				if cmd == TakeCommand {
-					takeAction := readTakeActionFromStdin(player, match)
-					fmt.Println(takeAction.HandCard)
-					fmt.Println(takeAction.BoardCards)
-					isValidClaim := model.CanTakeCards(takeAction.HandCard, takeAction.BoardCards)
-					if isValidClaim {
-						fmt.Println("La jugada es valida!")
+				if player == model.ComputerPlayer {
+					fmt.Println("Juega computadora")
+					action := model.CalculateAction(match)
+					match.Apply(action)
+					playerMustAct = false
+				} else {
+					fmt.Print("Que deseas hacer, sugerencia de la casa (s), jugar (t), soltar carta (d), salir (q): ")
+					cmd := doReadInput()
+					if cmd == TakeCommand {
+						takeAction := readTakeActionFromStdin(player, match)
+						fmt.Println(takeAction.HandCard)
+						fmt.Println(takeAction.BoardCards)
+						isValidClaim := model.CanTakeCards(takeAction.HandCard, takeAction.BoardCards)
+						if isValidClaim {
+							fmt.Println("La jugada es valida!")
+							playerMustAct = false
+							match.Take(takeAction)
+						} else {
+							fmt.Println("La jugada NO es valida")
+						}
+					} else if cmd == DropCommand {
+						dropAction := readDropActionFromStdin(player, match)
+						match.Drop(dropAction)
 						playerMustAct = false
-						match.Take(takeAction)
-					} else {
-						fmt.Println("La jugada NO es valida")
+					} else if cmd == QuitCommand {
+						playerMustAct = false
+						quitGame = true
+					} else if cmd == SuggestionCommand {
+						//fmt.Println("Calculando sugerencias...")
+						cards := model.GetMostImportantCards(match.Cards.Board, 8)
+						//fmt.Println("cards:", cards)
+						possibleTakeActions := model.CalculatePossibleTakeActions(cards, playerCards.Hand)
+						analizedActions := model.AnalizeActions(possibleTakeActions, match)
+						fmt.Println(analizedActions)
 					}
-				} else if cmd == DropCommand {
-					dropAction := readDropActionFromStdin(player, match)
-					match.Drop(dropAction)
-					playerMustAct = false
-				} else if cmd == QuitCommand {
-					playerMustAct = false
-					quitGame = true
 				}
-				staticticsByPlayer := match.CalculateStaticticsByPlayer()
-				//fmt.Printf("===ESTADISTICAS DEL PARTIDO===\n%+v\n", staticticsByPlayer)
-				fmt.Printf("===Resutaldos===\n%+v\n", staticticsByPlayer.BuildScoreSummaryByPlayer())
 			}
+			/*staticticsByPlayer := match.CalculateStaticticsByPlayer()
+			//fmt.Printf("===ESTADISTICAS DEL PARTIDO===\n%+v\n", staticticsByPlayer)
+			scoreByPlayer := staticticsByPlayer.BuildScoreSummaryByPlayer()
+			fmt.Println("Resulados")
+			for player, score := range scoreByPlayer {
+				fmt.Printf("%+v %+v\n", player, score)
+			}*/
 
 		}
 		//fmt.Println(match)
@@ -170,6 +188,7 @@ const (
 	DropCommandType
 	TakeCommandType
 	InputValueCommandType
+	SuggestionCommandType
 )
 
 type BaseCommand struct {
@@ -188,6 +207,7 @@ var QuitCommand = BaseCommand{QuitCommandType, "q"}
 var DropCommand = BaseCommand{DropCommandType, "d"}
 var TakeCommand = BaseCommand{TakeCommandType, "t"}
 var FinishCommand = BaseCommand{FinishCommandType, "f"}
+var SuggestionCommand = BaseCommand{SuggestionCommandType, "s"}
 
 var scanner = bufio.NewScanner(os.Stdin)
 
@@ -205,6 +225,9 @@ func doReadInput() Command {
 	}
 	if str == FinishCommand.Value {
 		return FinishCommand
+	}
+	if str == SuggestionCommand.Value {
+		return SuggestionCommand
 	}
 	return BaseCommand{InputValueCommandType, str}
 }

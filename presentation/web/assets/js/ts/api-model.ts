@@ -15,7 +15,7 @@ namespace Api {
 
   export interface Match {
     players?: Player[];
-    actionsByPlayer: ActionsByPlayerUniqueKey;
+    actionsByPlayerUniqueKey: ActionsByPlayerUniqueKey;
     playerActions: PlayerAction[];
     matchCards: MatchCards;
     firstPlayerIndex: number;

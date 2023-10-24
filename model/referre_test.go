@@ -180,9 +180,7 @@ func TestDropActionCanBePerformedOnlyByTheTurnPlayer(t *testing.T) {
 	for _, testRun := range testRuns {
 		t.Logf("==== Running unit test: %s ====", testRun.title)
 		match := CreateMatch(testRun.players)
-		match.Prepare()
-		round := match.NextRound()
-		player := round.NextTurn()
+		player := match.Begins()
 		var notTurnPlayer *Player
 		if player.Id == player1.Id {
 			notTurnPlayer = &player2

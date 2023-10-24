@@ -62,7 +62,7 @@
        <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
       </div>
       <div ng-if="ctr.isMatchInProgress && peekPlayer" class="player-action">
-        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerKey[ctr.playerToUniqueKey(player)]">
+        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerUniqueKey[ctr.playerToUniqueKey(player)]">
           <player-action ng-if="$last" order="$index" ng-model="action"></player-action>
         </div>
       </div>
@@ -150,7 +150,7 @@
       <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
         <h3>Acciones</h3>
         <div class="player-actions-section">
-          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerKey[ctr.playerToUniqueKey(ctr.player)]">
+          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerUniqueKey[ctr.playerToUniqueKey(ctr.player)]">
             <player-action order="$index" ng-model="playerAction"></player-action>
           </div>
         </div>
@@ -162,9 +162,9 @@
     <div class="stats-section" ng-show="ctr.isMatchInProgress">
       <h3>Estadísticas del partido actual</h3>
       <div class="player-stats-container">
-        <div ng-init="playerName = ctr.extractPlayerName(playerUniqueKey)" ng-repeat="(playerUniqueKey,stats) in ctr.currentMatchStatsByPlayerUniqueKey" class="player-stats-item">
+        <div ng-repeat="(playerUniqueKey,stats) in ctr.currentMatchStatsByPlayerUniqueKey" class="player-stats-item">
           <div>
-            <span class="player-name">{{playerName}}</span>&nbsp;
+            <span class="player-name">{{ctr.extractPlayerName(playerUniqueKey)}}</span>&nbsp;
             <span style="font-size:120%;">
               <span class="stats-name">Puntaje:</span>&nbsp;<span class="stats-value">{{stats.score}}</span>
             </span>

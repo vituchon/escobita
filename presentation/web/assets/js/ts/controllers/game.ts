@@ -57,7 +57,7 @@ namespace Game {
           "id": 1,
         }
       ],
-      "actionsByPlayer": {
+      "actionsByPlayerUniqueKey": {
         "1|Betoven": []
       },
       "playerActions": [],
@@ -507,7 +507,7 @@ namespace Game {
         switch (notification.kind) {
           case "drop":
           case "take":
-          case "resume":
+          case "start":
             this.setGame(notification.data.game)
             break;
           case "updated":

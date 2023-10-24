@@ -8,7 +8,7 @@ import (
 
 type Match struct {
 	Players          []Player        `json:"players"`
-	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayer"`
+	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayerUniqueKey"`
 	ActionsLog       PlayerActions   `json:"playerActions"`
 	Cards            MatchCards      `json:"matchCards"`
 	FirstPlayerIndex int             `json:"firstPlayerIndex"`
