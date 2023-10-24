@@ -507,7 +507,7 @@ namespace Game {
         switch (notification.kind) {
           case "drop":
           case "take":
-          case "resume":
+          case "start":
             this.setGame(notification.data.game)
             break;
           case "updated":

@@ -10,7 +10,7 @@ import (
 
 // Escobita Oriented Functions
 
-func ResumeGame(game repositories.PersistentGame) (*repositories.PersistentGame, error) {
+func StartGame(game repositories.PersistentGame) (*repositories.PersistentGame, error) {
 	if game.HasMatchInProgress() {
 		return nil, model.MatchInProgressErr
 	}
@@ -87,4 +87,38 @@ func advanceGame(game repositories.PersistentGame) *repositories.PersistentGame 
 		game.CurrentMatch.CurrentRound.NextTurn() // advances into the first turn (within the first round)
 		return &game
 	}
+}
+
+func advanceGameComputerAware() {
+	/*
+		var updated *repositories.PersistentGame = &game
+			mustResume := true
+			for mustResume {
+				updated, err = services.ResumeGame(*updated)
+				fmt.Println("resume game err", err)
+				updated, err = services.ResumeGame(*updated)
+				fmt.Println("resume game err 2", err)
+				if updated.CurrentMatch != nil { // TODO: method for determinging is the current's game match is not ended.. if any remaining player must act
+					isComputerTurn := model.ComputerPlayer.Id == updated.CurrentMatch.CurrentRound.CurrentTurnPlayer.Id
+					fmt.Println("updated.CurrentMatch.CurrentRound.CurrentTurnPlayer", updated.CurrentMatch.CurrentRound.CurrentTurnPlayer)
+					fmt.Println("isComputerTurn", isComputerTurn)
+					mustResume = isComputerTurn //  must resume UNTIL match ends or there is an human player turn
+					if isComputerTurn {
+						action := model.CalculateAction(*updated.CurrentMatch)
+						action, _ = updated.CurrentMatch.Apply(action)
+					}
+					updated, err = gamesRepository.UpdateGame(*updated)
+					if err != nil {
+						log.Printf("error while resuming Game: '%v'", err)
+						response.WriteHeader(http.StatusInternalServerError)
+						return
+					}
+				} else {
+					mustResume = false
+				}
+
+				msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
+				gameWebSockets.NotifyGameConns(*game.Id, "resume", msgPayload)
+			}
+	*/
 }
