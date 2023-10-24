@@ -88,3 +88,34 @@ func advanceGame(game repositories.PersistentGame) *repositories.PersistentGame 
 		return &game
 	}
 }
+
+func advanceGameComputerAware(game repositories.PersistentGame) *repositories.PersistentGame {
+	var updated *repositories.PersistentGame = &game
+	mustResume := true
+	for mustResume {
+		updated = advanceGame(*updated)
+		if updated.CurrentMatch != nil { // TODO: method for determinging is the current's game match is not ended.. if any remaining player must act
+			isComputerTurn := model.ComputerPlayer.Id == updated.CurrentMatch.CurrentRound.CurrentTurnPlayer.Id
+			fmt.Println("updated.CurrentMatch.CurrentRound.CurrentTurnPlayer", updated.CurrentMatch.CurrentRound.CurrentTurnPlayer)
+			fmt.Println("isComputerTurn", isComputerTurn)
+			mustResume = isComputerTurn //  must resume UNTIL match ends or there is an human player turn
+			if isComputerTurn {
+				action := model.CalculateAction(*updated.CurrentMatch)
+				action, _ = updated.CurrentMatch.Apply(action)
+				msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
+				switch action.(type) {
+				case model.PlayerTakeAction:
+					GameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)
+					break
+				case model.PlayerDropAction:
+					GameWebSockets.NotifyGameConns(*game.Id, "drop", msgPayload)
+					break
+				}
+			}
+		} else {
+			mustResume = false
+		}
+	}
+	return updated
+
+}
