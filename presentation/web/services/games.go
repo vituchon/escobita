@@ -20,7 +20,7 @@ func ResumeGame(game repositories.PersistentGame) (*repositories.PersistentGame,
 
 func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
 	if game.CurrentMatch == nil {
-		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id=('%d')", game.Id)
+		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id='%d')", game.Id)
 		return nil, nil, errors.New(errMsg)
 	}
 	updatedAction, err := game.CurrentMatch.Take(action)
@@ -33,7 +33,7 @@ func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTake
 
 func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
 	if game.CurrentMatch == nil {
-		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id=('%d')", game.Id)
+		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id='%d')", game.Id)
 		return nil, nil, errors.New(errMsg)
 	}
 	updatedAction, err := game.CurrentMatch.Drop(action)
@@ -64,39 +64,17 @@ func CanPlayerDeleteGame(game *repositories.PersistentGame, player repositories.
 func advanceGame(game repositories.PersistentGame) *repositories.PersistentGame {
 	if game.HasMatchInProgress() {
 		currentRound := game.CurrentMatch.CurrentRound
-		mustAdvanceTurn := true
-		isComputerTurn := false
-		for mustAdvanceTurn {
-			if currentRound.HasNextTurn() {
-				currentRound.NextTurn()
-				isComputerTurn = model.ComputerPlayer.Id == currentRound.CurrentTurnPlayer.Id
-				mustAdvanceTurn = !isComputerTurn
+		if currentRound.HasNextTurn() {
+			currentRound.NextTurn()
+		} else {
+			if game.CurrentMatch.HasMoreRounds() {
+				round := game.CurrentMatch.NextRound()
+				round.NextTurn()
 			} else {
-				if game.CurrentMatch.HasMoreRounds() {
-					round := game.CurrentMatch.NextRound()
-					round.NextTurn()
-					isComputerTurn = model.ComputerPlayer.Id == currentRound.CurrentTurnPlayer.Id
-					mustAdvanceTurn = !isComputerTurn
-				} else {
-					// game ends
-					game.CurrentMatch.Ends()
-					game.Matchs = append(game.Matchs, *game.CurrentMatch)
-					game.CurrentMatch = nil // setting to nil provides a means to detect the current match ending on the client side
-					mustAdvanceTurn = false
-				}
-			}
-			if isComputerTurn {
-				action := model.CalculateAction(*game.CurrentMatch)
-				action, err := game.CurrentMatch.Apply(action)
-				if err != nil {
-					fmt.Println("ERRORAZO", err)
-				} else {
-					fmt.Println("Haciendo esta acción", action)
-					/* NEED TO MOVE gameswebsockets into service package
-					msgPayload := WebSockectOutgoingActionMsgPayload{game, action}
-					gameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)*/
-				}
-
+				// game ends
+				game.CurrentMatch.Ends()
+				game.Matchs = append(game.Matchs, *game.CurrentMatch)
+				game.CurrentMatch = nil // setting to nil provides a means to detect the current match ending on the client side
 			}
 		}
 		return &game

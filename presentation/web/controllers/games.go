@@ -71,6 +71,10 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 	}
 
 	game.Owner = *player
+
+	// TODO: provide endpoint and functionallity to do this
+	game.Join(model.ComputerPlayer)
+
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
 		log.Printf("error while creating Game: '%v'", err)
@@ -166,16 +170,35 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	updated, err := services.ResumeGame(game)
-	updated, err = gamesRepository.UpdateGame(*updated)
-	if err != nil {
-		log.Printf("error while starting Game: '%v'", err)
-		response.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	var updated *repositories.PersistentGame = &game
+	mustResume := true
+	for mustResume {
+		updated, err = services.ResumeGame(*updated)
+		fmt.Println("resume game err", err)
+		updated, err = services.ResumeGame(*updated)
+		fmt.Println("resume game err 2", err)
+		if updated.CurrentMatch != nil { // TODO: method for determinging is the current's game match is not ended.. if any remaining player must act
+			isComputerTurn := model.ComputerPlayer.Id == updated.CurrentMatch.CurrentRound.CurrentTurnPlayer.Id
+			fmt.Println("updated.CurrentMatch.CurrentRound.CurrentTurnPlayer", updated.CurrentMatch.CurrentRound.CurrentTurnPlayer)
+			fmt.Println("isComputerTurn", isComputerTurn)
+			mustResume = isComputerTurn //  must resume UNTIL match ends or there is an human player turn
+			if isComputerTurn {
+				action := model.CalculateAction(*updated.CurrentMatch)
+				action, _ = updated.CurrentMatch.Apply(action)
+			}
+			updated, err = gamesRepository.UpdateGame(*updated)
+			if err != nil {
+				log.Printf("error while resuming Game: '%v'", err)
+				response.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		} else {
+			mustResume = false
+		}
 
-	msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
-	gameWebSockets.NotifyGameConns(*game.Id, "resume", msgPayload)
+		msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
+		gameWebSockets.NotifyGameConns(*game.Id, "resume", msgPayload)
+	}
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
