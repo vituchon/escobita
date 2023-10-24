@@ -57,7 +57,7 @@ namespace Game {
           "id": 1,
         }
       ],
-      "actionsByPlayer": {
+      "actionsByPlayerUniqueKey": {
         "1|Betoven": []
       },
       "playerActions": [],
