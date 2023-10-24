@@ -89,6 +89,20 @@ func (match *Match) Drop(action PlayerDropAction) (PlayerAction, error) {
 	return action, nil
 }
 
+var ActionNotRecoignizedErr = errors.New("Not a valid action to perform in a match")
+
+// Performs an action over the match
+func (match *Match) Apply(playerAction PlayerAction) (PlayerAction, error) {
+	switch playerConcreteAction := playerAction.(type) {
+	case PlayerTakeAction:
+		return match.Take(playerConcreteAction)
+	case PlayerDropAction:
+		return match.Drop(playerConcreteAction)
+	default:
+		return nil, ActionNotRecoignizedErr
+	}
+}
+
 // Deal cards to each player for starting a new round
 func (match *Match) NextRound() *Round {
 	for _, player := range match.Players {

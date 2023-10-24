@@ -71,6 +71,10 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 	}
 
 	game.Owner = *player
+
+	// TODO: provide endpoint and functionallity to do this
+	game.Join(model.ComputerPlayer)
+
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
 		log.Printf("error while creating Game: '%v'", err)
@@ -137,7 +141,7 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 
 // Escobita oriented events
 
-func ResumeGame(response http.ResponseWriter, request *http.Request) {
+func StartGame(response http.ResponseWriter, request *http.Request) {
 	var game repositories.PersistentGame
 
 	/*bufferedReader := bufio.NewReader(request.Body)
@@ -166,7 +170,7 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	updated, err := services.ResumeGame(game)
+	updated, err := services.StartGame(game)
 	updated, err = gamesRepository.UpdateGame(*updated)
 	if err != nil {
 		log.Printf("error while starting Game: '%v'", err)
@@ -175,7 +179,7 @@ func ResumeGame(response http.ResponseWriter, request *http.Request) {
 	}
 
 	msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
-	gameWebSockets.NotifyGameConns(*game.Id, "resume", msgPayload)
+	gameWebSockets.NotifyGameConns(*game.Id, "start", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 

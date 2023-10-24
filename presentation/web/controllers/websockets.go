@@ -237,12 +237,12 @@ func ReleaseBrokenWebSockets(response http.ResponseWriter, request *http.Request
 
 func ReleaseAllWebSockets(response http.ResponseWriter, request *http.Request) {
 	for clientId, conn := range webSocketsHandler.connByClientId {
-			err := webSocketsHandler.doRelease(clientId, "Connection terminated by force")
-			if err != nil {
-				log.Printf("Error while releasing web socket(RemoteAddr='%s') for client(id='%d'): '%v'", conn.RemoteAddr().String(), clientId, err)
-			} else {
-				log.Printf("Released web socket(RemoteAddr='%s') for client(id='%d') gracefully", conn.RemoteAddr().String(), clientId)
-			}
+		err := webSocketsHandler.doRelease(clientId, "Connection terminated by force")
+		if err != nil {
+			log.Printf("Error while releasing web socket(RemoteAddr='%s') for client(id='%d'): '%v'", conn.RemoteAddr().String(), clientId, err)
+		} else {
+			log.Printf("Released web socket(RemoteAddr='%s') for client(id='%d') gracefully", conn.RemoteAddr().String(), clientId)
+		}
 	}
 	response.WriteHeader(http.StatusOK)
 }

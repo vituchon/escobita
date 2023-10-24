@@ -2,6 +2,8 @@ package model
 
 import (
 	"errors"
+
+	"github.com/vituchon/escobita/util"
 )
 
 var MatchInProgressErr error = errors.New("A match is in progress")
@@ -39,4 +41,13 @@ func (game Game) HasMatchInProgress() bool {
 func (game *Game) createNewMatch() {
 	match := CreateMatch(game.Players)
 	game.CurrentMatch = &match
+}
+
+// If already joined then nothing happens... perhaps it could return an error just in case...
+func (game *Game) Join(player Player) {
+	joinedPlayer := util.Find(game.Players, func(gamePlayer Player) bool { return gamePlayer.Id == player.Id })
+	playerNotJoined := joinedPlayer == nil
+	if playerNotJoined {
+		game.Players = append(game.Players, player)
+	}
 }

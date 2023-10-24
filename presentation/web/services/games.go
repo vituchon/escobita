@@ -10,37 +10,37 @@ import (
 
 // Escobita Oriented Functions
 
-func ResumeGame(game repositories.PersistentGame) (*repositories.PersistentGame, error) {
+func StartGame(game repositories.PersistentGame) (*repositories.PersistentGame, error) {
 	if game.HasMatchInProgress() {
 		return nil, model.MatchInProgressErr
 	}
-	updatedGame := advanceGame(game)
+	updatedGame := advanceGameComputerAware(game)
 	return updatedGame, nil
 }
 
 func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
 	if game.CurrentMatch == nil {
-		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id=('%d')", game.Id)
+		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id='%d')", game.Id)
 		return nil, nil, errors.New(errMsg)
 	}
 	updatedAction, err := game.CurrentMatch.Take(action)
 	if err != nil {
 		return nil, nil, err
 	}
-	updatedGame := advanceGame(game)
+	updatedGame := advanceGameComputerAware(game)
 	return updatedGame, &updatedAction, nil
 }
 
 func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
 	if game.CurrentMatch == nil {
-		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id=('%d')", game.Id)
+		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id='%d')", game.Id)
 		return nil, nil, errors.New(errMsg)
 	}
 	updatedAction, err := game.CurrentMatch.Drop(action)
 	if err != nil {
 		return nil, nil, err
 	}
-	updatedGame := advanceGame(game)
+	updatedGame := advanceGameComputerAware(game)
 	return updatedGame, &updatedAction, nil
 }
 
@@ -87,4 +87,29 @@ func advanceGame(game repositories.PersistentGame) *repositories.PersistentGame 
 		game.CurrentMatch.CurrentRound.NextTurn() // advances into the first turn (within the first round)
 		return &game
 	}
+}
+
+func advanceGameComputerAware(game repositories.PersistentGame) *repositories.PersistentGame {
+	var updated *repositories.PersistentGame = &game
+	mustResume := true
+	for mustResume {
+		updated = advanceGame(*updated)
+		if updated.CurrentMatch != nil { // TODO: method for determinging is the current's game match is not ended.. if any remaining player must act
+			isComputerTurn := model.ComputerPlayer.Id == updated.CurrentMatch.CurrentRound.CurrentTurnPlayer.Id
+			fmt.Println("updated.CurrentMatch.CurrentRound.CurrentTurnPlayer", updated.CurrentMatch.CurrentRound.CurrentTurnPlayer)
+			fmt.Println("isComputerTurn", isComputerTurn)
+			mustResume = isComputerTurn //  must resume UNTIL match ends or there is an human player turn
+			if isComputerTurn {
+				action := model.CalculateAction(*updated.CurrentMatch)
+				action, _ = updated.CurrentMatch.Apply(action)
+				fmt.Println("Accion realizada", action)
+			}
+		} else {
+			mustResume = false
+		}
+		/*msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
+		gameWebSockets.NotifyGameConns(*game.Id, "resume", msgPayload)*/
+	}
+	return updated
+
 }

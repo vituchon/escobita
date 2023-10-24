@@ -179,9 +179,9 @@ namespace Matchs {
     function calculateTakeActionSymbolicScore(action: Api.PlayerTakeAction, match: Api.Match) {
       const employedCards = action.boardCards.concat(action.handCard)
 
-      const seventiesSymbolicScore = coundSevenRankCards(employedCards) * 3
+      const seventiesSymbolicScore = countSevenRankCards(employedCards) * 3
 
-      const goldenSuitCardsSymbolicScore = coundGoldenSuitCards(employedCards) * 2
+      const goldenSuitCardsSymbolicScore = countGoldenSuitCards(employedCards) * 2
       const goldSevenSymbolicScore = (determineIsGoldenSevenIsUsed(employedCards) ? 1: 0) * 10
 
       const isEscobita = _.size(match.matchCards.board) === _.size(action.boardCards)
@@ -195,13 +195,13 @@ namespace Matchs {
       return Util.isDefined(card) ? true : false
     }
 
-    function coundSevenRankCards(cards: Api.Card[])  {
+    function countSevenRankCards(cards: Api.Card[])  {
       return cards.reduce((acc,card) => {
         return acc + (Cards.isSevenRank(card) ? 1 : 0)
       }, 0)
     }
 
-    function coundGoldenSuitCards(cards: Api.Card[])  {
+    function countGoldenSuitCards(cards: Api.Card[])  {
       return cards.reduce((acc,card) => {
         return acc + (Cards.isGoldenSuit(card) ? 1 : 0)
       }, 0)
