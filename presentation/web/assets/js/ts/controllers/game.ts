@@ -655,7 +655,6 @@ namespace Game {
     }
 
     public performDropAction() {
-      const selectedBoardCards = this.getSelectedBoardCards() // TODO: remove this line // TODO : please remove it...
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
