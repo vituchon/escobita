@@ -728,7 +728,6 @@ namespace Game {
         boardCards = Matchs.Engine.getMostImportantCards(boardCards, 8)
       }
 
-      this.loading = true;
       this.suggestionRequestCount++
       const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
       const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
@@ -737,6 +736,7 @@ namespace Game {
       this.recomendedTakeActionTakeAction = analizedActions.recomendedAction;
 
       this.playerMessage.text = "Soy 💩 y pido sugerencias al escoba master";
+      this.loading = true;
       this.doSendAndCleanMessage(this.playerMessage).finally(() => {
         this.loading = false;
       })
@@ -750,6 +750,17 @@ namespace Game {
     public closePossibleTakeActionsDialog() {
       const dialog = document.getElementById('suggested-take-actions-dialog') as HTMLDialogElement;
       dialog.close();
+    }
+
+    public botCount: number = 0
+    public addComputerPlayer(game: Games.Game) {
+      this.loading = true;
+      this.gamesService.addComputerPlayer(game).then(() => {
+        Toastr.info("Computer added")
+        this.botCount++
+      }).finally(() => {
+        this.loading = false;
+      })
     }
 
     public isPlayerGameOwner = Games.isPlayerOwner

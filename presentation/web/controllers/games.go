@@ -78,12 +78,9 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 
 	game.Owner = *player
 
-	// TODO: provide endpoint and functionallity to do this
-	game.Join(model.ComputerPlayer)
-
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
-		log.Printf("error while creating Game: '%v'", err)
+		log.Printf("error while creating game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -100,7 +97,7 @@ func UpdateGame(response http.ResponseWriter, request *http.Request) {
 	}
 	updated, err := gamesRepository.UpdateGame(game)
 	if err != nil {
-		log.Printf("error while updating Game: '%v'", err)
+		log.Printf("error while updating game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -258,6 +255,29 @@ func QuitGame(response http.ResponseWriter, request *http.Request) {
 	msgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, player}
 	services.GameWebSockets.NotifyGameConns(*game.Id, "quit", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, game)
+}
+
+func AddComputer(response http.ResponseWriter, request *http.Request) {
+	var game repositories.PersistentGame
+	err := parseJsonFromReader(request.Body, &game)
+	if err != nil {
+		log.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	game.Join(model.ComputerPlayer)
+
+	updated, err := gamesRepository.UpdateGame(game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	message := services.VolatileWebMessage{Player: model.ComputerPlayer, Text: "Buenas y santas!"}
+	msgPayload := WebSockectOutgoingChatMsgPayload{message}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "game-chat", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {

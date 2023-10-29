@@ -77,6 +77,7 @@ namespace Games {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
 
+    // TODO: remove Game or Games letters from these methods, as Games. provides already context (avoid slutering)
     getGames(): ng.IPromise<Game[]> {
       return this.$http.get<Game[]>(`/api/v1/games`).then((response) => {
         return response.data;
@@ -124,6 +125,12 @@ namespace Games {
 
     quitGame(game: Game): ng.IPromise<Game> {
       return this.$http.post<Game>(`/api/v1/games/${game.id}/quit`,game).then((response) => {
+        return response.data
+      })
+    }
+
+    addComputerPlayer(game: Game): ng.IPromise<Game> {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/add-computer`,game).then((response) => {
         return response.data
       })
     }

@@ -82,7 +82,7 @@ func SendMessageAllWebSockets(response http.ResponseWriter, request *http.Reques
 		return
 	}
 	for clientId, conn := range services.WebSocketsHandler.ConnByClientId {
-		serverMsg := ServerMessage{Kind: "debug", Message: *message}
+		serverMsg := ServerMessage{Kind: "debug", Message: *message} // TODO: rename "debug" to "broadcast"
 		serverMsgAsJson, err := json.Marshal(serverMsg)
 		if err != nil {
 			log.Printf("Error on marshalling server message, skip send. Error was: '%v'\n", err)
