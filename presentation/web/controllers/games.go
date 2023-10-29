@@ -268,8 +268,8 @@ func AddComputer(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	game.Join(model.ComputerPlayer)
 
+	game.Join(model.ComputerPlayer)
 	updated, err := gamesRepository.UpdateGame(game)
 	if err != nil {
 		log.Printf("error while updating game: '%v'", err)
@@ -278,8 +278,11 @@ func AddComputer(response http.ResponseWriter, request *http.Request) {
 	}
 
 	message := services.VolatileWebMessage{Player: model.ComputerPlayer, Text: "Buenas y santas! 🧉😸"}
-	msgPayload := WebSockectOutgoingChatMsgPayload{message}
-	services.GameWebSockets.NotifyGameConns(*game.Id, "game-chat", msgPayload)
+	chatMsgPayload := WebSockectOutgoingChatMsgPayload{message}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "game-chat", chatMsgPayload)
+
+	joinMsgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, &model.ComputerPlayer}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "join", joinMsgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
@@ -316,7 +319,7 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	msgPayload := services.WebSockectOutgoingActionMsgPayload{game, model.PlayerAction(action)}
+	msgPayload := services.WebSockectOutgoingActionMsgPayload{game, action}
 	services.GameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
