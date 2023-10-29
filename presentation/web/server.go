@@ -130,6 +130,7 @@ func buildRouter() *mux.Router {
 	apiGet("/games/{id:[0-9]+}", controllers.GetGameById)
 	apiPost("/games", controllers.CreateGame)
 	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
+	// TODO : usage of game's id instead of game as parameter for game related endpoints.
 	//apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
 	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
 	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
