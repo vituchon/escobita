@@ -64,6 +64,11 @@ func (game *Game) Join(player Player) error {
 	return nil
 }
 
+func (game *Game) IsJoined(player Player) bool {
+	joinedPlayer := util.Find(game.Players, func(gamePlayer Player) bool { return gamePlayer.Id == player.Id })
+	return joinedPlayer != nil
+}
+
 func (game *Game) Quit(player Player) error {
 	if game.IsStarted() {
 		return GameStartedErr // if the game is already started you can quit! as The Eagles stated "you can checkout any time you want, but you can never leave"

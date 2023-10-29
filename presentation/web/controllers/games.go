@@ -3,8 +3,11 @@ package controllers
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/vituchon/escobita/model"
 	"github.com/vituchon/escobita/presentation/web/services"
@@ -274,7 +277,7 @@ func AddComputer(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	message := services.VolatileWebMessage{Player: model.ComputerPlayer, Text: "Buenas y santas!"}
+	message := services.VolatileWebMessage{Player: model.ComputerPlayer, Text: "Buenas y santas! 🧉😸"}
 	msgPayload := WebSockectOutgoingChatMsgPayload{message}
 	services.GameWebSockets.NotifyGameConns(*game.Id, "game-chat", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
@@ -418,6 +421,46 @@ func SendMessage(response http.ResponseWriter, request *http.Request) {
 
 	msgPayload := WebSockectOutgoingChatMsgPayload{message}
 	services.GameWebSockets.NotifyGameConns(id, "game-chat", msgPayload)
+
+	if strings.Contains(strings.ToLower(message.Player.Name), "vitu") {
+		game, err := gamesRepository.GetGameById(id)
+		if err != nil {
+			log.Printf("Error getting game for sending an obsequent accompaniment to vitu '%s'", err)
+		} else {
+			if game.IsJoined(model.ComputerPlayer) {
+				mustSendAbsequentAccompaniment := rand.Intn(2) == 0 // flip a coin
+				if mustSendAbsequentAccompaniment {
+					sendAbsequentAccompaniment := func() {
+						names := []string{}
+						for _, gamePlayer := range game.Players {
+							if gamePlayer.Id != message.Player.Id && gamePlayer.Id != model.ComputerPlayer.Id {
+								names = append(names, gamePlayer.Name)
+							}
+						}
+						allNames := strings.Join(names, " ")
+						var obsequentAccompaniments []string = []string{
+							"Totalmente",
+							"Kpo++ vituchon 👏🏿🤗",
+							"Cuanta razón....",
+							allNames + " calentito los panchos",
+							allNames + " y todos los que lo leen son de la B",
+							allNames + " silenció.... habló el maestro...",
+							"Faa como la cantó...",
+							allNames + " i-m-p-e-c-a-b-l-e lo que dijo el vitul 👏🏿",
+							allNames + " shhh no saben nada...",
+						}
+
+						message.Player = model.ComputerPlayer
+						message.Text = obsequentAccompaniments[rand.Intn(len(obsequentAccompaniments))]
+						msgPayload := WebSockectOutgoingChatMsgPayload{message}
+						services.GameWebSockets.NotifyGameConns(id, "game-chat", msgPayload)
+					}
+					time.AfterFunc(1*time.Second, sendAbsequentAccompaniment)
+				}
+			}
+		}
+	}
+
 	WriteJsonResponse(response, http.StatusOK, struct{}{})
 }
 
