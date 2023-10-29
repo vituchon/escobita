@@ -19,11 +19,13 @@ func StartGame(game repositories.PersistentGame) (*repositories.PersistentGame, 
 }
 
 func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
+	// TODO : move this validation into model facade
 	if game.CurrentMatch == nil {
 		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id='%d')", game.Id)
 		return nil, nil, errors.New(errMsg)
 	}
-	updatedAction, err := game.CurrentMatch.Take(action)
+	// TODO: end logic validation
+	updatedAction, err := game.CurrentMatch.Take(action) // TODO: analize if is required to return a copy as the game already is modified due to mutator method invokation
 	if err != nil {
 		return nil, nil, err
 	}
@@ -32,10 +34,12 @@ func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTake
 }
 
 func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
+	// TODO : move this validation into model facade
 	if game.CurrentMatch == nil {
 		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id='%d')", game.Id)
 		return nil, nil, errors.New(errMsg)
 	}
+	// TODO: end logic validation
 	updatedAction, err := game.CurrentMatch.Drop(action)
 	if err != nil {
 		return nil, nil, err
@@ -102,7 +106,7 @@ func advanceGameComputerAware(game repositories.PersistentGame) *repositories.Pe
 			if isComputerTurn {
 				action := model.CalculateAction(*updated.CurrentMatch)
 				action, _ = updated.CurrentMatch.Apply(action)
-				msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
+				msgPayload := WebSockectOutgoingActionMsgPayload{updated, &action}
 				switch action.(type) {
 				case model.PlayerTakeAction:
 					GameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)

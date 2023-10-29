@@ -11,6 +11,16 @@ import (
 	"github.com/vituchon/escobita/repositories"
 )
 
+// TODO: refact: promote usage of gameId in the following endpoints
+/*	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
+	//apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
+	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
+	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
+	apiPost("/games/{id:[0-9]+}/join", controllers.JoinGame)
+	apiPost("/games/{id:[0-9]+}/quit", controllers.QuitGame)
+	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
+	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
+	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)*/
 var gamesRepository repositories.Games = repositories.NewGamesMemoryRepository()
 
 func GetGames(response http.ResponseWriter, request *http.Request) {
@@ -161,7 +171,7 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 	}
 	playerId := services.GetWebPlayerId(request)
 	if game.Owner.Id != playerId {
-		log.Printf("error while starting Game: request doesn't cames from the owner, in cames from %d\n", playerId)
+		log.Printf("error while starting game: request doesn't cames from the owner, in cames from %d\n", playerId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -169,7 +179,7 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 	updated, err := services.StartGame(game)
 	updated, err = gamesRepository.UpdateGame(*updated)
 	if err != nil {
-		log.Printf("error while starting Game: '%v'", err)
+		log.Printf("error while starting game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -177,6 +187,77 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 	msgPayload := services.WebSockectOutgoingActionMsgPayload{updated, nil}
 	services.GameWebSockets.NotifyGameConns(*game.Id, "start", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
+}
+
+func JoinGame(response http.ResponseWriter, request *http.Request) {
+	var game repositories.PersistentGame
+
+	err := parseJsonFromReader(request.Body, &game)
+	if err != nil {
+		log.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	playerId := services.GetWebPlayerId(request)
+	player, err := playersRepository.GetPlayerById(playerId)
+	if err != nil {
+		msg := fmt.Sprintf("error while getting player by id, error was: '%v'\n", player)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+
+	err = game.Join(*player)
+	if err != nil {
+		msg := fmt.Sprintf("error while joining game, error was: '%v'\n", err)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+	updated, err := gamesRepository.UpdateGame(game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	msgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, player}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "join", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, game)
+}
+
+func QuitGame(response http.ResponseWriter, request *http.Request) {
+	var game repositories.PersistentGame
+	err := parseJsonFromReader(request.Body, &game)
+	if err != nil {
+		log.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	playerId := services.GetWebPlayerId(request)
+	player, err := playersRepository.GetPlayerById(playerId)
+	if err != nil {
+		msg := fmt.Sprintf("error while getting player by id, error was: '%v'\n", player)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+
+	err = game.Quit(*player)
+	if err != nil {
+		msg := fmt.Sprintf("error while quiting game, error was: '%v'\n", player)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+	updated, err := gamesRepository.UpdateGame(game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	msgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, player}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "quit", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, game)
 }
 
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {

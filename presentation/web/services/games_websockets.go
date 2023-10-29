@@ -116,3 +116,12 @@ type WebSockectOutgoingActionMsgPayload struct {
 	Game   *repositories.PersistentGame `json:"game"`
 	Action *model.PlayerAction          `json:"action,omitempty"`
 }
+
+type WebSockectOutgoingAccessMsgPayload struct {
+	Game   *repositories.PersistentGame `json:"game"`
+	Player *model.Player                `json:"player,omitempty"`
+}
+
+type WebSockectOutgoingJoinMsgPayload = WebSockectOutgoingAccessMsgPayload
+
+type WebSockectOutgoingQuitMsgPayload = WebSockectOutgoingAccessMsgPayload
