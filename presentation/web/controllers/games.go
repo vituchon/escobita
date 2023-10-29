@@ -261,7 +261,7 @@ func QuitGame(response http.ResponseWriter, request *http.Request) {
 }
 
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
+	paramId := RouteParam(request, "id") // TODO : encapsulate this into  id, err := ParseIntRouteParam (req´uest, "id") and employ fmt.Sprint + log.Errorf + Http.Error response pattern!
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
 		log.Printf("Can not parse id from '%s'", paramId)
