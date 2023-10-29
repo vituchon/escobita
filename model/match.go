@@ -61,6 +61,7 @@ func (actions *PlayerActions) UnmarshalJSON(b []byte) error {
 	var parsedActions []PlayerAction
 	for _, rawAction := range rawActions {
 		_, hasBoardCardsField := rawAction["boardCards"] // if it contains board cards then is take action, else is a drop action. Recall that there aren't more actions.
+		// TODO (&& dev notes): [IMPORTANT LESSON HERE] perhaps it is convenient to use "kind"/"type"/"discriminator" in the base struct... as the data eventually gets stringified and I guess there is no other way to figure out a hierarchical relation
 		if hasBoardCardsField {
 			var takeAction PlayerTakeAction = parsePlayerTakeAction(rawAction)
 			parsedActions = append(parsedActions, takeAction)
