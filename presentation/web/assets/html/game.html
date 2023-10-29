@@ -159,7 +159,7 @@
     </div>
 
     <!-- MATCH STATS -->
-    <div class="stats-section" ng-show="ctr.isMatchInProgress">
+    <div class="stats-section" ng-show="ctr.hasGameStarted(ctr.game)">
       <h3>Estadísticas del partido actual</h3>
       <div class="player-stats-container">
         <div ng-repeat="(playerUniqueKey,stats) in ctr.currentMatchStatsByPlayerUniqueKey" class="player-stats-item">
