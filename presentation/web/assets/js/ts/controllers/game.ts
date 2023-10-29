@@ -493,7 +493,10 @@ namespace Game {
         switch (notification.kind) {
           case "drop":
           case "take":
-            this.displayAction(notification.data.action)
+            const isClientOtherPlayer = notification.data.action.player.id !== this.player.id
+            if (isClientOtherPlayer) {
+              this.displayAction(notification.data.action) // is designed to display actions performed by other users
+            }
             this.setGame(notification.data.game)
             break
           case "start":
@@ -509,6 +512,7 @@ namespace Game {
             this.displayMessage(notification.data.message)
             break;
           default:
+            console.log("not processing ", notification?.kind)
             break;
         }
       }
@@ -623,7 +627,7 @@ namespace Game {
         if (data.action.isEscobita) {
           Toastr.success("Has hecho escoba! 🥳")
         }
-        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
+        //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.isBoardCardSelectedById = {}
@@ -655,7 +659,7 @@ namespace Game {
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
-        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
+        //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.loading = false;
