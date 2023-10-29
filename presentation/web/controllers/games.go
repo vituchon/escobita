@@ -293,8 +293,7 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	msgPayload := services.WebSockectOutgoingActionMsgPayload{game, action}
+	msgPayload := services.WebSockectOutgoingActionMsgPayload{game, model.PlayerAction(action)}
 	services.GameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }

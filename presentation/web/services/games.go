@@ -18,7 +18,7 @@ func StartGame(game repositories.PersistentGame) (*repositories.PersistentGame, 
 	return updatedGame, nil
 }
 
-func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
+func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTakeAction) (*repositories.PersistentGame, model.PlayerAction, error) {
 	// TODO : move this validation into model facade
 	if game.CurrentMatch == nil {
 		errMsg := fmt.Sprintf("Can not perform take action: not current match in game(id='%d')", game.Id)
@@ -30,10 +30,10 @@ func PerformTakeAction(game repositories.PersistentGame, action model.PlayerTake
 		return nil, nil, err
 	}
 	updatedGame := advanceGameComputerAware(game)
-	return updatedGame, &updatedAction, nil
+	return updatedGame, updatedAction, nil
 }
 
-func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, *model.PlayerAction, error) {
+func PerformDropAction(game repositories.PersistentGame, action model.PlayerDropAction) (*repositories.PersistentGame, model.PlayerAction, error) {
 	// TODO : move this validation into model facade
 	if game.CurrentMatch == nil {
 		errMsg := fmt.Sprintf("Can not perform drop action: not current match in game(id='%d')", game.Id)
@@ -45,7 +45,7 @@ func PerformDropAction(game repositories.PersistentGame, action model.PlayerDrop
 		return nil, nil, err
 	}
 	updatedGame := advanceGameComputerAware(game)
-	return updatedGame, &updatedAction, nil
+	return updatedGame, updatedAction, nil
 }
 
 func CalculateCurrentMatchStats(game repositories.PersistentGame) model.ScoreSummaryByPlayer {
@@ -106,7 +106,7 @@ func advanceGameComputerAware(game repositories.PersistentGame) *repositories.Pe
 			if isComputerTurn {
 				action := model.CalculateAction(*updated.CurrentMatch)
 				action, _ = updated.CurrentMatch.Apply(action)
-				msgPayload := WebSockectOutgoingActionMsgPayload{updated, &action}
+				msgPayload := WebSockectOutgoingActionMsgPayload{updated, action}
 				switch action.(type) {
 				case model.PlayerTakeAction:
 					GameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)

@@ -18,7 +18,7 @@ type webSocketsHandler struct {
 	upgrader             websocket.Upgrader
 	ConnByClientId       map[int]*websocket.Conn
 	mutex                sync.Mutex
-	clientIdResolverFunc ClientIdResolverFunc // Dev notes: this could be removed and the clientId resolution can be responsability of client side
+	clientIdResolverFunc ClientIdResolverFunc
 }
 
 func NewWebSocketsHandler(clientIdResolverFunc ClientIdResolverFunc) webSocketsHandler {

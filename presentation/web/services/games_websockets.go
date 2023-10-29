@@ -114,7 +114,7 @@ func (gws *gameWebSockets) doUnbindClientWebSocketInGame(givenConn *websocket.Co
 
 type WebSockectOutgoingActionMsgPayload struct {
 	Game   *repositories.PersistentGame `json:"game"`
-	Action *model.PlayerAction          `json:"action,omitempty"`
+	Action model.PlayerAction           `json:"action,omitempty"`
 }
 
 type WebSockectOutgoingAccessMsgPayload struct {
