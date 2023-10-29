@@ -221,20 +221,22 @@ module Lobby {
       return !Games.isStarted(game)
     }
 
-    public joinGame(game: Games.Game, player: Players.Player) {
+    public joinGame(game: Games.Game) {
       this.loading = true
-      this.gamesService.getGameById(game.id).then((game) => {
-        if (Games.isStarted(game)) {
-          Toastr.warn("La partida esta en progreso, no te podés unir.")
-          return
-        }
-        Games.addPlayer(game, player)
-        this.gamesService.updateGame(game).then(() => {
-          this.$state.go("game", {
-            game: game,
-            player: player,
-          })
+      const hasNotJoin = !Games.hasPlayerJoin(game, this.player)
+      var joinPromise = this.$q.when<Games.Game>(game)
+      if (hasNotJoin) {
+        joinPromise = this.gamesService.joinGame(game).then((joinedGame) => {
+          return joinedGame
         })
+      }
+      joinPromise.then((joinedGame) => {
+        this.$state.go("game", {
+          game: joinedGame,
+          player: this.player,
+        })
+      }).catch((err) => {
+        Toastr.error(err.data)
       }).finally(() => {
         this.loading = false
       })

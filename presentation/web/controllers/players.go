@@ -7,19 +7,13 @@ import (
 
 	"github.com/vituchon/escobita/model"
 
-	"github.com/gorilla/sessions"
+	"github.com/vituchon/escobita/presentation/web/services"
 	"github.com/vituchon/escobita/repositories"
 )
 
 var playersRepository repositories.Players = repositories.NewPlayersMemoryRepository()
 
 // PLAYERS
-
-func getWebPlayerId(request *http.Request) int {
-	clientSession := request.Context().Value("clientSession").(*sessions.Session)
-	wrappedInt, _ := clientSession.Values["clientId"]
-	return wrappedInt.(int)
-}
 
 func GetPlayers(response http.ResponseWriter, request *http.Request) {
 	players, err := playersRepository.GetPlayers()
@@ -33,7 +27,7 @@ func GetPlayers(response http.ResponseWriter, request *http.Request) {
 
 // Gets the web client's correspondant player (There is only ONE player per client!)
 func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
-	id := getWebPlayerId(request)
+	id := services.GetWebPlayerId(request)
 	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
 		if err == repositories.EntityNotExistsErr {

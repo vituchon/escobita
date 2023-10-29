@@ -79,7 +79,7 @@
   <div class="section game-match-section">
 
     <button class="materialButton colorButton" style="background-color: firebrick; align-self: center;"  ng-hide="ctr.isMatchInProgress || !ctr.isClientPlayerGameOwner" ng-disabled="ctr.loading" ng-click="ctr.startGame(ctr.game)">COMENZAR</button>
-
+    <button class="materialButton colorButton" style="background-color: darkgreen; align-self: center;"  ng-hide="ctr.isMatchInProgress || !ctr.isClientPlayerGameOwner || ctr.botCount > 0" ng-disabled="ctr.loading" ng-click="ctr.addComputerPlayer(ctr.game)">Agregar computadora como jugador!</button>
     <!-- <loading message="Cargando..." ng-if="ctr.loading"></loading>-->
 
     <!-- PLAYING CARDS -->
@@ -159,7 +159,7 @@
     </div>
 
     <!-- MATCH STATS -->
-    <div class="stats-section" ng-show="ctr.isMatchInProgress">
+    <div class="stats-section" ng-show="ctr.hasGameStarted(ctr.game)">
       <h3>Estadísticas del partido actual</h3>
       <div class="player-stats-container">
         <div ng-repeat="(playerUniqueKey,stats) in ctr.currentMatchStatsByPlayerUniqueKey" class="player-stats-item">

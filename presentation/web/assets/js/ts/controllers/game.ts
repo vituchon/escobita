@@ -407,20 +407,6 @@ namespace Game {
         const displayMode = displayCardsAsSprites ? 'sprite' : 'text'
         this.$rootScope.$broadcast(Cards.changeDisplayModeEventName, displayMode);
       })
-
-      this.$scope.$watch(() => {
-        if (!this.isMatchInProgress) {
-          return undefined
-        }
-        return this.game.currentMatch.currentRound.currentTurnPlayer.name;
-      }, (currentTurnPlayerName, previousTurnPlayerName) => {
-        if (_.isUndefined(previousTurnPlayerName)) {
-          return
-        }
-        if (previousTurnPlayerName !== this.player.name) {
-          this.displayLastAction();
-        }
-      })
     }
 
     private setupUI() {
@@ -498,27 +484,35 @@ namespace Game {
           kind: string,
           data: {
             game: Api.Game,
-            action?: Api.PlayerAction
-            message?: Games.VolatileMessage
+            action?: Api.PlayerAction // drop/quit message
+            message?: Games.VolatileMessage // chat message
+            player?: Api.Player // join/quit message
           };
         } = JSON.parse(event.data)
-        console.log("llega una notificación", notification);
 
         switch (notification.kind) {
           case "drop":
           case "take":
-          case "start":
+            const isClientOtherPlayer = notification.data.action.player.id !== this.player.id
+            if (isClientOtherPlayer) {
+              this.displayAction(notification.data.action) // is designed to display actions performed by other users
+            }
             this.setGame(notification.data.game)
+            break
+          case "start":
+            this.setGame(notification.data.game) // no need to update UI managed by angular
             break;
-          case "updated":
+          case "join":
+          case "quit":
             this.$timeout(() => {
               this.setGame(notification.data.game)
-            }) // update UI as this.game.players may be updated!
+            }) // need to update  UI managed by angular as this.game.players IS updated!
             break;
           case "game-chat":
             this.displayMessage(notification.data.message)
             break;
           default:
+            console.log("not processing ", notification?.kind)
             break;
         }
       }
@@ -540,19 +534,13 @@ namespace Game {
       $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px")
     }
 
-    private displayLastAction() {
+    private displayAction(action: Api.PlayerAction) {
       const options: ToastrOptions = {
         timeOut: 5000,
         toastClass: "toastr-info-action-class",
         closeButton: true,
       }
-      Toastr.info(`${this.generateLastActionDescription()}`, options)
-    }
-
-    private generateLastActionDescription() {
-      const lastActionIndex = _.size(this.game.currentMatch.playerActions) - 1
-      const lastAction = this.game.currentMatch.playerActions[lastActionIndex];
-      return this.generateActionDescription(lastAction);
+      Toastr.info(`${this.generateActionDescription(action)}`, options)
     }
 
     private generateActionDescription(action: Api.PlayerAction) {
@@ -639,7 +627,7 @@ namespace Game {
         if (data.action.isEscobita) {
           Toastr.success("Has hecho escoba! 🥳")
         }
-        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
+        //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.isBoardCardSelectedById = {}
@@ -667,11 +655,10 @@ namespace Game {
     }
 
     public performDropAction() {
-      const selectedBoardCards = this.getSelectedBoardCards() // TODO: remove this line
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
-        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
+        //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.loading = false;
@@ -741,7 +728,6 @@ namespace Game {
         boardCards = Matchs.Engine.getMostImportantCards(boardCards, 8)
       }
 
-      this.loading = true;
       this.suggestionRequestCount++
       const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
       const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
@@ -750,6 +736,7 @@ namespace Game {
       this.recomendedTakeActionTakeAction = analizedActions.recomendedAction;
 
       this.playerMessage.text = "Soy 💩 y pido sugerencias al escoba master";
+      this.loading = true;
       this.doSendAndCleanMessage(this.playerMessage).finally(() => {
         this.loading = false;
       })
@@ -765,9 +752,21 @@ namespace Game {
       dialog.close();
     }
 
+    public botCount: number = 0
+    public addComputerPlayer(game: Games.Game) {
+      this.loading = true;
+      this.gamesService.addComputerPlayer(game).then(() => {
+        Toastr.info("Computer added")
+        this.botCount++
+      }).finally(() => {
+        this.loading = false;
+      })
+    }
+
     public isPlayerGameOwner = Games.isPlayerOwner
     public playerToUniqueKey = Players.generateUniqueKey // interesting case! both names are pretty same. the player context is provivded by the leading namespace or the inclusion in the name's identifier
     public extractPlayerName = Players.extractName
+    public hasGameStarted = Games.isStarted
   }
 
   escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);

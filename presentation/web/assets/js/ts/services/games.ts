@@ -17,25 +17,16 @@ namespace Games {
     return isPlayerOwner(game,player)
   }
 
-  export function addPlayer(game :Game, player: Players.Player) {
-    if (_.isEmpty(game.players)) {
-      game.players = [player]
-    } else {
-      // it allow to share screen for those users with same name... could result in unexpected behaviour, although it may be very funny! <-- No, I guess nou... it would be a big problem
-      const gamePlayer = _.find(game.players,(gamePlayer) => gamePlayer.name == player.name)
-      const playerNotJoined = _.isUndefined(gamePlayer)
-      if (playerNotJoined) {
-        game.players.push(player)
-      }
-    }
-  }
-
   export function isPlayerOwner(game :Game, player: Players.Player) {
     if (Util.isDefined(player.id)) {
       return player.id === game.owner.id
     } else {
       return player.name === game.owner.name // Dev notes (Loop hole here!) : recall that in a game players MUST have different names...
     }
+  }
+
+  export function hasPlayerJoin(game :Game, player: Players.Player) {
+    return _.findIndex(game.players,(gamePlayer) => gamePlayer.id === player.id) !== -1
   }
 
   export namespace Periods {
@@ -86,6 +77,7 @@ namespace Games {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
 
+    // TODO: remove Game or Games letters from these methods, as Games. provides already context (avoid slutering)
     getGames(): ng.IPromise<Game[]> {
       return this.$http.get<Game[]>(`/api/v1/games`).then((response) => {
         return response.data;
@@ -104,11 +96,11 @@ namespace Games {
       })
     }
 
-    updateGame(game: Game): ng.IPromise<Game> {
+    /*updateGame(game: Game): ng.IPromise<Game> {
       return this.$http.put<Game>(`/api/v1/games/${game.id}`,game).then((response) => {
         return response.data
       })
-    }
+    }*/
 
     deleteGame(game: Game, player: Players.Player): ng.IPromise<any> {
       const config: ng.IRequestShortcutConfig = {
@@ -121,6 +113,24 @@ namespace Games {
 
     startGame(game: Game): ng.IPromise<Game> {
       return this.$http.post<Game>(`/api/v1/games/${game.id}/start`,game).then((response) => {
+        return response.data
+      })
+    }
+
+    joinGame(game: Game): ng.IPromise<Game> {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/join`,game).then((response) => {
+        return response.data
+      })
+    }
+
+    quitGame(game: Game): ng.IPromise<Game> {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/quit`,game).then((response) => {
+        return response.data
+      })
+    }
+
+    addComputerPlayer(game: Game): ng.IPromise<Game> {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/add-computer`,game).then((response) => {
         return response.data
       })
     }

@@ -1,20 +1,29 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
-	"sync"
+	"strings"
+	"time"
 
 	"github.com/vituchon/escobita/model"
 	"github.com/vituchon/escobita/presentation/web/services"
 	"github.com/vituchon/escobita/repositories"
-
-	"github.com/gorilla/websocket"
 )
 
+// TODO: refact: promote usage of gameId in the following endpoints
+/*	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
+	//apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
+	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
+	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
+	apiPost("/games/{id:[0-9]+}/join", controllers.JoinGame)
+	apiPost("/games/{id:[0-9]+}/quit", controllers.QuitGame)
+	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
+	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
+	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)*/
 var gamesRepository repositories.Games = repositories.NewGamesMemoryRepository()
 
 func GetGames(response http.ResponseWriter, request *http.Request) {
@@ -47,7 +56,7 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 const MAX_GAMES_PER_PLAYER = 1
 
 func CreateGame(response http.ResponseWriter, request *http.Request) {
-	playerId := getWebPlayerId(request) // will be the game's owner
+	playerId := services.GetWebPlayerId(request) // will be the game's owner
 	if gamesRepository.GetGamesCreatedCount(playerId) == MAX_GAMES_PER_PLAYER {
 		msg := fmt.Sprintf("Player(id='%d') has reached the maximum game creation limit: '%v'", playerId, MAX_GAMES_PER_PLAYER)
 		log.Println(msg)
@@ -72,12 +81,9 @@ func CreateGame(response http.ResponseWriter, request *http.Request) {
 
 	game.Owner = *player
 
-	// TODO: provide endpoint and functionallity to do this
-	game.Join(model.ComputerPlayer)
-
 	created, err := gamesRepository.CreateGame(game)
 	if err != nil {
-		log.Printf("error while creating Game: '%v'", err)
+		log.Printf("error while creating game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -94,12 +100,12 @@ func UpdateGame(response http.ResponseWriter, request *http.Request) {
 	}
 	updated, err := gamesRepository.UpdateGame(game)
 	if err != nil {
-		log.Printf("error while updating Game: '%v'", err)
+		log.Printf("error while updating game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
-	gameWebSockets.NotifyGameConns(*game.Id, "updated", msgPayload)
+	msgPayload := services.WebSockectOutgoingActionMsgPayload{updated, nil}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "updated", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
@@ -135,7 +141,7 @@ func DeleteGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	gameWebSockets.UnbindAllWebSocketsInGame(id, request)
+	services.GameWebSockets.UnbindAllWebSocketsInGame(id, request)
 	response.WriteHeader(http.StatusOK)
 }
 
@@ -163,9 +169,9 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	playerId := getWebPlayerId(request)
+	playerId := services.GetWebPlayerId(request)
 	if game.Owner.Id != playerId {
-		log.Printf("error while starting Game: request doesn't cames from the owner, in cames from %d\n", playerId)
+		log.Printf("error while starting game: request doesn't cames from the owner, in cames from %d\n", playerId)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -173,23 +179,115 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 	updated, err := services.StartGame(game)
 	updated, err = gamesRepository.UpdateGame(*updated)
 	if err != nil {
-		log.Printf("error while starting Game: '%v'", err)
+		log.Printf("error while starting game: '%v'", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	msgPayload := WebSockectOutgoingActionMsgPayload{updated, nil}
-	gameWebSockets.NotifyGameConns(*game.Id, "start", msgPayload)
+	msgPayload := services.WebSockectOutgoingActionMsgPayload{updated, nil}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "start", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
-type WebSockectOutgoingActionMsgPayload struct {
-	Game   *repositories.PersistentGame `json:"game"`
-	Action *model.PlayerAction          `json:"action,omitempty"`
+func JoinGame(response http.ResponseWriter, request *http.Request) {
+	var game repositories.PersistentGame
+
+	err := parseJsonFromReader(request.Body, &game)
+	if err != nil {
+		log.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	playerId := services.GetWebPlayerId(request)
+	player, err := playersRepository.GetPlayerById(playerId)
+	if err != nil {
+		msg := fmt.Sprintf("error while getting player by id, error was: '%v'\n", player)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+
+	err = game.Join(*player)
+	if err != nil {
+		msg := fmt.Sprintf("error while joining game, error was: '%v'\n", err)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+	updated, err := gamesRepository.UpdateGame(game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	msgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, player}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "join", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, game)
+}
+
+func QuitGame(response http.ResponseWriter, request *http.Request) {
+	var game repositories.PersistentGame
+	err := parseJsonFromReader(request.Body, &game)
+	if err != nil {
+		log.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	playerId := services.GetWebPlayerId(request)
+	player, err := playersRepository.GetPlayerById(playerId)
+	if err != nil {
+		msg := fmt.Sprintf("error while getting player by id, error was: '%v'\n", player)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+
+	err = game.Quit(*player)
+	if err != nil {
+		msg := fmt.Sprintf("error while quiting game, error was: '%v'\n", player)
+		log.Println(msg)
+		http.Error(response, msg, http.StatusBadRequest)
+		return
+	}
+	updated, err := gamesRepository.UpdateGame(game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	msgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, player}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "quit", msgPayload)
+	WriteJsonResponse(response, http.StatusOK, game)
+}
+
+func AddComputer(response http.ResponseWriter, request *http.Request) {
+	var game repositories.PersistentGame
+	err := parseJsonFromReader(request.Body, &game)
+	if err != nil {
+		log.Printf("error reading request body: '%v'", err)
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	game.Join(model.ComputerPlayer)
+	updated, err := gamesRepository.UpdateGame(game)
+	if err != nil {
+		log.Printf("error while updating game: '%v'", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	message := services.VolatileWebMessage{Player: model.ComputerPlayer, Text: "Buenas y santas! 🧉😸"}
+	chatMsgPayload := WebSockectOutgoingChatMsgPayload{message}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "game-chat", chatMsgPayload)
+
+	joinMsgPayload := services.WebSockectOutgoingJoinMsgPayload{updated, &model.ComputerPlayer}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "join", joinMsgPayload)
+	WriteJsonResponse(response, http.StatusOK, updated)
 }
 
 func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
+	paramId := RouteParam(request, "id") // TODO : encapsulate this into  id, err := ParseIntRouteParam (req´uest, "id") and employ fmt.Sprint + log.Errorf + Http.Error response pattern!
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
 		log.Printf("Can not parse id from '%s'", paramId)
@@ -221,9 +319,8 @@ func PerformTakeAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	msgPayload := WebSockectOutgoingActionMsgPayload{game, action}
-	gameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)
+	msgPayload := services.WebSockectOutgoingActionMsgPayload{game, action}
+	services.GameWebSockets.NotifyGameConns(*game.Id, "take", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
 
@@ -261,9 +358,9 @@ func PerformDropAction(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	msgPayload := WebSockectOutgoingActionMsgPayload{game, action}
+	msgPayload := services.WebSockectOutgoingActionMsgPayload{game, action}
 
-	gameWebSockets.NotifyGameConns(*game.Id, "drop", msgPayload)
+	services.GameWebSockets.NotifyGameConns(*game.Id, "drop", msgPayload)
 	WriteJsonResponse(response, http.StatusOK, msgPayload)
 }
 
@@ -326,38 +423,48 @@ func SendMessage(response http.ResponseWriter, request *http.Request) {
 	}
 
 	msgPayload := WebSockectOutgoingChatMsgPayload{message}
-	gameWebSockets.NotifyGameConns(id, "game-chat", msgPayload)
+	services.GameWebSockets.NotifyGameConns(id, "game-chat", msgPayload)
+
+	if strings.Contains(strings.ToLower(message.Player.Name), "vitu") {
+		game, err := gamesRepository.GetGameById(id)
+		if err != nil {
+			log.Printf("Error getting game for sending an obsequent accompaniment to vitu '%s'", err)
+		} else {
+			if game.IsJoined(model.ComputerPlayer) {
+				mustSendAbsequentAccompaniment := rand.Intn(2) == 0 // flip a coin
+				if mustSendAbsequentAccompaniment {
+					sendAbsequentAccompaniment := func() {
+						names := []string{}
+						for _, gamePlayer := range game.Players {
+							if gamePlayer.Id != message.Player.Id && gamePlayer.Id != model.ComputerPlayer.Id {
+								names = append(names, gamePlayer.Name)
+							}
+						}
+						allNames := strings.Join(names, " ")
+						var obsequentAccompaniments []string = []string{
+							"Totalmente",
+							"Kpo++ vituchon 👏🏿🤗",
+							"Cuanta razón....",
+							allNames + " calentito los panchos",
+							allNames + " y todos los que lo leen son de la B",
+							allNames + " silenció.... habló el maestro...",
+							"Faa como la cantó...",
+							allNames + " i-m-p-e-c-a-b-l-e lo que dijo el vitul 👏🏿",
+							allNames + " shhh no saben nada...",
+						}
+
+						message.Player = model.ComputerPlayer
+						message.Text = obsequentAccompaniments[rand.Intn(len(obsequentAccompaniments))]
+						msgPayload := WebSockectOutgoingChatMsgPayload{message}
+						services.GameWebSockets.NotifyGameConns(id, "game-chat", msgPayload)
+					}
+					time.AfterFunc(1*time.Second, sendAbsequentAccompaniment)
+				}
+			}
+		}
+	}
+
 	WriteJsonResponse(response, http.StatusOK, struct{}{})
-}
-
-type GameWebSockets struct {
-	connsByGameId map[int][]*websocket.Conn
-	mutex         sync.Mutex
-}
-
-var gameWebSockets GameWebSockets = GameWebSockets{connsByGameId: make(map[int][]*websocket.Conn)}
-
-func (gws *GameWebSockets) NotifyGameConns(gameId int, kind string, data interface{}) {
-	type Notification struct {
-		Kind      string      `json:"kind"`
-		BagOfCats interface{} `json:"data"`
-	}
-
-	gws.mutex.Lock()
-	defer gws.mutex.Unlock()
-	conns := gws.connsByGameId[gameId]
-	for _, conn := range conns {
-		notification := Notification{Kind: kind, BagOfCats: data}
-		notificationAsJson, err := json.Marshal(notification)
-		if err != nil {
-			log.Printf("Error on marshalling notification, skip send. Error was: '%v'\n", err)
-			continue
-		}
-		err = conn.WriteMessage(websocket.TextMessage, notificationAsJson)
-		if err != nil {
-			log.Println(err)
-		}
-	}
 }
 
 func BindClientWebSocketToGame(response http.ResponseWriter, request *http.Request) {
@@ -367,85 +474,16 @@ func BindClientWebSocketToGame(response http.ResponseWriter, request *http.Reque
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	gameWebSockets.BindClientWebSocketToGame(response, request, gameId)
-}
-
-func (gws *GameWebSockets) BindClientWebSocketToGame(response http.ResponseWriter, request *http.Request, gameId int) {
-	log.Printf("Binding web socket from client(id=%d) in game(id=%d)...", getWebPlayerId(request), gameId)
-	conn, _, err := webSocketsHandler.AdquireOrRetrieve(response, request)
-	if err != nil {
-		log.Println(err)
-		response.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	gws.mutex.Lock()
-	defer gws.mutex.Unlock()
-
-	for _, exstingConn := range gws.connsByGameId[gameId] {
-		if exstingConn == conn {
-			msg := fmt.Sprintf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
-			log.Println(msg)
-			http.Error(response, msg, http.StatusBadRequest)
-			return
-		}
-	}
-
-	gws.connsByGameId[gameId] = append(gws.connsByGameId[gameId], conn)
-	log.Printf("Binded web socket(remoteAddr='%s') from client(id=%d) in game(id=%d)", conn.RemoteAddr().String(), getWebPlayerId(request), gameId)
+	services.GameWebSockets.BindClientWebSocketToGame(response, request, gameId)
 }
 
 func UnbindClientWebSocketInGame(response http.ResponseWriter, request *http.Request) {
-	conn := webSocketsHandler.Retrieve(request)
+	conn := services.WebSocketsHandler.Retrieve(request)
 	if conn != nil {
-		gameWebSockets.UnbindClientWebSocketInGame(conn, request)
+		services.GameWebSockets.UnbindClientWebSocketInGame(conn, request)
 		response.WriteHeader(http.StatusOK)
 	} else {
-		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", getWebPlayerId(request))
+		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", services.GetWebPlayerId(request))
 		response.WriteHeader(http.StatusBadRequest)
 	}
-}
-
-func (gws *GameWebSockets) UnbindAllWebSocketsInGame(gameId int, request *http.Request) {
-	gws.mutex.Lock()
-	defer gws.mutex.Unlock()
-	log.Printf("Unbinding all web sockets from possible joined game id='%d'...\n", gameId)
-
-	for _, conn := range gws.connsByGameId[gameId] {
-		gws.doUnbindClientWebSocketInGame(conn, gameId, request)
-	}
-	delete(gws.connsByGameId, gameId)
-
-	log.Printf("Unbinded all web sockets from possible joined game id='%d'\n", gameId)
-}
-
-func (gws *GameWebSockets) UnbindClientWebSocketInGame(conn *websocket.Conn, request *http.Request) {
-	gws.mutex.Lock()
-	defer gws.mutex.Unlock()
-	log.Printf("Unbinding web socket(remoteAddr='%s') from a possible joined game...\n", conn.RemoteAddr().String())
-
-	for gameId, conns := range gws.connsByGameId {
-		for _, _conn := range conns {
-			if _conn == conn {
-				gws.doUnbindClientWebSocketInGame(conn, gameId, request)
-				return
-			}
-		}
-	}
-	log.Printf("Web socket(remoteAddr='%s') was NOT binded to a game\n", conn.RemoteAddr().String())
-}
-
-// helper function, internal usage, do note that synchronization must be provided by in the client code... for now the only client is UnbindClientWebSocketInGame
-func (gws *GameWebSockets) doUnbindClientWebSocketInGame(givenConn *websocket.Conn, gameId int, request *http.Request) {
-	log.Printf("Unbinding Web socket(remoteAddr='%s') in game id='%d'...\n", givenConn.RemoteAddr().String(), gameId)
-	conns := gws.connsByGameId[gameId]
-	connsPtr := &conns
-	chopped := (*connsPtr)[:0]
-	for _, conn := range conns {
-		if givenConn != conn {
-			chopped = append(chopped, conn)
-		}
-	}
-	*connsPtr = chopped
-	gws.connsByGameId[gameId] = *connsPtr
-	log.Printf("Unbinded Web socket(remoteAddr='%s') in game id='%d'\n", givenConn.RemoteAddr().String(), gameId)
 }
