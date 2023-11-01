@@ -95,6 +95,7 @@ namespace WebSockets {
           const notification: ServerMessage = JSON.parse(event.data)
           if (notification.kind === "debug") {
             Toastr.info(notification.message)
+            Sounds.playBroadcastMessage();
           }
         }
         const cleanup = () => {

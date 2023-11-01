@@ -532,6 +532,7 @@ namespace Game {
       const $elem = Toastr.chat(player.name,message.text)
       const fontSize = this.getFontSize(player)
       $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px")
+      Sounds.playGameMessage();
     }
 
     private displayAction(action: Api.PlayerAction) {
@@ -541,6 +542,12 @@ namespace Game {
         closeButton: true,
       }
       Toastr.info(`${this.generateActionDescription(action)}`, options)
+      const playAction1 = (Math.floor(Math.random() * 2) == 0);
+      if (playAction1) {
+        Sounds.playGameAction1()
+      } else {
+        Sounds.playGameAction2()
+      }
     }
 
     private generateActionDescription(action: Api.PlayerAction) {

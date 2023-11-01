@@ -149,3 +149,26 @@ namespace Arrays {
     }
   }
 }
+
+namespace Sounds {
+
+  const gameMessage = new Audio('/presentation/web/assets/sounds/game-message.mp3');
+  export function playGameMessage() {
+    gameMessage.play();
+  }
+
+  const broadcastMessage = new Audio('/presentation/web/assets/sounds/game-message.mp3');
+  export function playBroadcastMessage() {
+    broadcastMessage.play();
+  }
+
+  const gameAction1 = new Audio('/presentation/web/assets/sounds/game-action-1.mp3');
+  export function playGameAction1() {
+    gameAction1.play();
+  }
+
+  const gameAction2 = new Audio('/presentation/web/assets/sounds/game-action-2.mp3');
+  export function playGameAction2() {
+    gameAction2.play();
+  }
+}
