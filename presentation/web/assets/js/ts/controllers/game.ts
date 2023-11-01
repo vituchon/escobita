@@ -542,12 +542,7 @@ namespace Game {
         closeButton: true,
       }
       Toastr.info(`${this.generateActionDescription(action)}`, options)
-      const playAction1 = (Math.floor(Math.random() * 2) == 0);
-      if (playAction1) {
-        Sounds.playGameAction1()
-      } else {
-        Sounds.playGameAction2()
-      }
+      Sounds.playAnAction()
     }
 
     private generateActionDescription(action: Api.PlayerAction) {

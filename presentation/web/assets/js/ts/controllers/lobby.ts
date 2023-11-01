@@ -158,6 +158,9 @@ module Lobby {
         this.appStateService.set("clientPlayer", player)
         const msg = "Nombre de jugador " + ((wasPlayerRegistered) ? "actualizado" : "registrado")
         Toastr.success(msg)
+        /*sif (!wasPlayerRegistered) {
+          Sounds.playWelcome();
+        }*/
       }).then(() => {
         this.showDisplayPlayerName("transform 1s ease");
         this.rearrangeHeaderAfterRegistration("opacity 1s ease");
