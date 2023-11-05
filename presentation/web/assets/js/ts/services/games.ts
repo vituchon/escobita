@@ -112,25 +112,25 @@ namespace Games {
     }
 
     startGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/start`,game).then((response) => {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/start`, undefined).then((response) => {
         return response.data
       })
     }
 
     joinGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/join`,game).then((response) => {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/join`,undefined).then((response) => {
         return response.data
       })
     }
 
     quitGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/quit`,game).then((response) => {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/quit`,undefined).then((response) => {
         return response.data
       })
     }
 
     addComputerPlayer(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/add-computer`,game).then((response) => {
+      return this.$http.post<Game>(`/api/v1/games/${game.id}/add-computer`,undefined).then((response) => {
         return response.data
       })
     }
