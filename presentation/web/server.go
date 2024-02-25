@@ -70,7 +70,7 @@ func StartServer() {
 		log.Printf("Unexpected error while retrieving cookie store key: %v", err)
 		return
 	}
-	controllers.NewSessionStore(key)
+	controllers.InitSessionStore(key)
 
 	router := buildRouter()
 	server := &http.Server{

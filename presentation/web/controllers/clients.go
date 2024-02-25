@@ -9,7 +9,7 @@ import (
 
 var clientSessions *sessions.CookieStore
 
-func NewSessionStore(key []byte) {
+func InitSessionStore(key []byte) {
 	clientSessions = sessions.NewCookieStore(key)
 }
 
