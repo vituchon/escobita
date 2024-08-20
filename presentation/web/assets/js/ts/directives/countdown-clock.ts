@@ -27,14 +27,15 @@ namespace CountdownClock {
       scope: {
         onEnd: "&?",
         totalSeconds: "=?",
-        refeshRateInMilis : "=?"
+        refeshRateInMilis : "=?",
+        handler: "=?",
       },
       bindToController: true,
       controller: 'CountdownClockCtr',
       controllerAs: 'ctr',
       template: `
-        <button ng-click="ctr.start()">Empezar contador</button>
-        <button ng-click="ctr.cancel()">Detener contador</button>
+        <!-- <button ng-click="ctr.start()">Empezar contador</button>
+        <button ng-click="ctr.cancel()">Detener contador</button> -->
         <div class="countdownContainer horizontalLayout" ng-style="{'background-image': ctr.backgroundRotation()}" ng-if="ctr.countdownInterval != null">
           <div class="countdownCover horizontalLayout">
             <span>{{ctr.minutesStr}}:{{ctr.secondsStr}}</span>
@@ -45,10 +46,9 @@ namespace CountdownClock {
 
   type WrappedOnEndFunc = (params: {seconds: number}) => void;
 
-  interface Contdown {
-    total?: number;
-    sec?: number;
-    min?: number;
+  export interface Handler {
+    start(): void;
+    cancel(): void;
   }
 
   class Controller {
@@ -64,25 +64,33 @@ namespace CountdownClock {
     public minutesStr: string;
     public secondsStr: string;
 
+    public handler: Handler;
 
-    constructor(private $scope: ng.IScope, private $interval: ng.IIntervalService) {
+    constructor(private $scope: ng.IScope, private $interval: ng.IIntervalService, private $attrs: ng.IAttributes) {
     }
 
     public $onInit() {
+      this.handler = this
       this.totalSeconds = this.totalSeconds || 30;
       this.refreshRateInMilis = this.refreshRateInMilis || 100
       this.onEnd = this.onEnd || ((params: {seconds: number}) => {})
       this.$scope.$on('$destroy', () => {
         this.cancel();
       });
+
+      if (Util.isDefined(this.$attrs["startInmediate"])) {
+        this.start()
+      }
     }
 
     public start () {
-      this.elapsedSeconds = 0
-      this.count()
-      this.countdownInterval = this.$interval(() => {
-        this.count();
-      }, 100);
+      if (this.countdownInterval == null) {
+        this.elapsedSeconds = 0
+        this.count()
+        this.countdownInterval = this.$interval(() => {
+          this.count();
+        }, 100);
+      }
     }
 
     public cancel () {
@@ -147,5 +155,5 @@ namespace CountdownClock {
     }
   }
 
-  escobita.controller("CountdownClockCtr", ['$scope', '$interval', Controller]);
+  escobita.controller("CountdownClockCtr", ["$scope", "$interval", "$attrs", Controller]);
 }
