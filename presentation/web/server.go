@@ -101,7 +101,12 @@ func buildRouter() *mux.Router {
 	// AFTER go:embed
 	/*assetsFileServer := http.FileServer(http.FS(assets))
 	assetsRouter := router.PathPrefix("/presentation/web/assets").Subrouter()
-	assetsRouter.PathPrefix("/").Handler(http.StripPrefix("/presentation/web/", assetsFileServer))*/
+	assetsRouter.PathPrefix("/").Handler(http.StripPrefix("/presentation/web/", assetsFileServer))
+
+	// see https://github.com/julienschmidt/httprouter/issues/354
+	router := httprouter.New()
+	router.Handler(http.MethodGet, "/static/*path", http.FileServerFS(ui.Files))
+	*/
 
 	rootRouter := router.PathPrefix("/").Subrouter()
 	rootRouter.Use(AccessLogMiddleware, ClientSessionAwareMiddleware)
