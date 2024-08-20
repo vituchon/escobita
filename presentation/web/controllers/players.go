@@ -48,14 +48,14 @@ func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
 				response.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			log.Printf("Creating new player %+v \n", player)
+			log.Printf("Creating new player %+v for ip=%s\n", player, request.RemoteAddr)
 		} else {
 			log.Printf("error while getting client player : '%v'", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	} else {
-		log.Printf("Using existing player %+v \n", player)
+		log.Printf("Using existing player %+v for ip=%s \n", player, request.RemoteAddr)
 	}
 	WriteJsonResponse(response, http.StatusOK, player)
 }
