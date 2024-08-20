@@ -302,7 +302,7 @@ namespace Game {
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
-    public isClientPlayerGameOwner: boolean;
+    public isClientPlayerGameOwner: boolean; // TODO: strip client from the name as it may be superflous
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[] = []; // persistent messages of this game (retrieved from the server using the previous message Api that works with persistent messages)
     public isBoardCardSelectedById: _.Dictionary<boolean>;
@@ -324,9 +324,17 @@ namespace Game {
     public loading: boolean = false;
     public displayCardsAsSprites: boolean = true;
 
+    // used for current player turn
+    public countdownHandler: CountdownClock.Handler = null;
+
+    // used for others player turn
+    public secondsToPerformAction: number = 20;
+    public remainingSecondsToPerformAction: number = 0;
+    private countdownInterval: ng.IPromise<any>;
+
     constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, $state: ng.ui.IStateService,
         private gamesService: Games.Service, private webSocketsService: WebSockets.Service, private $timeout: ng.ITimeoutService,
-        private $q: ng.IQService, private $window: ng.IWindowService, private appStateService: AppState.Service) {
+        private $q: ng.IQService, private $window: ng.IWindowService, private $interval: ng.IIntervalService, private appStateService: AppState.Service) {
       this.game = $state.params["game"]// || onGoingGame
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
@@ -424,11 +432,7 @@ namespace Game {
         // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
         if (event.key === 'x') { // helper code for dev purposes
           if (this.isMatchInProgress) {
-            const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
-            if (handCards.length > 0) {
-              this.selectedHandCard = handCards[0]
-              this.performDropAction();
-            }
+            this.performAnAutomaticDropAction()
           }
         }
       };
@@ -625,6 +629,7 @@ namespace Game {
       const selectedBoardCards = this.getSelectedBoardCards()
       const takeAction = Matchs.createTakeAction(this.player,selectedBoardCards,this.selectedHandCard)
       this.loading = true;
+      this.countdownHandler?.cancel?.()
       this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
         if (data.action.isEscobita) {
           Toastr.success("Has hecho escoba! 🥳")
@@ -659,6 +664,7 @@ namespace Game {
     public performDropAction() {
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
+      this.countdownHandler?.cancel?.()
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
         //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
@@ -674,6 +680,19 @@ namespace Game {
       if (this.isMatchInProgress) {
         this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
         this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
+        this.$interval.cancel(this.countdownInterval);
+        if (this.isPlayerTurn) {
+          this.countdownHandler?.start?.();
+        } else {
+          this.remainingSecondsToPerformAction = this.secondsToPerformAction
+          this.countdownInterval = this.$interval(() => {
+            if (this.remainingSecondsToPerformAction > 0) {
+              this.remainingSecondsToPerformAction--;
+            } else {
+              this.$interval.cancel(this.countdownInterval);
+            }
+          }, 1000);
+        }
         return this.updateGameStats(currentMatchIndex).then(() => {
           return this.game
         })
@@ -765,11 +784,23 @@ namespace Game {
       })
     }
 
+    public onEndCountdown() {
+      this.performAnAutomaticDropAction()
+    }
+
+    private performAnAutomaticDropAction() {
+      const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
+      if (handCards.length > 0) {
+        this.selectedHandCard = handCards[0]
+        this.performDropAction();
+      }
+    }
+
     public isPlayerGameOwner = Games.isPlayerOwner
     public playerToUniqueKey = Players.generateUniqueKey // interesting case! both names are pretty same. the player context is provivded by the leading namespace or the inclusion in the name's identifier
     public extractPlayerName = Players.extractName
     public hasGameStarted = Games.isStarted
   }
 
-  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
+  escobita.controller("GameController", ["$rootElement","$rootScope","$scope","$state", "GamesService", "WebSocketsService", "$timeout", "$q", "$window", "$interval", "AppStateService", Controller]);
 }
