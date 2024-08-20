@@ -3,21 +3,31 @@
 
 namespace CountdownClock {
 
-  /** A countdown clock widget.
-  *
-  * Usage: <countdown-clock></countdown-clock>
-  *
-  * Parameters:
-  * @seconds: (Optional) Total seconds to count, defaults to 60.
-  * @onEnd: (Optional) Function to be invoked when user changes the selection. The actual function must include '(value)' literally ir order to receive the new selected value as input.
-      So if the  function is identified in the current scope by "myOnChangeFunc" then the right way to reference the function is "myOnChangeFunc(value)".
-  */
+  /**
+   * A countdown clock widget that displays a countdown timer. It can be customized by providing
+   * the total number of seconds to count down from, the refresh rate of the display, and a callback
+   * function that is invoked when the countdown reaches zero.
+   *
+   * @example
+   * // Basic usage in HTML:
+   * // <countdown-clock total-seconds="120" refresh-rate-in-milis="1000" on-end="callbackFunction()"></countdown-clock>
+   *
+   * @param {number} [totalSeconds=60] - Optional. The total number of seconds to count down from.
+   *                                      Defaults to 30 seconds if not provided.
+   * @param {number} [refreshRateInMilis=1000] - Optional. The interval in milliseconds to refresh the display.
+   *                                             Defaults to 100ms (0.1 second) if not provided.
+   * @param {function} [onEnd] - Optional. A callback function to be invoked when the countdown finishes.
+   *                             No arguments are passed to this function.
+   *
+   * @returns {void}
+   */
   escobita.directive('countdownClock', () => {
     return <ng.IDirective>{
       restrict: 'E',
       scope: {
         onEnd: "&?",
-        totalSeconds: "=?seconds",
+        totalSeconds: "=?",
+        refeshRateInMilis : "=?"
       },
       bindToController: true,
       controller: 'CountdownClockCtr',
@@ -45,19 +55,22 @@ namespace CountdownClock {
 
     public onEnd: WrappedOnEndFunc;
 
-    public totalSeconds: number;
-    public elapsedSeconds: number;
+    private totalSeconds: number;
+    private elapsedSeconds: number;
 
     public countdownInterval: ng.IPromise<any> = null;
+    private refreshRateInMilis: number;
 
     public minutesStr: string;
     public secondsStr: string;
+
 
     constructor(private $scope: ng.IScope, private $interval: ng.IIntervalService) {
     }
 
     public $onInit() {
-      this.totalSeconds = this.totalSeconds || 12;
+      this.totalSeconds = this.totalSeconds || 30;
+      this.refreshRateInMilis = this.refreshRateInMilis || 100
       this.onEnd = this.onEnd || ((params: {seconds: number}) => {})
       this.$scope.$on('$destroy', () => {
         this.cancel();
@@ -69,7 +82,7 @@ namespace CountdownClock {
       this.count()
       this.countdownInterval = this.$interval(() => {
         this.count();
-      }, 1000);
+      }, 100);
     }
 
     public cancel () {
@@ -86,12 +99,13 @@ namespace CountdownClock {
     }
 
     public count() {
-      this.elapsedSeconds += 1
-      if (this.elapsedSeconds == this.totalSeconds) {
+      const increment = this.refreshRateInMilis / 1000;
+      this.elapsedSeconds += increment
+      if (this.elapsedSeconds >= this.totalSeconds) {
         this.end();
         this.cancel()
       } else {
-        const remaingSeconds = this.totalSeconds - this.elapsedSeconds
+        const remaingSeconds = Math.floor(this.totalSeconds - this.elapsedSeconds)
 
         const minutes = Math.floor(remaingSeconds / 60)
         this.minutesStr = minutes.toString()
