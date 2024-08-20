@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/vituchon/escobita/presentation/web/services"
 )
@@ -19,10 +18,9 @@ func GetMessages(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetMessageById(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -36,10 +34,9 @@ func GetMessageById(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetMessagesByGame(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -98,10 +95,9 @@ func UpdateMessage(response http.ResponseWriter, request *http.Request) {
 }
 
 func DeleteMessage(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
