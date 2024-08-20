@@ -54,7 +54,7 @@ func RouteParam(request *http.Request, name string) string {
 }
 
 func ParseRouteParamAsInt(request *http.Request, name string) (int, error) {
-	rawValue := mux.Vars(request)[name]
+	rawValue := RouteParam(request, name)
 	intValue, err := strconv.Atoi(rawValue)
 	if err != nil {
 		errMsg := fmt.Sprintf("Can not parse route param as integer from '%d'", intValue)

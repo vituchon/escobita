@@ -3,7 +3,6 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/vituchon/escobita/model"
 
@@ -73,10 +72,9 @@ func createPlayer(id int, name string) (*repositories.PersistentPlayer, error) {
 }
 
 func GetPlayerById(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -111,10 +109,9 @@ func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 }
 
 func DeletePlayer(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}

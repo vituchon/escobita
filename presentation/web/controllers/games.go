@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,10 +37,9 @@ func GetGames(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetGameById(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -448,11 +446,9 @@ func UnbindClientWebSocketInGame(response http.ResponseWriter, request *http.Req
 
 // Retrieves the stored game in the underlying storage system using the id present in the URL (route param)
 func retrieveGameByReference(request *http.Request) (*repositories.PersistentGame, error) {
-	paramId := RouteParam(request, "id") // TODO : encapsulate this  RouteParam into  id, err := ParseIntRouteParam (req´uest, "id") and employ fmt.Sprint + log.Errorf + Http.Error response pattern!
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		errMsg := fmt.Sprintf("Can not parse id from '%s'", paramId)
-		return nil, errors.New(errMsg)
+		return nil, err
 	}
 
 	game, err := gamesRepository.GetGameById(id)
