@@ -152,7 +152,7 @@
       <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
         <h3>Acciones</h3>
         <div class="player-actions-section">
-          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayer.get(player)">
+          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayer.get(ctr.player)">
             <player-action order="$index" ng-model="playerAction"></player-action>
           </div>
         </div>

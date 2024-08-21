@@ -29,6 +29,7 @@ namespace Game {
   }
 
   const game: Games.Game = {
+    hasPlayerMaps: false,
     "players": [
       {
         "name": "Betoven",
@@ -328,7 +329,7 @@ namespace Game {
     public countdownHandler: CountdownClock.Handler = null;
 
     // used for others player turn
-    public secondsToPerformAction: number = 20;
+    public secondsToPerformAction: number = 200;
     public remainingSecondsToPerformAction: number = 0;
     private countdownInterval: ng.IPromise<any>;
 
@@ -339,11 +340,11 @@ namespace Game {
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
 
-        /*const navPanel = document.getElementById("nav-panel")
-        navPanel.className = 'visible'
+      /*const navPanel = document.getElementById("nav-panel")
+      navPanel.className = 'visible'
 
-        const shortHeader = document.getElementById("short-header")
-        shortHeader.style.display = "flex"*/
+      const shortHeader = document.getElementById("short-header")
+      shortHeader.style.display = "flex"*/
 
       this.isClientPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
       this.playerMessage = Games.newMessage(this.game.id,this.player,""); // dev notes: the gameId and playerId are constants but the text (last arg) is set from the UI using ng-model="ctr.playerMessage.text"
@@ -673,9 +674,9 @@ namespace Game {
       })
     }
 
-    private setGame(game: Games.Game) {
+    private setGame(game: Api.Game) {
       this.game = Games.setupGamePlayerMaps(game)
-      this.isMatchInProgress = Games.hasMatchInProgress(game)
+      this.isMatchInProgress = Games.hasMatchInProgress(this.game)
       const currentMatchIndex = _.size(this.game.matchs)
       if (this.isMatchInProgress) {
         this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;

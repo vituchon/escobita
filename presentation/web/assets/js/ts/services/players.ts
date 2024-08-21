@@ -16,7 +16,7 @@ namespace Players {
   export interface Player extends Api.Player {  // TODO : analyse if this approach is worty...
   }
 
-  // a decorated object that facilitates access an object used as map, transforim the player into a key using the transformation function "toMapKey"
+  // a decorated object that facilitates access an object used as map, transforim the player into a key using the transformation function "generateUniqueKey"
   export class MapByPlayer<T> implements Api.MapByPlayer<T>, Object {
     [key: string]: T | any;
 
@@ -30,11 +30,11 @@ namespace Players {
     }
 
     public set(player: Player, data: T) {
-      this[toMapKey(player)] = data
+      this[generateUniqueKey(player)] = data
     }
 
     public get(player: Player): T {
-      return this[toMapKey(player)]
+      return this[generateUniqueKey(player)]
     }
   }
 
