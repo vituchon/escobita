@@ -29,6 +29,7 @@ namespace Game {
   }
 
   const game: Games.Game = {
+    hasPlayerMaps: false,
     "players": [
       {
         "name": "Betoven",
@@ -57,7 +58,7 @@ namespace Game {
           "id": 1,
         }
       ],
-      "actionsByPlayerUniqueKey": {
+      "actionsByPlayer": {
         "1|Betoven": []
       },
       "playerActions": [],
@@ -339,11 +340,11 @@ namespace Game {
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
 
-        /*const navPanel = document.getElementById("nav-panel")
-        navPanel.className = 'visible'
+      /*const navPanel = document.getElementById("nav-panel")
+      navPanel.className = 'visible'
 
-        const shortHeader = document.getElementById("short-header")
-        shortHeader.style.display = "flex"*/
+      const shortHeader = document.getElementById("short-header")
+      shortHeader.style.display = "flex"*/
 
       this.isClientPlayerGameOwner = Games.isPlayerOwner(this.game, this.player)
       this.playerMessage = Games.newMessage(this.game.id,this.player,""); // dev notes: the gameId and playerId are constants but the text (last arg) is set from the UI using ng-model="ctr.playerMessage.text"
@@ -673,9 +674,9 @@ namespace Game {
       })
     }
 
-    private setGame(game: Games.Game) {
-      this.game = game;
-      this.isMatchInProgress = Games.hasMatchInProgress(game)
+    private setGame(game: Api.Game) {
+      this.game = Games.setupGamePlayerMaps(game)
+      this.isMatchInProgress = Games.hasMatchInProgress(this.game)
       const currentMatchIndex = _.size(this.game.matchs)
       if (this.isMatchInProgress) {
         this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
@@ -750,7 +751,7 @@ namespace Game {
       }
 
       this.suggestionRequestCount++
-      const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
+      const handCards = this.game.currentMatch.matchCards.byPlayer.get(this.player).hand
       const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
       const analizedActions = Matchs.Engine.analizeActions(possibleTakeActions, this.game.currentMatch)
       this.possibleTakeActions = analizedActions.possibleActions;
@@ -789,7 +790,7 @@ namespace Game {
     }
 
     private performAnAutomaticDropAction() {
-      const handCards = this.game.currentMatch.matchCards.byPlayer[Players.generateUniqueKey(this.player)].hand
+      const handCards = this.game.currentMatch.matchCards.byPlayer.get(this.player).hand
       if (handCards.length > 0) {
         this.selectedHandCard = handCards[0]
         this.performDropAction();
@@ -797,7 +798,6 @@ namespace Game {
     }
 
     public isPlayerGameOwner = Games.isPlayerOwner
-    public playerToUniqueKey = Players.generateUniqueKey // interesting case! both names are pretty same. the player context is provivded by the leading namespace or the inclusion in the name's identifier
     public extractPlayerName = Players.extractName
     public hasGameStarted = Games.isStarted
   }

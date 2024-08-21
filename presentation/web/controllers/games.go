@@ -431,6 +431,7 @@ func BindClientWebSocketToGame(response http.ResponseWriter, request *http.Reque
 		return
 	}
 	services.GameWebSockets.BindClientWebSocketToGame(response, request, gameId)
+	response.WriteHeader(http.StatusOK)
 }
 
 func UnbindClientWebSocketInGame(response http.ResponseWriter, request *http.Request) {

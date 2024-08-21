@@ -52,10 +52,10 @@
   <div class="section player-list-section">
     <h3>Jugadores</h3>
     <!-- the check performed at Games.addPlayer at joining a game ensures that won't be two players with the same name, but they could share it and they will actually share the player -->
-    <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.name">
-      <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : ctr.currentTurnPlayer.name === player.name}">{{player.name}}</span></span> <!-- TODO: now game players have id, USE ID to avoid a clash! -->
+    <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.id">
+      <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : (ctr.currentTurnPlayer.id === player.id)}">{{player.name}}</span></span>
       <span ng-if="ctr.isPlayerGameOwner(ctr.game,player)" style="font-size: 2rem;">🪑</span>
-      <i ng-if="ctr.currentTurnPlayer.name === player.name && !ctr.isPlayerTurn">⏱️: {{ctr.remainingSecondsToPerformAction}}</i>
+      <i ng-if="(ctr.currentTurnPlayer.id === player.id) && !ctr.isPlayerTurn">⏱️: {{ctr.remainingSecondsToPerformAction}}</i>
       <span style="width: 10px;"></span>
       <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
       <div ng-show="ctr.player.name != player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
@@ -63,7 +63,7 @@
        <img ng-show="peekPlayer" src="/presentation/web/assets/images/eyes_closed.png" height="20px">
       </div>
       <div ng-if="ctr.isMatchInProgress && peekPlayer" class="player-action">
-        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayerUniqueKey[ctr.playerToUniqueKey(player)]">
+        <div ng-repeat="action in ctr.game.currentMatch.actionsByPlayer.get(player)">
           <player-action ng-if="$last" order="$index" ng-model="action"></player-action>
         </div>
       </div>
@@ -104,7 +104,7 @@
           <div class="title">En mano</div>
           <countdown-clock handler="ctr.countdownHandler" total-seconds="ctr.secondsToPerformAction" refresh-rate-in-milis="500" on-end="ctr.onEndCountdown()"></countdown-clock>
           <div class="cards">
-            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayer[ctr.playerToUniqueKey(ctr.player)].hand">
+            <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayer.get(ctr.player).hand">
               <input ng-if="ctr.isPlayerTurn" type="radio" ng-model="ctr.selectedHandCard" ng-value="card">
               <card ng-model="card" ng-click="ctr.isPlayerTurn && (ctr.selectedHandCard = card)"></card>
             </div>
@@ -142,7 +142,7 @@
       <div class="taken-cards-container" ng-show="ctr.isMatchInProgress" ng-if="showTakenCards">
         <h3>Cartas tomadas</h3>
         <div class="taken-cards-section">
-          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayer[ctr.playerToUniqueKey(ctr.player)].taken">
+          <div class="card" ng-repeat="card in ctr.game.currentMatch.matchCards.byPlayer.get(ctr.player).taken">
             <card ng-model="card"></card>
           </div>
         </div>
@@ -152,7 +152,7 @@
       <div class="player-actions-container" ng-show="ctr.isMatchInProgress" ng-if="showPlayerActions">
         <h3>Acciones</h3>
         <div class="player-actions-section">
-          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayerUniqueKey[ctr.playerToUniqueKey(ctr.player)]">
+          <div class="player-action" ng-repeat="playerAction in ctr.game.currentMatch.actionsByPlayer.get(ctr.player)">
             <player-action order="$index" ng-model="playerAction"></player-action>
           </div>
         </div>

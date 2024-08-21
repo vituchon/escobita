@@ -13,7 +13,29 @@ namespace Players {
     return playerKey?.split?.(playerFieldSeparator)?.[1]
   }
 
-  export interface Player extends Api.Player {  // TODO : analyse if this approach is worty...
+  export interface Player extends Api.Player {
+  }
+
+  // a decorated object that facilitates access an object used as map, transforim the player into a key using the transformation function "generateUniqueKey"
+  export class MapByPlayer<T> {
+    private map: { [key: string]: T } = {};
+
+    constructor(object: { [key: string]: T }) {
+      if (Util.isDefined(object)) {
+        const props = Object.getOwnPropertyNames(object)
+        _.forEach(props,(prop) => {
+          this.map[prop] = object[prop]
+        })
+      }
+    }
+
+    public set(player: Player, data: T): void {
+      this.map[generateUniqueKey(player)] = data;
+    }
+
+    public get(player: Player): T | undefined {
+      return this.map[generateUniqueKey(player)];
+    }
   }
 
   export class Service {

@@ -2,7 +2,10 @@
 
 namespace Games {
 
-  export interface Game extends Api.Game {  // TODO : analyse if this approach is worty...
+  export interface Game extends Api.Game {
+    matchs?: Matchs.Match[]; // previous played matchs
+    currentMatch?: Matchs.Match;
+    hasPlayerMaps: boolean;
   }
 
   export function hasMatchInProgress(game :Game) : boolean {
@@ -18,11 +21,7 @@ namespace Games {
   }
 
   export function isPlayerOwner(game :Game, player: Players.Player) {
-    if (Util.isDefined(player.id)) {
-      return player.id === game.owner.id
-    } else {
-      return player.name === game.owner.name // Dev notes (Loop hole here!) : recall that in a game players MUST have different names...
-    }
+    return player.id === game.owner.id
   }
 
   export function hasPlayerJoin(game :Game, player: Players.Player) {
@@ -73,32 +72,62 @@ namespace Games {
       text: text,
     }
   }
+
+  function isGameWithPlayerMaps(game: Api.Game): game is Game {
+    return (game as Game).hasPlayerMaps !== undefined;
+  }
+
+  export function setupGamePlayerMaps(game: Api.Game): Game {
+    if (isGameWithPlayerMaps(game)) {
+      return game;
+    }
+
+    if (Util.isDefined(game.currentMatch)) {
+      setupMatchPlayerMaps(game.currentMatch)
+    }
+
+    if (_.size(game.matchs) > 0) {
+      for (let i = 0; i < game.matchs.length; i++) {
+        setupMatchPlayerMaps(game.matchs[i])
+      }
+    }
+    return _.extend(game, { hasPlayerMaps : true }) // mark as converted in order to avoid converting again
+  }
+
+  function setupMatchPlayerMaps(match: Api.Match) {
+    match.actionsByPlayer = <any> new Players.MapByPlayer<Api.PlayerAction>(match.actionsByPlayer)
+    match.matchCards.byPlayer = <any> new Players.MapByPlayer<Api.PlayerMatchCards>(match.matchCards.byPlayer)
+  }
+
   export class Service {
     constructor(private $http: ng.IHttpService, private $q: ng.IQService) {
     }
 
-    // TODO: remove Game or Games letters from these methods, as Games. provides already context (avoid slutering)
     getGames(): ng.IPromise<Game[]> {
-      return this.$http.get<Game[]>(`/api/v1/games`).then((response) => {
-        return response.data;
+      return this.$http.get<Api.Game[]>(`/api/v1/games`).then((response) => {
+        const games = response.data
+        return _.map(games,(game) => setupGamePlayerMaps(game))
       });
     }
 
     getGameById(gamesId: number): ng.IPromise<Game> {
-      return this.$http.get<Game>(`/api/v1/games/${gamesId}`).then((response) => {
-        return response.data;
+      return this.$http.get<Api.Game>(`/api/v1/games/${gamesId}`).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       });
     }
 
-    createGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games`,game).then((response) => {
-        return response.data
+    createGame(game: Api.Game): ng.IPromise<Game> {
+      return this.$http.post<Api.Game>(`/api/v1/games`,game).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       })
     }
 
     /*updateGame(game: Game): ng.IPromise<Game> {
-      return this.$http.put<Game>(`/api/v1/games/${game.id}`,game).then((response) => {
-        return response.data
+      return this.$http.put<Api.Game>(`/api/v1/games/${game.id}`,game).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       })
     }*/
 
@@ -112,26 +141,30 @@ namespace Games {
     }
 
     startGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/start`, undefined).then((response) => {
-        return response.data
+      return this.$http.post<Api.Game>(`/api/v1/games/${game.id}/start`,game).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       })
     }
 
     joinGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/join`,undefined).then((response) => {
-        return response.data
+      return this.$http.post<Api.Game>(`/api/v1/games/${game.id}/join`,undefined).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       })
     }
 
     quitGame(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/quit`,undefined).then((response) => {
-        return response.data
+      return this.$http.post<Api.Game>(`/api/v1/games/${game.id}/quit`,undefined).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       })
     }
 
     addComputerPlayer(game: Game): ng.IPromise<Game> {
-      return this.$http.post<Game>(`/api/v1/games/${game.id}/add-computer`,undefined).then((response) => {
-        return response.data
+      return this.$http.post<Api.Game>(`/api/v1/games/${game.id}/add-computer`,undefined).then((response) => {
+        const game = response.data
+        return setupGamePlayerMaps(game)
       })
     }
 
@@ -159,21 +192,15 @@ namespace Games {
     }
 
     bindWebSocket(id: number) {
-      return this.$http.get<Game>(`/api/v1/games/${id}/bind-ws`).then((response) => {
-        return response.data;
-      });
+      return this.$http.get(`/api/v1/games/${id}/bind-ws`)
     }
 
     unbindWebSocket(id: number) {
-      return this.$http.get<Game>(`/api/v1/games/${id}/unbind-ws`).then((response) => {
-        return response.data;
-      });
+      return this.$http.get(`/api/v1/games/${id}/unbind-ws`)
     }
 
     sendMessage(msg: VolatileMessage) {
-      return this.$http.post<Game>(`/api/v1/games/${msg.gameId}/message`, msg).then((response) => {
-        return response.data
-      })
+      return this.$http.post<void>(`/api/v1/games/${msg.gameId}/message`, msg)
     }
   }
 
