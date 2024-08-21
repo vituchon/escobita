@@ -329,7 +329,7 @@ namespace Game {
     public countdownHandler: CountdownClock.Handler = null;
 
     // used for others player turn
-    public secondsToPerformAction: number = 200;
+    public secondsToPerformAction: number = 20;
     public remainingSecondsToPerformAction: number = 0;
     private countdownInterval: ng.IPromise<any>;
 
