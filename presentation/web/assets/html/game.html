@@ -52,10 +52,10 @@
   <div class="section player-list-section">
     <h3>Jugadores</h3>
     <!-- the check performed at Games.addPlayer at joining a game ensures that won't be two players with the same name, but they could share it and they will actually share the player -->
-    <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.name">
-      <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : ctr.currentTurnPlayer.name === player.name}">{{player.name}}</span></span> <!-- TODO: now game players have id, USE ID to avoid a clash! -->
+    <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.id">
+      <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : (ctr.currentTurnPlayer.id === player.id)}">{{player.name}}</span></span>
       <span ng-if="ctr.isPlayerGameOwner(ctr.game,player)" style="font-size: 2rem;">🪑</span>
-      <i ng-if="ctr.currentTurnPlayer.name === player.name && !ctr.isPlayerTurn">⏱️: {{ctr.remainingSecondsToPerformAction}}</i>
+      <i ng-if="(ctr.currentTurnPlayer.id === player.id) && !ctr.isPlayerTurn">⏱️: {{ctr.remainingSecondsToPerformAction}}</i>
       <span style="width: 10px;"></span>
       <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
       <div ng-show="ctr.player.name != player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">
