@@ -51,10 +51,10 @@ func (repo *GamesMemoryRepository) CreateGame(game PersistentGame) (created *Per
 	}
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	nextId := repo.idSequence + 1
-	game.Id = &nextId
+	nextId := repo.idSequence + 1 // need to copy repo.idSequence in another place (nextId), also added plus one to increment the sequence current number...
+	game.Id = &nextId             // ...that place (nextId) will work as reference...
 	repo.gamesById[nextId] = game
-	repo.idSequence++ // can not reference idSequence as each update would increment all the games Id by id (thus all will be the same)
+	repo.idSequence++ // ...if it is used idSequence as a reference, then each update would increment all the games Id by 1 (actually all game.Id will point to the same thing)
 	repo.gamesCreatedByPlayerId[game.Owner.Id]++
 	return &game, nil
 }

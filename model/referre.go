@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -8,28 +10,20 @@ import (
 
 var EscobitaRanks []Rank = aggregateRanks(Ranks[:7], Ranks[9:])
 
-// creates the match and prepare it for play
-// do note that the initial cards are laydown at moment 0 and not at round one!
-func CreateAndBegins(players []Player) Match {
-	match := CreateMatch(players)
-	match.Begins()
-	return match
-}
-
 func CreateMatch(players []Player) Match {
 	var deck Deck = NewDeck(Suits, EscobitaRanks)
 	return newMatch(players, deck)
 }
 
 // performs the initial lay down of cards and select the initial player so the match is ready to begin
-func (match *Match) Begins() {
+func (match *Match) Prepare() {
 	shuffle(match.Cards.Left)
 	match.Cards.Board = copyDeck(match.Cards.Left[:4])
 	match.Cards.Left = match.Cards.Left[4:]
 	match.FirstPlayerIndex = rand.Intn(len(match.Players))
 }
 
-// finalizes the match grating the left cards to the last taker
+// Ends the match grating the left cards to the last taker
 func (match *Match) Ends() {
 	if len(match.Cards.Board) > 0 {
 		player := match.getLastCardTaker()
@@ -60,7 +54,11 @@ func (match Match) getLastCardTaker() *Player {
 
 // Performs cards take from board using a hand card.
 // It is assumed that the combination of cards is valid (sums 15)
-func (match *Match) Take(action PlayerTakeAction) PlayerAction {
+func (match *Match) Take(action PlayerTakeAction) (PlayerAction, error) {
+	if action.Player.Id != match.CurrentRound.CurrentTurnPlayer.Id {
+		errMsg := fmt.Sprintf("Can not perform take action: it is not player(id='%d') turn", action.Player.Id)
+		return nil, errors.New(errMsg)
+	}
 	player := action.Player
 	match.Cards.Board.Without(action.BoardCards...)
 	matchPlayerCards := match.Cards.ByPlayer[player]
@@ -72,11 +70,15 @@ func (match *Match) Take(action PlayerTakeAction) PlayerAction {
 	action.Is_Escobita = isEscobita
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
-	return action
+	return action, nil
 }
 
 // Performs a card drop
-func (match *Match) Drop(action PlayerDropAction) PlayerAction {
+func (match *Match) Drop(action PlayerDropAction) (PlayerAction, error) {
+	if action.Player.Id != match.CurrentRound.CurrentTurnPlayer.Id {
+		errMsg := fmt.Sprintf("Can not perform take action: it is not player(id='%d') turn", action.Player.Id)
+		return nil, errors.New(errMsg)
+	}
 	player := action.Player
 	match.Cards.Board = append(match.Cards.Board, action.HandCard)
 	matchPlayerCards := match.Cards.ByPlayer[player]
@@ -84,7 +86,21 @@ func (match *Match) Drop(action PlayerDropAction) PlayerAction {
 	match.Cards.ByPlayer[player] = matchPlayerCards
 	match.ActionsByPlayer[player] = append(match.ActionsByPlayer[player], action)
 	match.ActionsLog = append(match.ActionsLog, action)
-	return action
+	return action, nil
+}
+
+var ActionNotRecoignizedErr = errors.New("Not a valid action to perform in a match")
+
+// Performs an action over the match
+func (match *Match) Apply(playerAction PlayerAction) (PlayerAction, error) {
+	switch playerConcreteAction := playerAction.(type) {
+	case PlayerTakeAction:
+		return match.Take(playerConcreteAction)
+	case PlayerDropAction:
+		return match.Drop(playerConcreteAction)
+	default:
+		return nil, ActionNotRecoignizedErr
+	}
 }
 
 // Deal cards to each player for starting a new round

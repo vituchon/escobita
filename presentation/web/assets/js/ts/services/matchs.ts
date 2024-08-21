@@ -22,27 +22,27 @@ namespace Matchs {
       return sumValues(boardCards.concat(handCard)) == 15
     }
 
-    export interface PositionByPlayerName extends _.Dictionary<number> {
-      [name:string]: number;
+    export interface PositionByPlayerUniqueKey extends _.Dictionary<number> {
+      [uniqueKey:string]: number;
     }
 
     interface PlayerScore {
-      name: string,
+      playerKey: string,
       score: number,
     }
 
-    export function calculatePositionByPlayerName(stats: Api.ScoreSummaryByPlayerName): PositionByPlayerName {
-      const asArray: PlayerScore[] = _.map(stats,(summary,playerName) => {
+    export function calculatePositionByPlayerUniqueKey(stats: Api.ScoreSummaryByPlayerUniqueKey): PositionByPlayerUniqueKey {
+      const asArray: PlayerScore[] = _.map(stats,(summary,playerKey) => {
         return {
-          name: playerName,
+          playerKey: playerKey,
           score: summary.score,
         }
       })
       const sorted = _.sortBy(asArray,(elem) => -elem.score) // sort desc so the higher score goes in "first"
       const asMap = _.reduce(sorted,(acc, playerScore, index) => {
-        acc[playerScore.name] = index
+        acc[playerScore.playerKey] = index
         return acc
-      },<PositionByPlayerName>{})
+      },<PositionByPlayerUniqueKey>{})
       return asMap
     }
   }
@@ -179,9 +179,9 @@ namespace Matchs {
     function calculateTakeActionSymbolicScore(action: Api.PlayerTakeAction, match: Api.Match) {
       const employedCards = action.boardCards.concat(action.handCard)
 
-      const seventiesSymbolicScore = coundSevenRankCards(employedCards) * 3
+      const seventiesSymbolicScore = countSevenRankCards(employedCards) * 3
 
-      const goldenSuitCardsSymbolicScore = coundGoldenSuitCards(employedCards) * 2
+      const goldenSuitCardsSymbolicScore = countGoldenSuitCards(employedCards) * 2
       const goldSevenSymbolicScore = (determineIsGoldenSevenIsUsed(employedCards) ? 1: 0) * 10
 
       const isEscobita = _.size(match.matchCards.board) === _.size(action.boardCards)
@@ -195,13 +195,13 @@ namespace Matchs {
       return Util.isDefined(card) ? true : false
     }
 
-    function coundSevenRankCards(cards: Api.Card[])  {
+    function countSevenRankCards(cards: Api.Card[])  {
       return cards.reduce((acc,card) => {
         return acc + (Cards.isSevenRank(card) ? 1 : 0)
       }, 0)
     }
 
-    function coundGoldenSuitCards(cards: Api.Card[])  {
+    function countGoldenSuitCards(cards: Api.Card[])  {
       return cards.reduce((acc,card) => {
         return acc + (Cards.isGoldenSuit(card) ? 1 : 0)
       }, 0)

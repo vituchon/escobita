@@ -3,23 +3,16 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/vituchon/escobita/model"
 
-	"github.com/gorilla/sessions"
+	"github.com/vituchon/escobita/presentation/web/services"
 	"github.com/vituchon/escobita/repositories"
 )
 
 var playersRepository repositories.Players = repositories.NewPlayersMemoryRepository()
 
 // PLAYERS
-
-func getWebPlayerId(request *http.Request) int {
-	clientSession := request.Context().Value("clientSession").(*sessions.Session)
-	wrappedInt, _ := clientSession.Values["clientId"]
-	return wrappedInt.(int)
-}
 
 func GetPlayers(response http.ResponseWriter, request *http.Request) {
 	players, err := playersRepository.GetPlayers()
@@ -33,7 +26,7 @@ func GetPlayers(response http.ResponseWriter, request *http.Request) {
 
 // Gets the web client's correspondant player (There is only ONE player per client!)
 func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
-	id := getWebPlayerId(request)
+	id := services.GetWebPlayerId(request)
 	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
 		if err == repositories.EntityNotExistsErr {
@@ -54,14 +47,14 @@ func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
 				response.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			log.Printf("Creating new player %+v \n", player)
+			log.Printf("Creating new player %+v for ip=%s\n", player, request.RemoteAddr)
 		} else {
 			log.Printf("error while getting client player : '%v'", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	} else {
-		log.Printf("Using existing player %+v \n", player)
+		log.Printf("Using existing player %+v for ip=%s \n", player, request.RemoteAddr)
 	}
 	WriteJsonResponse(response, http.StatusOK, player)
 }
@@ -79,10 +72,9 @@ func createPlayer(id int, name string) (*repositories.PersistentPlayer, error) {
 }
 
 func GetPlayerById(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -117,10 +109,9 @@ func UpdatePlayer(response http.ResponseWriter, request *http.Request) {
 }
 
 func DeletePlayer(response http.ResponseWriter, request *http.Request) {
-	paramId := RouteParam(request, "id")
-	id, err := strconv.Atoi(paramId)
+	id, err := ParseRouteParamAsInt(request, "id")
 	if err != nil {
-		log.Printf("Can not parse id from '%s'", paramId)
+		log.Println(err)
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}

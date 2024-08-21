@@ -8,7 +8,7 @@ import (
 
 type Match struct {
 	Players          []Player        `json:"players"`
-	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayerName"`  // dev notes (TODO): The map uses the id+name... not only name, shall I change the name?
+	ActionsByPlayer  ActionsByPlayer `json:"actionsByPlayer"`
 	ActionsLog       PlayerActions   `json:"playerActions"`
 	Cards            MatchCards      `json:"matchCards"`
 	FirstPlayerIndex int             `json:"firstPlayerIndex"`
@@ -20,7 +20,7 @@ type Match struct {
 }
 
 func newMatch(players []Player, deck Deck) Match {
-	totalTurns := len(deck) - 4 // it should be 36, but in the tests is lower because i employ an small deck
+	totalTurns := len(deck) - 4 // it should be 36, but in the tests is lower because I employ an small deck, so this formula works for both cases (real life and test life)
 	match := Match{
 		Players:          players,
 		ActionsByPlayer:  newActionsByPlayer(players),
@@ -61,6 +61,7 @@ func (actions *PlayerActions) UnmarshalJSON(b []byte) error {
 	var parsedActions []PlayerAction
 	for _, rawAction := range rawActions {
 		_, hasBoardCardsField := rawAction["boardCards"] // if it contains board cards then is take action, else is a drop action. Recall that there aren't more actions.
+		// TODO (&& dev notes): [IMPORTANT LESSON HERE] perhaps it is convenient to use "kind"/"type"/"discriminator" in the base struct... as the data eventually gets stringified and I guess there is no other way to figure out a hierarchical relation
 		if hasBoardCardsField {
 			var takeAction PlayerTakeAction = parsePlayerTakeAction(rawAction)
 			parsedActions = append(parsedActions, takeAction)
@@ -135,7 +136,7 @@ func newActionsByPlayer(players []Player) ActionsByPlayer {
 type MatchCards struct {
 	Board    Deck                        `json:"board"` // the cards on the table that anyone can reclaim
 	Left     Deck                        `json:"left"`  // the remaining cards to play in the rest of the match
-	ByPlayer map[Player]PlayerMatchCards `json:"byPlayerName"`  // dev notes (TODO): The map uses the id+name... not only name, shall I change the name?
+	ByPlayer map[Player]PlayerMatchCards `json:"byPlayer"`
 }
 
 func newMatchCards(players []Player, deck Deck) MatchCards {

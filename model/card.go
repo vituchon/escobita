@@ -15,7 +15,19 @@ type Card struct {
 
 func (s Card) String() string {
 	//return "(id=" + strconv.Itoa(s.Id) + ",value=" + strconv.Itoa(determineValue(s)) + ") " + s.Suit.String() + "," + strconv.Itoa(s.Rank)
-	return s.Suit.String() + "," + strconv.Itoa(s.Rank)
+	return s.Suit.String() + "#" + strconv.Itoa(s.Rank) + "(id=" + strconv.Itoa(s.Id) + ")"
+}
+
+func (card Card) IsGoldenSeven() bool {
+	return card.IsSevenRank() && card.IsGoldenSuit()
+}
+
+func (card Card) IsGoldenSuit() bool {
+	return card.Suit == GOLD
+}
+
+func (card Card) IsSevenRank() bool {
+	return card.Rank == 7
 }
 
 // The suit that a card belongs to
@@ -142,7 +154,7 @@ func NewDeck(suits []Suit, ranks []Rank) Deck {
 }
 
 func copyDeck(original Deck) (replica Deck) {
-	replica = make(Deck, len(original), len(original))
+	replica = make(Deck, len(original))
 	copy(replica, original)
 	return
 }

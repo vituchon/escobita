@@ -26,9 +26,10 @@ func (match Match) CalculateStatictics(player Player) PlayerStatictics {
 func (match Match) doCalculateStatictics(player Player) PlayerStatictics {
 	cardsTakenCount := countCardsTaken(player, match)
 	escobitasCount := countEscobitas(player, match)
-	seventiesScore := calculateSeventiesScore(match.Cards.ByPlayer[player].Taken)
-	hasGoldSeven := hasGoldSeven(player, match)
-	goldCardsCount := countGoldCards(player, match)
+	playerTakenCards := match.Cards.ByPlayer[player].Taken
+	seventiesScore := calculateSeventiesScore(playerTakenCards)
+	hasGoldSeven := DetermineIsGoldenSevenIsUsed(playerTakenCards)
+	goldCardsCount := CountGoldenSuitCards(playerTakenCards)
 
 	ps := PlayerStatictics{
 		CardsTakenCount: cardsTakenCount,
@@ -76,20 +77,29 @@ func calculateSeventiesScore(cards Deck) int {
 	return score
 }
 
-func hasGoldSeven(player Player, match Match) bool {
-	for _, card := range match.Cards.ByPlayer[player].Taken {
-		if card.Rank == 7 && card.Suit == GOLD {
+func DetermineIsGoldenSevenIsUsed(cards []Card) bool {
+	for _, card := range cards {
+		if card.IsGoldenSeven() {
 			return true
 		}
 	}
 	return false
 }
 
-func countGoldCards(player Player, match Match) (score int) {
-	for _, card := range match.Cards.ByPlayer[player].Taken {
-		score += boolToInt[card.Suit == GOLD]
+func CountSevenRankCards(cards []Card) int {
+	count := 0
+	for _, card := range cards {
+		count += boolToInt[card.IsSevenRank()]
 	}
-	return
+	return count
+}
+
+func CountGoldenSuitCards(cards []Card) int {
+	count := 0
+	for _, card := range cards {
+		count += boolToInt[card.IsGoldenSuit()]
+	}
+	return count
 }
 
 type Tracker struct {

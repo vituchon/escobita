@@ -149,3 +149,54 @@ namespace Arrays {
     }
   }
 }
+
+namespace Sounds {
+  export enum Clips {
+    GameAction1,
+    GameAction2,
+    Welcome,
+    GameMessage,
+    BroadcastMessage,
+  };
+
+  const filenameByClip: _.Dictionary<string> = Object.freeze({
+    [Clips.GameAction1] : "game-action-1.mp3",
+    [Clips.GameAction2] : "game-action-2.mp3",
+    [Clips.Welcome] : "welcome.mp3",
+    [Clips.GameMessage] : "game-message.mp3",
+    [Clips.BroadcastMessage] : "broadcast-message.mp3",
+  });
+
+
+  const audioByClip: _.Dictionary<HTMLAudioElement> = {}
+  function loadSounds() {
+    const commonPath = "/presentation/web/assets/sounds/"
+    const clips =  Object.keys(Clips).filter((v) => !isNaN(Number(v)))
+    clips.forEach((clip) => {
+      const filename = filenameByClip[clip]
+      const fullpath = commonPath + filename
+      audioByClip[clip] = new Audio(fullpath);
+    })
+  }
+  loadSounds();
+
+  export function playWelcome() {
+    audioByClip[Clips.Welcome].play();
+  }
+
+  export function playGameMessage() {
+    audioByClip[Clips.GameMessage].play();
+  }
+
+  export function playBroadcastMessage() {
+    audioByClip[Clips.BroadcastMessage].play();
+  }
+
+  export function playAnAction() {
+    const rand = Math.floor(Math.random() * 2)
+    audioByClip[rand].play(); // rand will be between 0 and 1, and those slots intentionally belongs to action sounds
+  }
+
+
+
+}

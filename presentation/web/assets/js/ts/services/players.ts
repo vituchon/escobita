@@ -5,10 +5,15 @@ namespace Players {
 
   // Dev notes: Would be the client side function of this back side function => model/player.go#MarshalText
   const playerFieldSeparator = "|"
-  export function toMapKey(player: Api.Player) {
+  export function generateUniqueKey(player: Api.Player) {
     return player.id + playerFieldSeparator + player.name
   }
-  export interface Player extends Api.Player {
+
+  export function extractName(playerKey: string): string {
+    return playerKey?.split?.(playerFieldSeparator)?.[1]
+  }
+
+  export interface Player extends Api.Player {  // TODO : analyse if this approach is worty...
   }
 
   // a decorated object that facilitates access an object used as map, transforim the player into a key using the transformation function "toMapKey"

@@ -16,15 +16,15 @@ namespace Game {
         return size;
     }
 
-    export interface FontSizeByPlayerName extends _.Dictionary<number> {
-      [name:string]: number;
+    export interface FontSizeByPlayerUniqueKey extends _.Dictionary<number> {
+      [uniqueKey:string]: number;
     }
 
-    export function calculateFontSizeByPlayerName(positionsByPlayerName: Matchs.Rules.PositionByPlayerName) : FontSizeByPlayerName {
-      return _.reduce(positionsByPlayerName,(acc, position, name) => {
+    export function calculateFontSizeByPlayerUniqueKey(positionsByPlayerUniqueKey: Matchs.Rules.PositionByPlayerUniqueKey) : FontSizeByPlayerUniqueKey {
+      return _.reduce(positionsByPlayerUniqueKey,(acc, position, name) => {
         acc[name] = determineFontSize(position + 1) // position starts at 0
         return acc
-      },<FontSizeByPlayerName>{})
+      },<FontSizeByPlayerUniqueKey>{})
     }
   }
 
@@ -57,7 +57,7 @@ namespace Game {
           "id": 1,
         }
       ],
-      "actionsByPlayerName": {
+      "actionsByPlayer": {
         "1|Betoven": []
       },
       "playerActions": [],
@@ -251,7 +251,7 @@ namespace Game {
             "rank": 5
           }
         ],
-        "byPlayerName": {
+        "byPlayer": {
           "Betoven": {
             "taken": null,
             "hand": [
@@ -302,7 +302,7 @@ namespace Game {
     public game: Games.Game; // the current game
     public player: Players.Player; // the client player
     public isPlayerTurn: boolean = undefined; // initial value because match didn't start, on start a true/false value is assigned
-    public isClientPlayerGameOwner: boolean;
+    public isClientPlayerGameOwner: boolean; // TODO: strip client from the name as it may be superflous
     public currentTurnPlayer: Players.Player; // the player that acts in the current turn
     public messages: Messages.Message[] = []; // persistent messages of this game (retrieved from the server using the previous message Api that works with persistent messages)
     public isBoardCardSelectedById: _.Dictionary<boolean>;
@@ -312,11 +312,11 @@ namespace Game {
     private sendingMessage: boolean = false;
     private allowSendMessage: boolean = true; // avoid message spawn
     public isChatEnabled: boolean = true;
-    private currentFontSizeByPlayerName: UIMessages.FontSizeByPlayerName; // funny font size to use by player name
-    private currentPositionByPlayerName: Matchs.Rules.PositionByPlayerName; // positions by player name
+    private currentFontSizeByPlayerUniqueKey: UIMessages.FontSizeByPlayerUniqueKey; // funny font size to use by player name
+    private currentPositionByPlayerUniqueKey: Matchs.Rules.PositionByPlayerUniqueKey; // positions by player name
 
     public isMatchInProgress: boolean = false;
-    public currentMatchStats: Api.ScoreSummaryByPlayerName;
+    public currentMatchStatsByPlayerUniqueKey: Api.ScoreSummaryByPlayerUniqueKey;
 
     public formatUnixTimestamp = Util.unixToReadableClock
     public translateSuit = Cards.Suits.translate
@@ -324,9 +324,17 @@ namespace Game {
     public loading: boolean = false;
     public displayCardsAsSprites: boolean = true;
 
+    // used for current player turn
+    public countdownHandler: CountdownClock.Handler = null;
+
+    // used for others player turn
+    public secondsToPerformAction: number = 20;
+    public remainingSecondsToPerformAction: number = 0;
+    private countdownInterval: ng.IPromise<any>;
+
     constructor(private $rootElement: ng.IRootElementService, private $rootScope: ng.IRootScopeService, private $scope: ng.IScope, $state: ng.ui.IStateService,
         private gamesService: Games.Service, private webSocketsService: WebSockets.Service, private $timeout: ng.ITimeoutService,
-        private $q: ng.IQService, private $window: ng.IWindowService, private appStateService: AppState.Service) {
+        private $q: ng.IQService, private $window: ng.IWindowService, private $interval: ng.IIntervalService, private appStateService: AppState.Service) {
       this.game = $state.params["game"]// || onGoingGame
       this.player = $state.params["player"]// || player
       this.setGame(this.game)
@@ -407,20 +415,6 @@ namespace Game {
         const displayMode = displayCardsAsSprites ? 'sprite' : 'text'
         this.$rootScope.$broadcast(Cards.changeDisplayModeEventName, displayMode);
       })
-
-      this.$scope.$watch(() => {
-        if (!this.isMatchInProgress) {
-          return undefined
-        }
-        return this.game.currentMatch.currentRound.currentTurnPlayer.name;
-      }, (currentTurnPlayerName, previousTurnPlayerName) => {
-        if (_.isUndefined(previousTurnPlayerName)) {
-          return
-        }
-        if (previousTurnPlayerName !== this.player.name) {
-          this.displayLastAction();
-        }
-      })
     }
 
     private setupUI() {
@@ -438,11 +432,7 @@ namespace Game {
         // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
         if (event.key === 'x') { // helper code for dev purposes
           if (this.isMatchInProgress) {
-            const handCards = this.game.currentMatch.matchCards.byPlayerName.get(this.player).hand
-            if (handCards.length > 0) {
-              this.selectedHandCard = handCards[0]
-              this.performDropAction();
-            }
+            this.performAnAutomaticDropAction()
           }
         }
       };
@@ -498,27 +488,35 @@ namespace Game {
           kind: string,
           data: {
             game: Api.Game,
-            action?: Api.PlayerAction
-            message?: Games.VolatileMessage
+            action?: Api.PlayerAction // drop/quit message
+            message?: Games.VolatileMessage // chat message
+            player?: Api.Player // join/quit message
           };
         } = JSON.parse(event.data)
-        console.log("llega una notificación", notification);
 
         switch (notification.kind) {
           case "drop":
           case "take":
-          case "resume":
+            const isClientOtherPlayer = notification.data.action.player.id !== this.player.id
+            if (isClientOtherPlayer) {
+              this.displayAction(notification.data.action) // is designed to display actions performed by other users
+            }
             this.setGame(notification.data.game)
+            break
+          case "start":
+            this.setGame(notification.data.game) // no need to update UI managed by angular
             break;
-          case "updated":
+          case "join":
+          case "quit":
             this.$timeout(() => {
               this.setGame(notification.data.game)
-            }) // update UI as this.game.players may be updated!
+            }) // need to update  UI managed by angular as this.game.players IS updated!
             break;
           case "game-chat":
             this.displayMessage(notification.data.message)
             break;
           default:
+            console.log("not processing ", notification?.kind)
             break;
         }
       }
@@ -538,21 +536,17 @@ namespace Game {
       const $elem = Toastr.chat(player.name,message.text)
       const fontSize = this.getFontSize(player)
       $(".toasrt-chat-message",$elem).css("font-size", fontSize + "px")
+      Sounds.playGameMessage();
     }
 
-    private displayLastAction() {
+    private displayAction(action: Api.PlayerAction) {
       const options: ToastrOptions = {
         timeOut: 5000,
         toastClass: "toastr-info-action-class",
         closeButton: true,
       }
-      Toastr.info(`${this.generateLastActionDescription()}`, options)
-    }
-
-    private generateLastActionDescription() {
-      const lastActionIndex = _.size(this.game.currentMatch.playerActions) - 1
-      const lastAction = this.game.currentMatch.playerActions[lastActionIndex];
-      return this.generateActionDescription(lastAction);
+      Toastr.info(`${this.generateActionDescription(action)}`, options)
+      Sounds.playAnAction()
     }
 
     private generateActionDescription(action: Api.PlayerAction) {
@@ -635,11 +629,12 @@ namespace Game {
       const selectedBoardCards = this.getSelectedBoardCards()
       const takeAction = Matchs.createTakeAction(this.player,selectedBoardCards,this.selectedHandCard)
       this.loading = true;
+      this.countdownHandler?.cancel?.()
       this.gamesService.performTakeAction(this.game,takeAction).then((data) => {
         if (data.action.isEscobita) {
           Toastr.success("Has hecho escoba! 🥳")
         }
-        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
+        //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.isBoardCardSelectedById = {}
@@ -667,11 +662,11 @@ namespace Game {
     }
 
     public performDropAction() {
-      const selectedBoardCards = this.getSelectedBoardCards() // TODO: remove this line
       const dropAction = Matchs.createDropAction(this.player,this.selectedHandCard)
       this.loading = true;
+      this.countdownHandler?.cancel?.()
       this.gamesService.performDropAction(this.game,dropAction).then((data) => {
-        //return this.setGame(data.game) // don't need to refresh as this clients gets notified via ws
+        //this.setGame(data.game) // don't need to refresh as this client gets notified via ws
       }).finally(() => {
         this.selectedHandCard = undefined
         this.loading = false;
@@ -679,12 +674,25 @@ namespace Game {
     }
 
     private setGame(game: Games.Game) {
-      this.game = game;
+      this.game = Games.setupGamePlayerMaps(game)
       this.isMatchInProgress = Games.hasMatchInProgress(game)
       const currentMatchIndex = _.size(this.game.matchs)
       if (this.isMatchInProgress) {
         this.currentTurnPlayer = this.game.currentMatch.currentRound.currentTurnPlayer;
         this.isPlayerTurn = Rounds.isPlayerTurn(this.game.currentMatch.currentRound,this.player)
+        this.$interval.cancel(this.countdownInterval);
+        if (this.isPlayerTurn) {
+          this.countdownHandler?.start?.();
+        } else {
+          this.remainingSecondsToPerformAction = this.secondsToPerformAction
+          this.countdownInterval = this.$interval(() => {
+            if (this.remainingSecondsToPerformAction > 0) {
+              this.remainingSecondsToPerformAction--;
+            } else {
+              this.$interval.cancel(this.countdownInterval);
+            }
+          }, 1000);
+        }
         return this.updateGameStats(currentMatchIndex).then(() => {
           return this.game
         })
@@ -708,18 +716,18 @@ namespace Game {
 
     private updateGameStats(matchIndex: number) {
       return this.gamesService.calculateStatsByGameId(this.game.id,matchIndex).then((stats) => {
-        this.currentMatchStats = stats;
-        this.currentPositionByPlayerName = Matchs.Rules.calculatePositionByPlayerName(stats)
-        this.currentFontSizeByPlayerName = UIMessages.calculateFontSizeByPlayerName(this.currentPositionByPlayerName)
+        this.currentMatchStatsByPlayerUniqueKey = stats;
+        this.currentPositionByPlayerUniqueKey = Matchs.Rules.calculatePositionByPlayerUniqueKey(stats)
+        this.currentFontSizeByPlayerUniqueKey = UIMessages.calculateFontSizeByPlayerUniqueKey(this.currentPositionByPlayerUniqueKey)
         return stats
       })
     }
 
     public getFontSize(player: Players.Player) {
-      if (_.isEmpty(this.currentFontSizeByPlayerName)) {
+      if (_.isEmpty(this.currentFontSizeByPlayerUniqueKey)) {
         return UIMessages.minFontSize;
       } else {
-        return this.currentFontSizeByPlayerName[Players.toMapKey(player)]
+        return this.currentFontSizeByPlayerUniqueKey[Players.generateUniqueKey(player)]
       }
     }
 
@@ -741,15 +749,15 @@ namespace Game {
         boardCards = Matchs.Engine.getMostImportantCards(boardCards, 8)
       }
 
-      this.loading = true;
       this.suggestionRequestCount++
-      const handCards = this.game.currentMatch.matchCards.byPlayerName[Players.toMapKey(this.player)].hand
+      const handCards = this.game.currentMatch.matchCards.byPlayer.get(this.player).hand
       const possibleTakeActions = Matchs.Engine.calculatePossibleTakeActions(boardCards, handCards, this.player)
       const analizedActions = Matchs.Engine.analizeActions(possibleTakeActions, this.game.currentMatch)
       this.possibleTakeActions = analizedActions.possibleActions;
       this.recomendedTakeActionTakeAction = analizedActions.recomendedAction;
 
       this.playerMessage.text = "Soy 💩 y pido sugerencias al escoba master";
+      this.loading = true;
       this.doSendAndCleanMessage(this.playerMessage).finally(() => {
         this.loading = false;
       })
@@ -765,9 +773,33 @@ namespace Game {
       dialog.close();
     }
 
+    public botCount: number = 0
+    public addComputerPlayer(game: Games.Game) {
+      this.loading = true;
+      this.gamesService.addComputerPlayer(game).then(() => {
+        Toastr.info("Computer added")
+        this.botCount++
+      }).finally(() => {
+        this.loading = false;
+      })
+    }
+
+    public onEndCountdown() {
+      this.performAnAutomaticDropAction()
+    }
+
+    private performAnAutomaticDropAction() {
+      const handCards = this.game.currentMatch.matchCards.byPlayer.get(this.player).hand
+      if (handCards.length > 0) {
+        this.selectedHandCard = handCards[0]
+        this.performDropAction();
+      }
+    }
+
     public isPlayerGameOwner = Games.isPlayerOwner
-    public playerToMapKey = Players.toMapKey
+    public extractPlayerName = Players.extractName
+    public hasGameStarted = Games.isStarted
   }
 
-  escobita.controller('GameController', ['$rootElement','$rootScope','$scope','$state', 'GamesService', 'WebSocketsService', '$timeout', '$q', '$window', 'AppStateService', Controller]);
+  escobita.controller("GameController", ["$rootElement","$rootScope","$scope","$state", "GamesService", "WebSocketsService", "$timeout", "$q", "$window", "$interval", "AppStateService", Controller]);
 }

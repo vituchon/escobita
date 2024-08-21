@@ -13,15 +13,14 @@ namespace Api {
     name: string;
   }
 
-  export interface MapByPlayer<T> extends _.Dictionary<T> {
-    [key:string]: T | any;
+  export interface MapByPlayer<T> {
     set(player: Player, data: T): void
     get(player: Player): T
   }
 
   export interface Match {
     players?: Player[];
-    actionsByPlayerName: MapByPlayer<Api.PlayerAction>;
+    actionsByPlayer: MapByPlayer<Api.PlayerAction>;
     playerActions: PlayerAction[];
     matchCards: MatchCards;
     firstPlayerIndex: number;
@@ -44,10 +43,6 @@ namespace Api {
     currentMatch?: Match;
   }
 
-  export interface ActionsByPlayerName extends _.Dictionary<PlayerAction> {
-    [name:string]: PlayerAction;
-  }
-
   interface BasePlayerAction {
     player: Player;
   }
@@ -55,11 +50,11 @@ namespace Api {
   export interface MatchCards {
     board?: Card[];
     left: Card[];
-    byPlayerName: MapByPlayer<PlayerMatchCards>;
+    byPlayer: MapByPlayer<PlayerMatchCards>;
   }
 
-  export interface MatchCardsByPlayerName extends _.Dictionary<PlayerMatchCards> {
-    [name:string]: PlayerMatchCards;
+  export interface MatchCardsByPlayerUniqueKey extends _.Dictionary<PlayerMatchCards> {
+    [uniqueKey:string]: PlayerMatchCards;
   }
 
   export interface PlayerMatchCards {
@@ -93,8 +88,8 @@ namespace Api {
       statictics: PlayerStatictics;
   }
 
-  export interface ScoreSummaryByPlayerName extends _.Dictionary<PlayerScoreSummary> {
-    [name:string]: PlayerScoreSummary;
+  export interface ScoreSummaryByPlayerUniqueKey extends _.Dictionary<PlayerScoreSummary> {
+    [uniqueKey:string]: PlayerScoreSummary;
   }
 
   export interface Message {

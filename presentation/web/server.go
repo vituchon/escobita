@@ -70,7 +70,7 @@ func StartServer() {
 		log.Printf("Unexpected error while retrieving cookie store key: %v", err)
 		return
 	}
-	controllers.NewSessionStore(key)
+	controllers.InitSessionStore(key)
 
 	router := buildRouter()
 	server := &http.Server{
@@ -101,7 +101,12 @@ func buildRouter() *mux.Router {
 	// AFTER go:embed
 	/*assetsFileServer := http.FileServer(http.FS(assets))
 	assetsRouter := router.PathPrefix("/presentation/web/assets").Subrouter()
-	assetsRouter.PathPrefix("/").Handler(http.StripPrefix("/presentation/web/", assetsFileServer))*/
+	assetsRouter.PathPrefix("/").Handler(http.StripPrefix("/presentation/web/", assetsFileServer))
+
+	// see https://github.com/julienschmidt/httprouter/issues/354
+	router := httprouter.New()
+	router.Handler(http.MethodGet, "/static/*path", http.FileServerFS(ui.Files))
+	*/
 
 	rootRouter := router.PathPrefix("/").Subrouter()
 	rootRouter.Use(AccessLogMiddleware, ClientSessionAwareMiddleware)
@@ -130,9 +135,13 @@ func buildRouter() *mux.Router {
 	apiGet("/games/{id:[0-9]+}", controllers.GetGameById)
 	apiPost("/games", controllers.CreateGame)
 	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
-	apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
+	// TODO : usage of game's id instead of game as parameter for game related endpoints.
+	//apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
 	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
-	apiPost("/games/{id:[0-9]+}/resume", controllers.ResumeGame)
+	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
+	apiPost("/games/{id:[0-9]+}/join", controllers.JoinGame)
+	apiPost("/games/{id:[0-9]+}/quit", controllers.QuitGame)
+	apiPost("/games/{id:[0-9]+}/add-computer", controllers.AddComputer)
 	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
 	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
 	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)
