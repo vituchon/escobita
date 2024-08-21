@@ -3,6 +3,8 @@
 namespace Games {
 
   export interface Game extends Api.Game {
+    matchs?: Matchs.Match[]; // previous played matchs
+    currentMatch?: Matchs.Match;
     hasPlayerMaps: boolean;
   }
 
@@ -93,8 +95,8 @@ namespace Games {
   }
 
   function setupMatchPlayerMaps(match: Api.Match) {
-    match.actionsByPlayer = new Players.MapByPlayer<Api.PlayerAction>(match.actionsByPlayer)
-    match.matchCards.byPlayer = new Players.MapByPlayer<Api.PlayerMatchCards>(match.matchCards.byPlayer)
+    match.actionsByPlayer = <any> new Players.MapByPlayer<Api.PlayerAction>(match.actionsByPlayer)
+    match.matchCards.byPlayer = <any> new Players.MapByPlayer<Api.PlayerMatchCards>(match.matchCards.byPlayer)
   }
 
   export class Service {

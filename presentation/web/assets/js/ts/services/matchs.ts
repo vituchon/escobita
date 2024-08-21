@@ -1,6 +1,15 @@
 
 namespace Matchs {
 
+  export interface Match extends Api.Match {
+    actionsByPlayer: Players.MapByPlayer<Api.PlayerAction> & _.Dictionary<Api.PlayerAction>; // dev notes: kind of odd as it should be  Players.MapByPlayer<Api.PlayerAction>, but it must be backward compatible with the extended type Api.Match and the field actionsByPlayer can be a _.Dictionary
+    matchCards: MatchCards;
+  }
+
+  export interface MatchCards extends Api.MatchCards {
+    byPlayer: Players.MapByPlayer<Api.PlayerMatchCards> & _.Dictionary<Api.PlayerMatchCards>; // dev notes: the same of above but with different types
+  }
+
   export namespace Rules {
     function sumValues(cards :Api.Card[]){
       const total = _.reduce(cards,(acc,card) => {

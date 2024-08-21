@@ -13,14 +13,9 @@ namespace Api {
     name: string;
   }
 
-  export interface MapByPlayer<T> {
-    set(player: Player, data: T): void
-    get(player: Player): T
-  }
-
   export interface Match {
     players?: Player[];
-    actionsByPlayer: MapByPlayer<Api.PlayerAction>;
+    actionsByPlayer: _.Dictionary<Api.PlayerAction>;
     playerActions: PlayerAction[];
     matchCards: MatchCards;
     firstPlayerIndex: number;
@@ -50,12 +45,9 @@ namespace Api {
   export interface MatchCards {
     board?: Card[];
     left: Card[];
-    byPlayer: MapByPlayer<PlayerMatchCards>;
+    byPlayer: _.Dictionary<Api.PlayerMatchCards>;
   }
 
-  export interface MatchCardsByPlayerUniqueKey extends _.Dictionary<PlayerMatchCards> {
-    [uniqueKey:string]: PlayerMatchCards;
-  }
 
   export interface PlayerMatchCards {
     taken: Card[];
