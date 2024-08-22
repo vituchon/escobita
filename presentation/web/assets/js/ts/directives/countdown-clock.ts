@@ -18,7 +18,7 @@ namespace CountdownClock {
    *                                             Defaults to 100ms (0.1 second) if not provided.
    * @param {function} [onEnd] - Optional. A callback function to be invoked when the countdown finishes.
    *                             No arguments are passed to this function.
-   *
+   * @param {Handler} [handler] - Optional. The countdown clock handler used for precise control and manipulation.
    * @returns {void}
    */
   escobita.directive('countdownClock', () => {
@@ -143,7 +143,7 @@ namespace CountdownClock {
       }
       //let color = '#ff9800';
       let color = '#'+hexRed+hexGreen+'00';
-      console.log(color)
+      //console.log(color)
       let background = '#ebebeb';
       if (remaingSeconds > (this.totalSeconds / 2)) {
         const angle = ((remaingSeconds - (this.totalSeconds / 2)) * 180 / (this.totalSeconds / 2)) - 90;
