@@ -44,7 +44,7 @@ namespace CountdownClock {
     }
   });
 
-  type WrappedOnEndFunc = (params: {seconds: number}) => void;
+  type WrappedOnEndFunc = () => void;
 
   export interface Handler {
     start(): void;
@@ -73,7 +73,7 @@ namespace CountdownClock {
       this.handler = this
       this.totalSeconds = this.totalSeconds || 30;
       this.refreshRateInMilis = this.refreshRateInMilis || 100
-      this.onEnd = this.onEnd || ((params: {seconds: number}) => {})
+      this.onEnd = this.onEnd || ( () => {} )
       this.$scope.$on('$destroy', () => {
         this.cancel();
       });
@@ -101,9 +101,7 @@ namespace CountdownClock {
     }
 
     public end () {
-      // Dev notes: It apperas that the countdown finish a little after the server already cleans up the seized resource
-      Toastr.info('FIN DE TIEMPO');
-      this.onEnd({seconds: this.totalSeconds});
+      this.onEnd();
     }
 
     public count() {
@@ -141,8 +139,8 @@ namespace CountdownClock {
       if (hexGreen.length == 1) {
         hexGreen = '0' + hexGreen
       }
-      //let color = '#ff9800';
       let color = '#'+hexRed+hexGreen+'00';
+      //let color = '#ff9800';
       //console.log(color)
       let background = '#ebebeb';
       if (remaingSeconds > (this.totalSeconds / 2)) {

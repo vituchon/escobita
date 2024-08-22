@@ -786,6 +786,7 @@ namespace Game {
     }
 
     public onEndCountdown() {
+      Toastr.info('¡Se acabó el tiempo!');
       this.performAnAutomaticDropAction()
     }
 
