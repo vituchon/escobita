@@ -40,7 +40,7 @@
     <div class="flex"></div>
     <div ng-if="ctr.isChatEnabled">
       <div class="send-message-control">
-        <input id="chat-message-input" class="text" placeholder="Escribe un mensaje" ng-model="ctr.playerMessage.text" >
+        <input id="chat-message-input" class="text" placeholder="Escribi un mensaje y presiona enter (o el botón enviar)" ng-model="ctr.playerMessage.text" >
         <button class="materialButton raised colorButton" style="display: flex; flex-direction: column;; margin-left: 1em;" ng-disabled="!ctr.canSendMessage(ctr.playerMessage)" title="Podés apretar enter para enviar" ng-click="ctr.sendAndCleanMessage(ctr.playerMessage);">
           <span>Enviar</span>
           <span id="chat-press-enter-hint">(ó enter)</span>
@@ -55,7 +55,7 @@
     <div class="game-player-header" ng-repeat="player in ctr.game.players track by player.id">
       <span>{{$index+1}}. <span ng-class="{'player-name': true, 'current-turn-player' : (ctr.currentTurnPlayer.id === player.id)}">{{player.name}}</span></span>
       <span ng-if="ctr.isPlayerGameOwner(ctr.game,player)" style="font-size: 2rem;">🪑</span>
-      <i ng-if="(ctr.currentTurnPlayer.id === player.id) && !ctr.isPlayerTurn">⏱️: {{ctr.remainingSecondsToPerformAction}}</i>
+      <i ng-if="(ctr.currentTurnPlayer.id === player.id)">⏱️: {{ctr.remainingSecondsToPerformAction}}</i>
       <span style="width: 10px;"></span>
       <!-- using ng-if=ng-show="ctr.player.name !== player.name" doesn't works here! -->
       <div ng-show="ctr.player.name != player.name" class="materialButton raised colorButton see-player-button" title="chusmear al jugador" ng-click="peekPlayer = !peekPlayer">

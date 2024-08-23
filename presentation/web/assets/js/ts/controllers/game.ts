@@ -684,7 +684,7 @@ namespace Game {
         this.$interval.cancel(this.countdownInterval);
         if (this.isPlayerTurn) {
           this.countdownHandler?.start?.();
-        } else {
+        } //else { as the countdown doesn't see on some mobile devices, the below code also provides a way to see how much time is left.
           this.remainingSecondsToPerformAction = this.secondsToPerformAction
           this.countdownInterval = this.$interval(() => {
             if (this.remainingSecondsToPerformAction > 0) {
@@ -693,7 +693,7 @@ namespace Game {
               this.$interval.cancel(this.countdownInterval);
             }
           }, 1000);
-        }
+        //}
         return this.updateGameStats(currentMatchIndex).then(() => {
           return this.game
         })
