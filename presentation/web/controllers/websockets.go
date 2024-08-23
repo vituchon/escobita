@@ -18,11 +18,11 @@ func AdquireWebSocket(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	if !isNew {
-		msg := fmt.Sprintf("Web socket already adquired for client(id='%d')", services.GetWebPlayerId(r))
+		msg := fmt.Sprintf("Web socket already adquired for client(id='%d')", services.GetClientId(r))
 		log.Println(msg)
 		http.Error(w, msg, http.StatusBadRequest)
 	} else {
-		log.Printf("Web socket(RemoteAddr='%s') adquired OK (connection \"upgraded\") for client(id='%d')\n", conn.RemoteAddr().String(), services.GetWebPlayerId(r))
+		log.Printf("Web socket(RemoteAddr='%s') adquired OK (connection \"upgraded\") for client(id='%d')\n", conn.RemoteAddr().String(), services.GetClientId(r))
 	}
 }
 
@@ -32,13 +32,13 @@ func ReleaseWebSocket(response http.ResponseWriter, request *http.Request) {
 		services.GameWebSockets.UnbindClientWebSocketInGame(conn, request) // just in case the ws is associated with a game, then delete the association
 		err := services.WebSocketsHandler.Release(request, "Connection closed gracefully")
 		if err != nil {
-			log.Printf("Error releasingWeb socket(RemoteAddr='%s') for client(id='%d')\n: %v\n", conn.RemoteAddr().String(), services.GetWebPlayerId(request), err)
+			log.Printf("Error releasingWeb socket(RemoteAddr='%s') for client(id='%d')\n: %v\n", conn.RemoteAddr().String(), services.GetClientId(request), err)
 			response.WriteHeader(http.StatusInternalServerError)
 		} else {
-			log.Printf("Web socket(RemoteAddr='%s') released OK for client(id='%d')\n", conn.RemoteAddr().String(), services.GetWebPlayerId(request))
+			log.Printf("Web socket(RemoteAddr='%s') released OK for client(id='%d')\n", conn.RemoteAddr().String(), services.GetClientId(request))
 		}
 	} else {
-		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", services.GetWebPlayerId(request))
+		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", services.GetClientId(request))
 		response.WriteHeader(http.StatusBadRequest)
 	}
 }
@@ -49,7 +49,7 @@ type ServerMessage struct {
 }
 
 func SendMessageWebSocket(response http.ResponseWriter, request *http.Request) {
-	playerId := services.GetWebPlayerId(request)
+	playerId := services.GetClientId(request)
 	message, err := getPingMessageOrDefault(request)
 	if err != nil {
 		log.Printf("error getting ping message: '%v'", err)

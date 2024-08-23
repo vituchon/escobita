@@ -132,35 +132,35 @@ func buildRouter() *mux.Router {
 	apiDelete := BuildSetHandleFunc(apiRouter, "DELETE")
 
 	apiGet("/games", controllers.GetGames)
-	apiGet("/games/{id:[0-9]+}", controllers.GetGameById)
+	apiGet("/games/{id:[+-]?[0-9]+}", controllers.GetGameById)
 	apiPost("/games", controllers.CreateGame)
-	apiPost("/games/{id:[0-9]+}/message", controllers.SendMessage)
+	apiPost("/games/{id:[+-]?[0-9]+}/message", controllers.SendMessage)
 	// TODO : usage of game's id instead of game as parameter for game related endpoints.
-	//apiPut("/games/{id:[0-9]+}", controllers.UpdateGame)
-	apiDelete("/games/{id:[0-9]+}", controllers.DeleteGame)
-	apiPost("/games/{id:[0-9]+}/start", controllers.StartGame)
-	apiPost("/games/{id:[0-9]+}/join", controllers.JoinGame)
-	apiPost("/games/{id:[0-9]+}/quit", controllers.QuitGame)
-	apiPost("/games/{id:[0-9]+}/add-computer", controllers.AddComputer)
-	apiPost("/games/{id:[0-9]+}/perform-take-action", controllers.PerformTakeAction)
-	apiPost("/games/{id:[0-9]+}/perform-drop-action", controllers.PerformDropAction)
-	apiGet("/games/{id:[0-9]+}/calculate-stats", controllers.CalculateGameStats)
+	//apiPut("/games/{id:[+-]?[0-9]+}", controllers.UpdateGame)
+	apiDelete("/games/{id:[+-]?[0-9]+}", controllers.DeleteGame)
+	apiPost("/games/{id:[+-]?[0-9]+}/start", controllers.StartGame)
+	apiPost("/games/{id:[+-]?[0-9]+}/join", controllers.JoinGame)
+	apiPost("/games/{id:[+-]?[0-9]+}/quit", controllers.QuitGame)
+	apiPost("/games/{id:[+-]?[0-9]+}/add-computer", controllers.AddComputer)
+	apiPost("/games/{id:[+-]?[0-9]+}/perform-take-action", controllers.PerformTakeAction)
+	apiPost("/games/{id:[+-]?[0-9]+}/perform-drop-action", controllers.PerformDropAction)
+	apiGet("/games/{id:[+-]?[0-9]+}/calculate-stats", controllers.CalculateGameStats)
 
-	apiGet("/games/{id:[0-9]+}/bind-ws", controllers.BindClientWebSocketToGame)
-	apiGet("/games/{id:[0-9]+}/unbind-ws", controllers.UnbindClientWebSocketInGame)
+	apiGet("/games/{id:[+-]?[0-9]+}/bind-ws", controllers.BindClientWebSocketToGame)
+	apiGet("/games/{id:[+-]?[0-9]+}/unbind-ws", controllers.UnbindClientWebSocketInGame)
 
 	apiGet("/players", controllers.GetPlayers)
 	apiGet("/players-by-game", controllers.GetPlayersByGame) // TODO: Implement if necessary...
 	apiGet("/player", controllers.GetClientPlayer)
-	apiGet("/players/{id:[0-9]+}", controllers.GetPlayerById)
-	apiPut("/players/{id:[0-9]+}", controllers.UpdatePlayer)
+	apiGet("/players/{id:[+-]?[0-9]+}", controllers.GetPlayerById)
+	apiPut("/players/{id:[+-]?[0-9]+}", controllers.UpdatePlayer)
 
 	apiGet("/messages", controllers.GetMessages) // TODO : add optional parameter "since", default beign server start up time
-	apiGet("/messages/{id:[0-9]+}", controllers.GetMessageById)
-	apiGet("/messages/get-by-game/{id:[0-9]+}", controllers.GetMessagesByGame)
+	apiGet("/messages/{id:[+-]?[0-9]+}", controllers.GetMessageById)
+	apiGet("/messages/get-by-game/{id:[+-]?[0-9]+}", controllers.GetMessagesByGame)
 	apiPost("/messages", controllers.CreateMessage)
-	apiPut("/messages/{id:[0-9]+}", controllers.UpdateMessage)
-	apiDelete("/messages/{id:[0-9]+}", controllers.DeleteMessage)
+	apiPut("/messages/{id:[+-]?[0-9]+}", controllers.UpdateMessage)
+	apiDelete("/messages/{id:[+-]?[0-9]+}", controllers.DeleteMessage)
 
 	return router
 }

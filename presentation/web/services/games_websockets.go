@@ -44,7 +44,7 @@ func (gws *gameWebSockets) NotifyGameConns(gameId int, kind string, data interfa
 }
 
 func (gws *gameWebSockets) BindClientWebSocketToGame(response http.ResponseWriter, request *http.Request, gameId int) {
-	log.Printf("Binding web socket from client(id=%d) in game(id=%d)...", GetWebPlayerId(request), gameId)
+	log.Printf("Binding web socket from client(id=%d) in game(id=%d)...", GetClientId(request), gameId)
 	conn, _, err := WebSocketsHandler.AdquireOrRetrieve(response, request)
 	if err != nil {
 		log.Println(err)
@@ -56,7 +56,7 @@ func (gws *gameWebSockets) BindClientWebSocketToGame(response http.ResponseWrite
 
 	for _, exstingConn := range gws.ConnsByGameId[gameId] {
 		if exstingConn == conn {
-			msg := fmt.Sprintf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), GetWebPlayerId(request), gameId)
+			msg := fmt.Sprintf("Web socket(remoteAddr='%s') from client(id=%d) already binded in game(id=%d)", conn.RemoteAddr().String(), GetClientId(request), gameId)
 			log.Println(msg)
 			http.Error(response, msg, http.StatusBadRequest)
 			return
@@ -64,7 +64,7 @@ func (gws *gameWebSockets) BindClientWebSocketToGame(response http.ResponseWrite
 	}
 
 	gws.ConnsByGameId[gameId] = append(gws.ConnsByGameId[gameId], conn)
-	log.Printf("Binded web socket(remoteAddr='%s') from client(id=%d) in game(id=%d)", conn.RemoteAddr().String(), GetWebPlayerId(request), gameId)
+	log.Printf("Binded web socket(remoteAddr='%s') from client(id=%d) in game(id=%d)", conn.RemoteAddr().String(), GetClientId(request), gameId)
 }
 
 func (gws *gameWebSockets) UnbindAllWebSocketsInGame(gameId int, request *http.Request) {

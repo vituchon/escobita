@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"net/http"
-	"sync"
 
+	"math/big"
+
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 )
 
@@ -13,20 +15,19 @@ func InitSessionStore(key []byte) {
 	clientSessions = sessions.NewCookieStore(key)
 }
 
-var clientSequenceId int = 0
-var mutex sync.Mutex
-
 func GetOrCreateClientSession(request *http.Request) (*sessions.Session, error) {
-	clientSession, err := clientSessions.Get(request, "client_session")
+	clientSession, err := clientSessions.Get(request, "escoba_client")
 	if err != nil {
 		return nil, err
 	}
 	if clientSession.IsNew {
-		mutex.Lock()
-		defer mutex.Unlock()
-		nextId := clientSequenceId + 1
-		clientSession.Values["clientId"] = nextId
-		clientSequenceId++
+		uuid := uuid.New()
+		uuidBytes := uuid[:]
+		nextId := int(big.NewInt(0).SetBytes(uuidBytes[:8]).Int64())
+		min := -1000000000
+		max := 1000000000
+		scaledNextId := (nextId % (max - min + 1)) + min // los escalo pues los navegadores pueden no soportar números tan grandes y luego hay conflicto a la hora de actualziar el jugador cuando se registra el nombre
+		clientSession.Values["clientId"] = scaledNextId
 	}
 	return clientSession, nil
 }
