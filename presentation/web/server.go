@@ -6,21 +6,18 @@ package web
 import (
 	"context"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"time"
 
-	"github.com/vituchon/escobita/presentation/util"
 	"github.com/vituchon/escobita/presentation/web/controllers"
 
 	//embed "embed"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/securecookie"
 )
 
 // TODO : nice implement something like this
@@ -38,39 +35,17 @@ func (s Server) Shutdown() {
 }
 */
 
-const (
-	storeKeyFilePath = ".ss" // the file were the actual key is stored
-)
-
-func retrieveCookieStoreKey(filepath string) (key []byte, err error) {
-	if util.FileExists(filepath) {
-		key, err = ioutil.ReadFile(storeKeyFilePath)
-		//log.Printf("Using existing key %s\n", string(key))
-	} else {
-		key = securecookie.GenerateRandomKey(32)
-		ioutil.WriteFile(storeKeyFilePath, key, 0644)
-		//log.Printf("Generated new key %s and stored at %s\n", string(key), storeKeyFilePath)
-	}
-	return
-}
-
 /*
 //go:embed assets/*
 var assets embed.FS*/
 
 func StartServer() {
+	var err error
 	//file, err := assets.Open("assets/html/root.html")
 	//bytes, err := ioutil.ReadFile("./pepe.txt")
 
 	//log.Println(err, string(bytes))
 	//fileBytes, err := ioutil.ReadAll(file)
-
-	key, err := retrieveCookieStoreKey(storeKeyFilePath)
-	if err != nil {
-		log.Printf("Unexpected error while retrieving cookie store key: %v", err)
-		return
-	}
-	controllers.InitSessionStore(key)
 
 	router := buildRouter()
 	server := &http.Server{
@@ -193,18 +168,13 @@ func AccessLogMiddleware(h http.Handler) http.Handler {
 
 func ClientSessionAwareMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		clientSession, err := controllers.GetOrCreateClientSession(request)
+		clientSession, err := controllers.GetOrCreateClientSession(request, response)
 		if err != nil {
 			log.Printf("error while getting client session: %v", err)
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		err = controllers.SaveClientSession(request, response, clientSession)
-		if err != nil {
-			log.Printf("error while saving client session: %v", err)
-			response.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+		//log.Printf("For request ip %s setting %+v client session", request.RemoteAddr, *clientSession)
 		ctx := context.WithValue(request.Context(), "clientSession", clientSession)
 		h.ServeHTTP(response, request.WithContext(ctx))
 	})

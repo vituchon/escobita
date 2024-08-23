@@ -7,8 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/sessions"
-
 	"github.com/gorilla/websocket"
 )
 
@@ -84,9 +82,3 @@ var (
 	ConnectionDoesntExistErr = errors.New("Connection doesn't exists")
 	WebSocketsHandler        = NewWebSocketsHandler(GetWebPlayerId)
 )
-
-func GetWebPlayerId(request *http.Request) int {
-	clientSession := request.Context().Value("clientSession").(*sessions.Session)
-	wrappedInt, _ := clientSession.Values["clientId"]
-	return wrappedInt.(int)
-}
