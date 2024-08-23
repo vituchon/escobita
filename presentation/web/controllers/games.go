@@ -55,7 +55,7 @@ func GetGameById(response http.ResponseWriter, request *http.Request) {
 const MAX_GAMES_PER_PLAYER = 1
 
 func CreateGame(response http.ResponseWriter, request *http.Request) {
-	playerId := services.GetWebPlayerId(request) // will be the game's owner
+	playerId := services.GetClientPlayerId(request) // will be the game's owner
 	if gamesRepository.GetGamesCreatedCount(playerId) == MAX_GAMES_PER_PLAYER {
 		msg := fmt.Sprintf("Player(id='%d') has reached the maximum game creation limit: '%v'", playerId, MAX_GAMES_PER_PLAYER)
 		log.Println(msg)
@@ -148,7 +148,7 @@ func StartGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	playerId := services.GetWebPlayerId(request)
+	playerId := services.GetClientPlayerId(request)
 	if game.Owner.Id != playerId {
 		log.Printf("error while starting game: request doesn't cames from the owner, in cames from %d\n", playerId)
 		response.WriteHeader(http.StatusBadRequest)
@@ -176,7 +176,7 @@ func JoinGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	playerId := services.GetWebPlayerId(request)
+	playerId := services.GetClientPlayerId(request)
 	player, err := playersRepository.GetPlayerById(playerId)
 	if err != nil {
 		msg := fmt.Sprintf("error while getting player by id, error was: '%v'\n", player)
@@ -211,7 +211,7 @@ func QuitGame(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	playerId := services.GetWebPlayerId(request)
+	playerId := services.GetClientPlayerId(request)
 	player, err := playersRepository.GetPlayerById(playerId)
 	if err != nil {
 		msg := fmt.Sprintf("error while getting player by id, error was: '%v'\n", player)
@@ -440,7 +440,7 @@ func UnbindClientWebSocketInGame(response http.ResponseWriter, request *http.Req
 		services.GameWebSockets.UnbindClientWebSocketInGame(conn, request)
 		response.WriteHeader(http.StatusOK)
 	} else {
-		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", services.GetWebPlayerId(request))
+		log.Printf("No need to release web socket as it was not adquired (or already released) for  client(id='%d')\n", services.GetClientPlayerId(request))
 		response.WriteHeader(http.StatusBadRequest)
 	}
 }

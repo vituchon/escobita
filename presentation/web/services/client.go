@@ -9,7 +9,7 @@ type ClientSession struct {
 	Id int
 }
 
-func GetWebPlayerId(request *http.Request) int {
+func GetClientPlayerId(request *http.Request) int {
 	clientSession := request.Context().Value("clientSession").(*ClientSession)
 	//log.Printf("For request ip %s got %+v client session", request.RemoteAddr, *clientSession)
 	return clientSession.Id

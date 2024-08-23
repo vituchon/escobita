@@ -80,5 +80,5 @@ func (h *webSocketsHandler) DoRelease(clientId int, reason string) error {
 
 var (
 	ConnectionDoesntExistErr = errors.New("Connection doesn't exists")
-	WebSocketsHandler        = NewWebSocketsHandler(GetWebPlayerId)
+	WebSocketsHandler        = NewWebSocketsHandler(GetClientPlayerId)
 )

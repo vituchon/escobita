@@ -2,27 +2,23 @@ package controllers
 
 import (
 	"fmt"
-	//"log"
+	"math/big"
 	"net/http"
 	"strconv"
-	"sync"
+
+	"github.com/google/uuid"
 
 	"github.com/vituchon/escobita/presentation/web/services"
 )
-
-var clientSequenceId int = 0
-var mutex sync.Mutex
 
 func GetOrCreateClientSession(request *http.Request, response http.ResponseWriter) (clientSession *services.ClientSession, err error) {
 	clientSession, err = getClientSession(request)
 	if err != nil {
 		isNewClient := (err == http.ErrNoCookie)
 		if isNewClient {
-			fmt.Printf("Creating new client for %s\n", request.RemoteAddr)
-			mutex.Lock()
-			clientSequenceId++
-			nextId := clientSequenceId
-			mutex.Unlock()
+			uuid := uuid.New()
+			uuidBytes := uuid[:]
+			nextId := int(big.NewInt(0).SetBytes(uuidBytes[:8]).Int64())
 			clientSession = &services.ClientSession{
 				Id: nextId,
 			}

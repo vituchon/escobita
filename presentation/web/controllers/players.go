@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/vituchon/escobita/model"
 
@@ -24,9 +25,13 @@ func GetPlayers(response http.ResponseWriter, request *http.Request) {
 	WriteJsonResponse(response, http.StatusOK, players)
 }
 
+var getClientPlayerMutex sync.Mutex
+
 // Gets the web client's correspondant player (There is only ONE player per client!)
 func GetClientPlayer(response http.ResponseWriter, request *http.Request) {
-	id := services.GetWebPlayerId(request)
+	getClientPlayerMutex.Lock()
+	defer getClientPlayerMutex.Unlock()
+	id := services.GetClientPlayerId(request)
 	player, err := playersRepository.GetPlayerById(id)
 	if err != nil {
 		if err == repositories.EntityNotExistsErr {
