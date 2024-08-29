@@ -116,8 +116,8 @@
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidTakeAction()" ng-click="ctr.performTakeAction()">Levantar</button>
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.hasValidDropAction()" ng-click="ctr.performDropAction()">Descartar</button>
             <button class="materialButton raised colorButton" ng-disabled="ctr.loading || !ctr.canRequestTakeActionsSuggestion()" ng-click="ctr.requestTakeActionsSuggestion(); ctr.openPossibleTakeActionsDialog();">Pedir sugerencia <span style="font-size: x-small;">({{ctr.calculateRemainderTakeActionSuggestions()}})</span></button>
-            <countdown-clock style="margin: auto;" handler="ctr.countdownHandler" total-seconds="ctr.secondsToPerformAction" refresh-rate-in-milis="500" on-end="ctr.onEndCountdown()"></countdown-clock>
           </div>
+          <countdown-clock style="margin: 0 auto" handler="ctr.countdownHandler" total-seconds="ctr.secondsToPerformAction" refresh-rate-in-milis="500" on-end="ctr.onEndCountdown()"></countdown-clock>
         </div>
       </div>
 
