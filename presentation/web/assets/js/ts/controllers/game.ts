@@ -431,11 +431,11 @@ namespace Game {
         }
 
         // TODO (check): if I leave pressed down the 'x' then at some time errors ocurrs in  func (match *Match) Drop(action PlayerDropAction) PlayerAction at referre.go!, there are concurrent map writes....
-        if (event.key === 'x') { // helper code for dev purposes
+        /*if (event.key === 'x') { // helper code for dev purposes
           if (this.isMatchInProgress) {
             this.performAnAutomaticDropAction()
           }
-        }
+        }*/
       };
       this.$rootElement.bind("keydown", keyHandler)
       this.$scope.$on('$destroy', () => {
