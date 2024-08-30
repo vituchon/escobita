@@ -3,6 +3,8 @@
 package util
 
 import (
+
+	"math/rand"
 	"os"
 )
 
@@ -12,4 +14,9 @@ func FileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+
+func GenerateRandomNumber(min int , max int) int {
+	return rand.Intn(max-min) + min
 }
