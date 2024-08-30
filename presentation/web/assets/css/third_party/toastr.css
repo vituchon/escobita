@@ -94,11 +94,9 @@ button.toast-close-button {
   left: 12px;
 }
 #toast-container {
-  position: relative;
-  bottom: 10vh;
+  position: fixed;
   z-index: 999999;
   pointer-events: none;
-  max-width: fit-content;
   /*overrides*/
 }
 #toast-container * {
