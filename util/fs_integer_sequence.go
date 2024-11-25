@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -32,7 +33,7 @@ func (seq *FsIntegerSequence) GetNext() (int, error) {
 	}
 	defer file.Close()
 
-	current, err := parseContent(file)
+	current, err := getContent(file)
 	if err != nil {
 		return 0, err
 	}
@@ -46,45 +47,42 @@ func (seq *FsIntegerSequence) GetNext() (int, error) {
 }
 
 func openOrCreate(filename string, initialValue int) (*os.File, error) {
-	file, err := os.Open(filename)
+	file, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return create(filename, initialValue)
+		if errors.Is(err, os.ErrExist) {
+			return os.OpenFile(filename, os.O_RDWR, 0644)
+		} else {
+			return nil, err
 		}
-		return nil, err
+	} else {
+		err = setContent(file, initialValue)
+		if err != nil {
+			return nil, err
+		}
+		return file, nil
 	}
-	return file, nil
-}
 
-func create(filename string, initialValue int) (*os.File, error) {
-	file, err := os.Create(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err != nil && file != nil {
-			file.Close()
-		}
-	}()
-	err = setContent(file, initialValue)
-	if err != nil {
-		return nil, err
-	}
-	_, err = file.Seek(0, os.SEEK_SET)
-	return file, err
 }
 
 func setContent(file *os.File, value int) error {
-	_, err := file.WriteString(strconv.Itoa(value))
+	_, err := file.Seek(0, os.SEEK_SET)
+	if err != nil {
+		return err
+	}
+	_, err = file.WriteString(strconv.Itoa(value))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func parseContent(file *os.File) (*int, error) {
+func getContent(file *os.File) (*int, error) {
+	_, err := file.Seek(0, os.SEEK_SET)
+	if err != nil {
+		return nil, err
+	}
 	var content string
-	_, err := fmt.Fscan(file, &content)
+	_, err = fmt.Fscan(file, &content)
 	if err != nil {
 		return nil, err
 	}
