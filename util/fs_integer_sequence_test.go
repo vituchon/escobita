@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestIntegerSequenceWorks(t *testing.T) {
+func TestFsIntegerSequenceWorks(t *testing.T) {
 	tests := []struct {
 		name         string
 		initialValue int
@@ -33,7 +33,7 @@ func TestIntegerSequenceWorks(t *testing.T) {
 			tmpFile := "test_sequence.txt"
 			defer os.Remove(tmpFile)
 
-			seq := NewIntegerSequence(tmpFile, test.initialValue, 1)
+			var seq IntegerSequence = NewIntegerSequence(tmpFile, test.initialValue, 1)
 			generated, err := seq.GetNext()
 			if err != nil {
 				t.Errorf("unexpected error: '%v'", err)

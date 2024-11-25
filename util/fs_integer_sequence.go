@@ -7,18 +7,22 @@ import (
 	"sync"
 )
 
-type IntegerSequence struct {
+type IntegerSequence interface {
+	GetNext() (int, error)
+}
+
+type FsIntegerSequence struct {
 	mu           sync.Mutex
 	filename     string
 	initialValue int
 	increment    int
 }
 
-func NewIntegerSequence(filename string, initialValue int, increment int) *IntegerSequence {
-	return &IntegerSequence{filename: filename, initialValue: initialValue, increment: increment}
+func NewIntegerSequence(filename string, initialValue int, increment int) *FsIntegerSequence {
+	return &FsIntegerSequence{filename: filename, initialValue: initialValue, increment: increment}
 }
 
-func (seq *IntegerSequence) GetNext() (int, error) {
+func (seq *FsIntegerSequence) GetNext() (int, error) {
 	seq.mu.Lock()
 	defer seq.mu.Unlock()
 
@@ -58,7 +62,6 @@ func create(filename string, initialValue int) (*os.File, error) {
 		return nil, err
 	}
 	defer func() {
-		fmt.Println(err)
 		if err != nil && file != nil {
 			file.Close()
 		}
