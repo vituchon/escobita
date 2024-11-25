@@ -73,8 +73,9 @@ func StartServer() {
 	controllers.InitSessionStore(key)
 
 	router := buildRouter()
+	port := getenv("PORT", "9090")
 	server := &http.Server{
-		Addr:         ":9090",
+		Addr:         ":" + port,
 		Handler:      router,
 		ReadTimeout:  40 * time.Second,
 		WriteTimeout: 300 * time.Second,
@@ -86,6 +87,14 @@ func StartServer() {
 	}
 
 	// TODO (for greater good) : Perhaps we are now in condition to add https://github.com/gorilla/mux#graceful-shutdown
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }
 
 func buildRouter() *mux.Router {
