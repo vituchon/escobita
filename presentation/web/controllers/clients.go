@@ -2,14 +2,17 @@ package controllers
 
 import (
 	"net/http"
+
 	"github.com/gorilla/sessions"
-	"github.com/vituchon/escobita/presentation/util"
+	"github.com/vituchon/escobita/util"
 )
 
 var clientSessions *sessions.CookieStore
+var integerSequence util.IntegerSequence
 
 func InitSessionStore(key []byte) {
 	clientSessions = sessions.NewCookieStore(key)
+	integerSequence = util.NewFsIntegerSequence("escobita.seq", 0, 1)
 }
 
 func GetOrCreateClientSession(request *http.Request) (*sessions.Session, error) {
@@ -18,7 +21,10 @@ func GetOrCreateClientSession(request *http.Request) (*sessions.Session, error) 
 		return nil, err
 	}
 	if clientSession.IsNew {
-		scaledNextId := util.GenerateRandomNumber(0, 10000000000)
+		scaledNextId, err := integerSequence.GetNext()
+		if err != nil {
+			return nil, err
+		}
 		clientSession.Values["clientId"] = scaledNextId
 	}
 	return clientSession, nil
