@@ -19,7 +19,7 @@ type FsIntegerSequence struct {
 	increment    int
 }
 
-func NewIntegerSequence(filename string, initialValue int, increment int) *FsIntegerSequence {
+func NewFsIntegerSequence(filename string, initialValue int, increment int) *FsIntegerSequence {
 	return &FsIntegerSequence{filename: filename, initialValue: initialValue, increment: increment}
 }
 

@@ -37,7 +37,7 @@ func TestFsIntegerSequenceWorks(t *testing.T) {
 			tmpFile := "test_sequence.txt"
 			defer os.Remove(tmpFile)
 
-			var seq IntegerSequence = NewIntegerSequence(tmpFile, test.initialValue, test.increment)
+			var seq IntegerSequence = NewFsIntegerSequence(tmpFile, test.initialValue, test.increment)
 			generated, err := seq.GetNext()
 			if err != nil {
 				t.Errorf("unexpected error: '%v'", err)
